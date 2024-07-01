@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../manager/GlobalController.dart';
+import '../fav/fav.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
-import '../zzim.dart';
 
 class MainPage extends StatelessWidget {
   final GlobalController _globalCtrl = Get.find<GlobalController>();
@@ -18,26 +18,26 @@ class MainPage extends StatelessWidget {
         items: [
           BottomNavigationBarItem(
             icon: _globalCtrl.selectedIndex.value == 0
-                ? Icon(Icons.star_rounded, color: Colors.yellow)
+                ? Icon(Icons.star_rounded, color: Color(0XFFFFC700))
                 : Icon(Icons.star_outline_rounded, color: Colors.black),
-            label: 'fav',
+            label: '찜한주식',
           ),
           BottomNavigationBarItem(
             icon: _globalCtrl.selectedIndex.value == 1
-                ? Icon(Icons.insert_chart_rounded, color: Colors.yellow)
+                ? Icon(Icons.insert_chart_rounded, color: Color(0XFFFFC700))
                 : Icon(Icons.insert_chart_outlined_rounded,
                     color: Colors.black),
-            label: 'price',
+            label: '현재가',
           ),
           BottomNavigationBarItem(
             icon: _globalCtrl.selectedIndex.value == 2
-                ? Icon(Icons.more_horiz_rounded, color: Colors.yellow)
+                ? Icon(Icons.more_horiz_rounded, color: Color(0XFFFFC700))
                 : Icon(Icons.more_horiz_rounded, color: Colors.black),
-            label: 'more',
+            label: '더보기',
           ),
         ],
         currentIndex: _globalCtrl.selectedIndex.value,
-        selectedItemColor: Colors.black,
+        selectedItemColor: Color(0XFFFFC700),
         onTap: (value) {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
@@ -52,8 +52,6 @@ class MainPage extends StatelessWidget {
               break;
           }
         },
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
       );
     });
@@ -61,68 +59,73 @@ class MainPage extends StatelessWidget {
 
   Widget setAppBar() {
     return Obx(() {
-    String titleWidget ='';
-    List<Widget> actions = [];
+      String titleWidget = '';
+      List<Widget> actions = [];
 
-     switch (_globalCtrl.selectedIndex.value) {
-       case 0:
-         titleWidget = '찜한주식';
-         actions = [
-           IconButton(
-             icon: Icon(Icons.add),
-             onPressed: () {},
-           ),
-           IconButton(
-             icon: Icon(Icons.create_outlined),
-             onPressed: () {},
-           ),
-         ];
-         break;
-       case 1:
-         titleWidget = '';
-         actions = [
-           IconButton(
-             icon: Icon(Icons.notification_add_outlined),
-             onPressed: () {},
-           ),
-           IconButton(
-             icon: Icon(Icons.share),
-             onPressed: () {},
-           ),
-         ];
-         break;
-       case 2:
-         titleWidget = '더보기';
-         actions = [
-           IconButton(
-             icon: Icon(Icons.settings),
-             onPressed: () {},
-           ),
-         ];
-         break;
-     }
+      switch (_globalCtrl.selectedIndex.value) {
+        case 0:
+          titleWidget = '찜한주식';
+          actions = [
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.create_outlined),
+              onPressed: () {},
+            ),
+          ];
+          break;
+        case 1:
+          titleWidget = '';
+          actions = [
+            IconButton(
+              icon: Icon(Icons.notification_add_outlined),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () {},
+            ),
+          ];
+          break;
+        case 2:
+          titleWidget = '더보기';
+          actions = [
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {},
+            ),
+          ];
+          break;
+      }
 
-    return AppBar(
-        leading : titleWidget == '' ? IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () {
-          },
-        ) : null,
-      title: Text(titleWidget),
-      actions: actions,
-    );
+      return AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        leading: titleWidget == ''
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+                onPressed: () {},
+              )
+            : null,
+        title: Text(titleWidget),
+        actions: actions,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
-      appBar:  PreferredSize(
-        preferredSize: const Size(double.infinity, 64),
-          child :  setAppBar()
-      ),
+      appBar: PreferredSize(
+          preferredSize: const Size(double.infinity, 64),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: setAppBar(),
+          )),
+        extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Obx(() {
           return _globalCtrl.currentWidget.value;

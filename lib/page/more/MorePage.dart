@@ -120,7 +120,7 @@ class MorePage extends StatelessWidget {
     return Container(
       height: 66,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildIconWithDescription(Icons.lock, '인증/보안', Color(0XFFFB422E)),
