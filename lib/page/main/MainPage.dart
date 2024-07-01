@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../manager/GlobalController.dart';
-import '../fav/fav.dart';
+import '../fav/FavPage.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
 
@@ -43,7 +43,7 @@ class MainPage extends StatelessWidget {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
             case 0:
-              _globalCtrl.setCurrWidget(fav()); // 찜하기 페이지
+              _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
               break;
             case 1:
               _globalCtrl.setCurrWidget(PricePage());

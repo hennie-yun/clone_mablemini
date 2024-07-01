@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 
@@ -31,7 +30,7 @@ class PricePage extends StatelessWidget {
 
             Container(height: 16, color: const Color(0xFFF7F8FA)),
 
-            //기업정보
+            //기업 정보
             Container(
                 padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 40.0),
                 child: Column(
@@ -52,7 +51,10 @@ class PricePage extends StatelessWidget {
                         tag('#갤럭시워치'),],)
 
                     ])),
+
             Container(height: 16, color: const Color(0xFFF7F8FA)),
+
+            //뉴스
             Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 28.0),
@@ -73,7 +75,7 @@ class PricePage extends StatelessWidget {
 }
 Widget tag(String title){
   return Container(
-      margin: EdgeInsets.only(right: 6),
+      margin: const EdgeInsets.only(right: 6),
       padding: const EdgeInsets.symmetric(
           horizontal: 16.0, vertical: 4.0),
       decoration: const BoxDecoration(
@@ -83,28 +85,26 @@ Widget tag(String title){
           right: Radius.circular(50.0),
         ),
       ),
-      child: Text(title,
-          style:
-          TextStyle(fontSize: 14, color: Colors.white)));
+      child: Text(title, style: const TextStyle(fontSize: 14, color: Colors.white)));
 }
 
 Widget title(String title){
   return  Row(
     children: [
       Expanded(
-          child: Text(title, style: TextStyle(fontSize: 20))),
-      Container(
+          child: Text(title, style: const TextStyle(fontSize: 20))),
+      SizedBox(
           width: 24,
           child: IconButton(
               onPressed: () {},
               iconSize: 24.0,
-              icon: Icon(Icons.arrow_forward_ios))
+              icon: const Icon(Icons.arrow_forward_ios))
       )
     ],
   );
 }
 Widget news(String title, String imagePath) {
-  return Container(
+  return SizedBox(
       width: double.infinity,
       height: 112,
       child: Row(
@@ -124,7 +124,7 @@ Widget news(String title, String imagePath) {
                         color: Color(0xFF7D7E85))),
               ])),
           Container(
-              margin: EdgeInsets.only(left: 15),
+              margin: const EdgeInsets.only(left: 15),
               width: 72,
               height: 72,
               child: ClipRRect(

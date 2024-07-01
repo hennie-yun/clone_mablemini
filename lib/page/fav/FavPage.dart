@@ -1,22 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class fav extends StatefulWidget {
-  const fav({super.key});
+class FavPage extends StatefulWidget {
+  const FavPage({super.key});
 
   @override
-  State<fav> createState() => _zzimState();
+  State<FavPage> createState() => _FavPage();
 }
 
-class _zzimState extends State<fav> {
+class _FavPage extends State<FavPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: ListView.builder(
-            itemCount: zzimDataList.length,
+            itemCount: DataList.length,
             itemBuilder: (context, index) {
               return Container(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   height: 72,
                   child: Row(children: [
                     Container(
@@ -27,19 +27,18 @@ class _zzimState extends State<fav> {
                         child: ClipOval(
                             child: Image.asset('assets/images/mmini.png'))),
                     Expanded(
-                      child: Text(zzimDataList[index]['jm_name']!,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w700, fontSize: 16)),
+                      child: Text(DataList[index]['jm_name']!,
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
                     ),
                     Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(zzimDataList[index]['nowprc']! + '원', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                          Text(DataList[index]['nowprc']! + '원', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
                           makePrice(
-                              zzimDataList[index]['prc2']!,
-                              zzimDataList[index]['percent']!,
-                              zzimDataList[index]['sign']!)
+                              DataList[index]['prc2']!,
+                              DataList[index]['percent']!,
+                              DataList[index]['sign']!)
                         ])
                   ]));
             }));
@@ -63,16 +62,16 @@ Color updownColor(String updwn) {
 
   if (updown < 3) {
     sign = '▲ ';
-    return Color(0xFFF24430);
+    return const Color(0xFFF24430);
   } else if (updown == 3) {
-    return Color(0xFF50505B);
+    return const Color(0xFF50505B);
   } else {
     sign = '▼ ';
-    return Color(0xFF4881FF);
+    return const Color(0xFF4881FF);
   }
 }
 
-final List<Map<String, String>> zzimDataList = [
+final List<Map<String, String>> DataList = [
   {
     'jm_name': 'SK증권',
     'sign': '2',
