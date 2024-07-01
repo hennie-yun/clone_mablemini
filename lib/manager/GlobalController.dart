@@ -7,7 +7,7 @@ class GlobalController extends GetxController {
   static GlobalController get instance => Get.find();
 
   var selectedIndex = 0.obs;
-  var currentWidget = Rx<Widget>(zzim()); // 초기화
+  var currentWidget = Rx<Widget>(fav()); // 초기화
 
   void setCurrWidget(Widget widget) {
     currentWidget.value = widget;

@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class zzim extends StatefulWidget {
-  const zzim({super.key});
+class fav extends StatefulWidget {
+  const fav({super.key});
 
   @override
-  State<zzim> createState() => _zzimState();
+  State<fav> createState() => _zzimState();
 }
 
-class _zzimState extends State<zzim> {
+class _zzimState extends State<fav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,15 +29,13 @@ class _zzimState extends State<zzim> {
                     Expanded(
                       child: Text(zzimDataList[index]['jm_name']!,
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
+                              fontWeight: FontWeight.w700, fontSize: 16)),
                     ),
                     Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(zzimDataList[index]['nowprc']! + '원',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(zzimDataList[index]['nowprc']! + '원', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
                           makePrice(
                               zzimDataList[index]['prc2']!,
                               zzimDataList[index]['percent']!,
@@ -53,12 +51,10 @@ String sign = '';
 Widget makePrice(String prc, String prct, String updwn) {
   Color updwnColor = updownColor(updwn);
 
-  var price = prc ?? '0';
-  var percent = prct ?? '0';
   return Row(children: [
     Text(sign, style: TextStyle(color: updwnColor, fontSize: 12)),
-    Text('$price원', style: TextStyle(color: updwnColor, fontSize: 12)),
-    Text(' ($percent%)', style: TextStyle(color: updwnColor, fontSize: 12)),
+    Text('$prc원', style: TextStyle(color: updwnColor, fontSize: 12)),
+    Text(' ($prct%)', style: TextStyle(color: updwnColor, fontSize: 12)),
   ]);
 }
 
@@ -66,13 +62,13 @@ Color updownColor(String updwn) {
   var updown = int.parse(updwn);
 
   if (updown < 3) {
-    sign = '▲';
-    return Colors.red;
+    sign = '▲ ';
+    return Color(0xFFF24430);
   } else if (updown == 3) {
-    return Colors.black;
+    return Color(0xFF50505B);
   } else {
-    sign = '▼';
-    return Colors.blue;
+    sign = '▼ ';
+    return Color(0xFF4881FF);
   }
 }
 

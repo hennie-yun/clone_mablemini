@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../../manager/GlobalController.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
-import '../zzim.dart';
+import '../fav/fav.dart';
 
 class MainPage extends StatelessWidget {
   final GlobalController _globalCtrl = Get.find<GlobalController>();
@@ -42,7 +42,7 @@ class MainPage extends StatelessWidget {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
             case 0:
-              _globalCtrl.setCurrWidget(zzim()); // 찜하기 페이지
+              _globalCtrl.setCurrWidget(fav()); // 찜하기 페이지
               break;
             case 1:
               _globalCtrl.setCurrWidget(PricePage());
@@ -79,7 +79,7 @@ class MainPage extends StatelessWidget {
          ];
          break;
        case 1:
-         titleWidget = '';
+         titleWidget = 'KB금융';
          actions = [
            IconButton(
              icon: Icon(Icons.notification_add_outlined),
@@ -103,7 +103,8 @@ class MainPage extends StatelessWidget {
      }
 
     return AppBar(
-        leading : titleWidget == '' ? IconButton(
+      titleSpacing: titleWidget == 'KB금융' ? -15 : null,
+        leading : titleWidget == 'KB금융' ? IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () {
           },
