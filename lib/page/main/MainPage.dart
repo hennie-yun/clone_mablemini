@@ -6,6 +6,7 @@ import 'package:get/get_core/src/get_main.dart';
 import '../../manager/GlobalController.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
+import '../zzim.dart';
 
 class MainPage extends StatelessWidget {
 
@@ -48,7 +49,7 @@ class MainPage extends StatelessWidget {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
             case 0:
-              // _globalCtrl.setCurrWidget(FavoritePage()); // 찜하기 페이지
+               _globalCtrl.setCurrWidget(zzim()); // 찜하기 페이지
               break;
             case 1:
               _globalCtrl.setCurrWidget(PricePage());
