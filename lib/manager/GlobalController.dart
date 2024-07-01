@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-import '../page/zzim.dart';
+import '../page/fav/fav.dart';
 
 class GlobalController extends GetxController {
   static GlobalController get instance => Get.find();
