@@ -12,40 +12,67 @@ class _zzimState extends State<zzim> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title:const Row(
-          children: [
-            Expanded(child:
-            Text('찜한주식')),
+        body: ListView.builder(
+            itemCount: zzimDataList.length,
+            itemBuilder: (context, index) {
+              return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  height: 72,
+                  child: Row(children: [
+                    Container(
+                        width: 36,
+                        height: 36,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: const BoxDecoration(shape: BoxShape.circle),
+                        child: ClipOval(
+                            child: Image.asset('assets/images/mmini.png'))),
+                    Expanded(
+                      child: Text(zzimDataList[index]['jm_name']!,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16)),
+                    ),
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(zzimDataList[index]['nowprc']! + '원',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                          makePrice(
+                              zzimDataList[index]['prc2']!,
+                              zzimDataList[index]['percent']!,
+                              zzimDataList[index]['sign']!)
+                        ])
+                  ]));
+            }));
+  }
+}
 
-          ],
+String sign = '';
 
-        )
-      ),
-     body:ListView.builder(
-         itemCount: zzimDataList.length,
-    itemBuilder: (context,  index) {
-           return Container(
-             height: 72,
-             decoration: const BoxDecoration(
-               border: Border(
-                 bottom: BorderSide(
-                   color:   Color(0xffEBEEF0),
-                   width: 1.0,
-                 ),
-               ),
-             ),
-             child:Row(
-               children: [
-                 Text(zzimDataList[index]['jm_name']!,
-                 //style:const TextStyle(fontWeight: 700)
-                  ),
-                 ]
-             )
-           );
+Widget makePrice(String prc, String prct, String updwn) {
+  Color updwnColor = updownColor(updwn);
 
-    }
-     )  );
+  var price = prc ?? '0';
+  var percent = prct ?? '0';
+  return Row(children: [
+    Text(sign, style: TextStyle(color: updwnColor, fontSize: 12)),
+    Text('$price원', style: TextStyle(color: updwnColor, fontSize: 12)),
+    Text(' ($percent%)', style: TextStyle(color: updwnColor, fontSize: 12)),
+  ]);
+}
+
+Color updownColor(String updwn) {
+  var updown = int.parse(updwn);
+
+  if (updown < 3) {
+    sign = '▲';
+    return Colors.red;
+  } else if (updown == 3) {
+    return Colors.black;
+  } else {
+    sign = '▼';
+    return Colors.blue;
   }
 }
 
