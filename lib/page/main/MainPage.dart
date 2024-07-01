@@ -5,7 +5,7 @@ import '../../manager/GlobalController.dart';
 import '../fav/fav.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
-import '../zzim.dart';
+
 
 class MainPage extends StatelessWidget {
   final GlobalController _globalCtrl = Get.find<GlobalController>();
@@ -102,7 +102,6 @@ class MainPage extends StatelessWidget {
       }
 
       return AppBar(
-        titleSpacing: titleWidget == 'KB금융' ? -15 :
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: titleWidget == ''
