@@ -78,7 +78,7 @@ class MainPage extends StatelessWidget {
           ];
           break;
         case 1:
-          titleWidget = 'KB금융';
+          titleWidget = '';
           actions = [
             IconButton(
               icon: Icon(Icons.notification_add_outlined),

@@ -113,5 +113,342 @@ final List<Map<String, String>> DataList = [
     'nowprc': '160000',
     'prc2': '200',
     'percent': '0.42'
+  },
+  {
+    'jm_name': 'SK증권',
+    'sign': '2',
+    'nowprc': '562',
+    'prc2': '0',
+    'percent': '0'
+  },
+  {
+    'jm_name': '삼성전자',
+    'sign': '1',
+    'nowprc': '81000',
+    'prc2': '500',
+    'percent': '0.62'
+  },
+  {
+    'jm_name': 'LG화학',
+    'sign': '2',
+    'nowprc': '801000',
+    'prc2': '2000',
+    'percent': '0.25'
+  },
+  {
+    'jm_name': '현대차',
+    'sign': '1',
+    'nowprc': '230000',
+    'prc2': '1000',
+    'percent': '0.44'
+  },
+  {
+    'jm_name': 'NAVER',
+    'sign': '4',
+    'nowprc': '420000',
+    'prc2': '3000',
+    'percent': '0.72'
+  },
+  {
+    'jm_name': '카카오',
+    'sign': '2',
+    'nowprc': '160000',
+    'prc2': '200',
+    'percent': '0.42'
+  },
+  {
+    'jm_name': 'SK증권',
+    'sign': '2',
+    'nowprc': '562',
+    'prc2': '0',
+    'percent': '0'
+  },
+  {
+    'jm_name': '삼성전자',
+    'sign': '1',
+    'nowprc': '81000',
+    'prc2': '500',
+    'percent': '0.62'
+  },
+  {
+    'jm_name': 'LG화학',
+    'sign': '2',
+    'nowprc': '801000',
+    'prc2': '2000',
+    'percent': '0.25'
+  },
+  {
+    'jm_name': '현대차',
+    'sign': '1',
+    'nowprc': '230000',
+    'prc2': '1000',
+    'percent': '0.44'
+  },
+  {
+    'jm_name': 'NAVER',
+    'sign': '4',
+    'nowprc': '420000',
+    'prc2': '3000',
+    'percent': '0.72'
+  },
+  {
+    'jm_name': '카카오',
+    'sign': '2',
+    'nowprc': '160000',
+    'prc2': '200',
+    'percent': '0.42'
+  },
+  {
+    'jm_name': 'SK증권',
+    'sign': '2',
+    'nowprc': '562',
+    'prc2': '0',
+    'percent': '0'
+  },
+  {
+    'jm_name': '삼성전자',
+    'sign': '1',
+    'nowprc': '81000',
+    'prc2': '500',
+    'percent': '0.62'
+  },
+  {
+    'jm_name': 'LG화학',
+    'sign': '2',
+    'nowprc': '801000',
+    'prc2': '2000',
+    'percent': '0.25'
+  },
+  {
+    'jm_name': '현대차',
+    'sign': '1',
+    'nowprc': '230000',
+    'prc2': '1000',
+    'percent': '0.44'
+  },
+  {
+    'jm_name': 'NAVER',
+    'sign': '4',
+    'nowprc': '420000',
+    'prc2': '3000',
+    'percent': '0.72'
+  },
+  {
+    'jm_name': '카카오',
+    'sign': '2',
+    'nowprc': '160000',
+    'prc2': '200',
+    'percent': '0.42'
+  },
+  {
+    'jm_name': 'SK증권',
+    'sign': '2',
+    'nowprc': '562',
+    'prc2': '0',
+    'percent': '0'
+  },
+  {
+    'jm_name': '삼성전자',
+    'sign': '1',
+    'nowprc': '81000',
+    'prc2': '500',
+    'percent': '0.62'
+  },
+  {
+    'jm_name': 'LG화학',
+    'sign': '2',
+    'nowprc': '801000',
+    'prc2': '2000',
+    'percent': '0.25'
+  },
+  {
+    'jm_name': '현대차',
+    'sign': '1',
+    'nowprc': '230000',
+    'prc2': '1000',
+    'percent': '0.44'
+  },
+  {
+    'jm_name': 'NAVER',
+    'sign': '4',
+    'nowprc': '420000',
+    'prc2': '3000',
+    'percent': '0.72'
+  },
+  {
+    'jm_name': '카카오',
+    'sign': '2',
+    'nowprc': '160000',
+    'prc2': '200',
+    'percent': '0.42'
+  },
+  {
+    'jm_name': 'SK증권',
+    'sign': '2',
+    'nowprc': '562',
+    'prc2': '0',
+    'percent': '0'
+  },
+  {
+    'jm_name': '삼성전자',
+    'sign': '1',
+    'nowprc': '81000',
+    'prc2': '500',
+    'percent': '0.62'
+  },
+  {
+    'jm_name': 'LG화학',
+    'sign': '2',
+    'nowprc': '801000',
+    'prc2': '2000',
+    'percent': '0.25'
+  },
+  {
+    'jm_name': '현대차',
+    'sign': '1',
+    'nowprc': '230000',
+    'prc2': '1000',
+    'percent': '0.44'
+  },
+  {
+    'jm_name': 'NAVER',
+    'sign': '4',
+    'nowprc': '420000',
+    'prc2': '3000',
+    'percent': '0.72'
+  },
+  {
+    'jm_name': '카카오',
+    'sign': '2',
+    'nowprc': '160000',
+    'prc2': '200',
+    'percent': '0.42'
+  },
+  {
+    'jm_name': 'SK증권',
+    'sign': '2',
+    'nowprc': '562',
+    'prc2': '0',
+    'percent': '0'
+  },
+  {
+    'jm_name': '삼성전자',
+    'sign': '1',
+    'nowprc': '81000',
+    'prc2': '500',
+    'percent': '0.62'
+  },
+  {
+    'jm_name': 'LG화학',
+    'sign': '2',
+    'nowprc': '801000',
+    'prc2': '2000',
+    'percent': '0.25'
+  },
+  {
+    'jm_name': '현대차',
+    'sign': '1',
+    'nowprc': '230000',
+    'prc2': '1000',
+    'percent': '0.44'
+  },
+  {
+    'jm_name': 'NAVER',
+    'sign': '4',
+    'nowprc': '420000',
+    'prc2': '3000',
+    'percent': '0.72'
+  },
+  {
+    'jm_name': '카카오',
+    'sign': '2',
+    'nowprc': '160000',
+    'prc2': '200',
+    'percent': '0.42'
+  },
+  {
+    'jm_name': 'SK증권',
+    'sign': '2',
+    'nowprc': '562',
+    'prc2': '0',
+    'percent': '0'
+  },
+  {
+    'jm_name': '삼성전자',
+    'sign': '1',
+    'nowprc': '81000',
+    'prc2': '500',
+    'percent': '0.62'
+  },
+  {
+    'jm_name': 'LG화학',
+    'sign': '2',
+    'nowprc': '801000',
+    'prc2': '2000',
+    'percent': '0.25'
+  },
+  {
+    'jm_name': '현대차',
+    'sign': '1',
+    'nowprc': '230000',
+    'prc2': '1000',
+    'percent': '0.44'
+  },
+  {
+    'jm_name': 'NAVER',
+    'sign': '4',
+    'nowprc': '420000',
+    'prc2': '3000',
+    'percent': '0.72'
+  },
+  {
+    'jm_name': '카카오',
+    'sign': '2',
+    'nowprc': '160000',
+    'prc2': '200',
+    'percent': '0.42'
+  },
+  {
+    'jm_name': 'SK증권',
+    'sign': '2',
+    'nowprc': '562',
+    'prc2': '0',
+    'percent': '0'
+  },
+  {
+    'jm_name': '삼성전자',
+    'sign': '1',
+    'nowprc': '81000',
+    'prc2': '500',
+    'percent': '0.62'
+  },
+  {
+    'jm_name': 'LG화학',
+    'sign': '2',
+    'nowprc': '801000',
+    'prc2': '2000',
+    'percent': '0.25'
+  },
+  {
+    'jm_name': '현대차',
+    'sign': '1',
+    'nowprc': '230000',
+    'prc2': '1000',
+    'percent': '0.44'
+  },
+  {
+    'jm_name': 'NAVER',
+    'sign': '4',
+    'nowprc': '420000',
+    'prc2': '3000',
+    'percent': '0.72'
+  },
+  {
+    'jm_name': '카카오',
+    'sign': '2',
+    'nowprc': '160000',
+    'prc2': '200',
+    'percent': '0.42'
   }
+
 ];

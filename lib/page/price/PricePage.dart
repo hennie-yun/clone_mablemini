@@ -15,15 +15,45 @@ class PricePage extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 24.0, vertical: 16.0),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Container(
+                      height: 30,
+                      child: Row (
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children : [
+                          Text('KB금융', style: TextStyle(
+                              fontSize: 22
+                          )),
+                          Container(
+                            height: 30,
+                            width: 30,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.grey.withOpacity(0.1),
+                            ),
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () {},
+                              iconSize: 24.0,
+                              icon: const Icon(Icons.push_pin_outlined),
+                            ),
+                          ),
+
+                        ],
+                      ),
+                ),
+
+        Row(
                       children: [
+                        // todo) 실시간현재가 값
                         Text('65,700', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w700)),
                         Text('원', style: TextStyle(fontSize: 28,)),
                       ],
                     ),
+                    // todo) 실시간현재가 값
                     Text('▲ 400원 (0.61%)', style: TextStyle(fontSize: 16, color: Color(0xFFF24430)))
                   ],
                 )),
