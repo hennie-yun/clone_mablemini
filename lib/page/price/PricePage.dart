@@ -29,7 +29,7 @@ class PricePage extends StatelessWidget {
 
   final PricePageController _controller = PricePageController();
 
- // final HogaPageController _hogaController = Get.put(HogaPageController());
+  // final HogaPageController _hogaController = Get.put(HogaPageController());
   final HogaPageController _hogaController = HogaPageController();
   /// 포맷팅
   final NumberFormat priceFormat = new NumberFormat('###,###');
@@ -55,19 +55,19 @@ class PricePage extends StatelessWidget {
   void _setupWebSocket() async {
     try {
 
-        _webSocketChannel = WebSocketChannel.connect(
-            Uri.parse('ws://203.109.30.207:10001/connect'));
+      _webSocketChannel = WebSocketChannel.connect(
+          Uri.parse('ws://203.109.30.207:10001/connect'));
 
-        _webSocketChannel.stream.listen((message) async {
+      _webSocketChannel.stream.listen((message) async {
         try {
           final data = jsonDecode(message);
           if (data['Data'] != null && data['Data']['websocketkey'] != null) {
             _websocketKey = data['Data']['websocketkey'];
             print('WebSocket Key: $_websocketKey');
-            //requestRealHoga(_websocketKey,selectedJm[0]);
+            requestRealHoga(_websocketKey,selectedJm[0]);
             requestRealChe(_websocketKey,selectedJm[0]);
 
-            _hogaController.requestHoga();
+
             await _requestReal(_websocketKey, selectedJm[0]);
           } else {
             if (data['TrCode'] == "H0STCNT0") {
@@ -129,7 +129,7 @@ class PricePage extends StatelessWidget {
       if (responseData['TrCode'] ==
           "/uapi/domestic-stock/v1/quotations/S0004") {
         SiseData siseData =
-            SiseData.fromJson(responseData["Data"]["output"], value);
+        SiseData.fromJson(responseData["Data"]["output"], value);
         print(siseData);
         _controller.siseList.add(siseData);
       }
@@ -152,7 +152,7 @@ class PricePage extends StatelessWidget {
       "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
     });
     final response =
-        await http.post(Uri.parse(url), headers: headers, body: body);
+    await http.post(Uri.parse(url), headers: headers, body: body);
 
     if (response.statusCode == 200) {
     } else {
@@ -178,275 +178,277 @@ class PricePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        // height: hogaListHeight*1.3,
+                        //height: hogaListHeight,
+                        child: Obx(() {
+                          if (_hogaController.hoga.value == null) {
+                            // request1101();
+                            //2024.02 벌고해 프로젝트_개편관련_김진겸 start
+                            //requestFHKST01010200(_hogaController.jmCode.value);
 
-                     Container(
-                                  // height: hogaListHeight*1.3,
-                                  //height: hogaListHeight,
-                                  child: Obx(() {
-                                    if (_hogaController.hoga.value == null) {
-                                      // request1101();
-                                      //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                                      //requestFHKST01010200(_hogaController.jmCode.value);
+                            print('_hogaController.hoga.value가 null');
 
-                                      print('_hogaController.hoga.value가 null');
+                            ///requestT1101(_hogaController.jmCode.value);
+                            //2024.02 벌고해 프로젝트_개편관련_김진겸 end
+                            return Container();
+                          }
+                          if (_hogaController.currentPrice.value == "") {
+                            //2024.02 벌고해 프로젝트_개편관련_김진겸 start
+                            //requestFHKST01010200(_hogaController.jmCode.value);
+                            print('_hogaController.currentPrice.value 가 ""');
 
-                                      ///requestT1101(_hogaController.jmCode.value);
-                                      //2024.02 벌고해 프로젝트_개편관련_김진겸 end
-                                      return Container();
-                                    }
-                                    if (_hogaController.currentPrice.value == "") {
-                                      //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                                      //requestFHKST01010200(_hogaController.jmCode.value);
-                                      print('_hogaController.currentPrice.value 가 ""');
+                            ///requestT1101(_hogaController.jmCode.value);
+                            //2024.02 벌고해 프로젝트_개편관련_김진겸 end
+                            return Container();
+                          }
+                          // var itemWidth = isBigScreen ? deviceWidth / 10.8 : deviceWidth / 3;
+                          var itemWidth = MediaQuery.of(context).size.width / 3;
 
-                                      ///requestT1101(_hogaController.jmCode.value);
-                                      //2024.02 벌고해 프로젝트_개편관련_김진겸 end
-                                      return Container();
-                                    }
-                                    // var itemWidth = isBigScreen ? deviceWidth / 10.8 : deviceWidth / 3;
-                                    var itemWidth = MediaQuery.of(context).size.width / 3;
+                          var itemHeight = hogaListHeight / 2;
+                          var listItemCount = 10;
+                          var listItemHeight = (itemHeight / listItemCount)-1 ;
 
-                                    var itemHeight = hogaListHeight / 2;
-                                    var listItemCount = 10;
-                                    var listItemHeight = (itemHeight / listItemCount)-1 ;
+                          print('높이');
+                          print('hogaListHeight');
+                          print(hogaListHeight);
+                          print('itemHeight');
+                          print(itemHeight);
+                          print('listItemHeight');
+                          print(listItemHeight);
 
-                                    print('높이');
-                                    print('hogaListHeight');
-                                    print(hogaListHeight);
-                                    print('itemHeight');
-                                    print(itemHeight);
-                                    print('listItemHeight');
-                                    print(listItemHeight);
-
-                                    var currentPrice = _hogaController.currentPrice.value;
+                          var currentPrice = _hogaController.currentPrice.value;
 
 
-                                    var beforeClose =
-                                        _hogaController.hoga2.value.basePrice ?? '';
-                                    var sellHogaArray =
-                                        _hogaController.hoga.value.sellHogas ?? [];
-                                    var sellRemArray =
-                                        _hogaController.hoga.value.sellRems ?? [];
-                                    var buyHogaArray =
-                                        _hogaController.hoga.value.buyHogas ?? [];
-                                    var buyRemArray =
-                                        _hogaController.hoga.value.buyRems ?? [];
+                          var beforeClose =
+                              _hogaController.hoga2.value.basePrice ?? '';
+                          var sellHogaArray =
+                              _hogaController.hoga.value.sellHogas ?? [];
+                          var sellRemArray =
+                              _hogaController.hoga.value.sellRems ?? [];
+                          var buyHogaArray =
+                              _hogaController.hoga.value.buyHogas ?? [];
+                          var buyRemArray =
+                              _hogaController.hoga.value.buyRems ?? [];
 
-                                    //2024.02 벌고해 프로젝트_개편관련_김진겸 end
+                          //2024.02 벌고해 프로젝트_개편관련_김진겸 end
 
-                                    var totalMaxRemArray = [];
+                          var totalMaxRemArray = [];
 
-                                    if (sellRemArray != null) {
-                                      totalMaxRemArray.addAll(sellRemArray.getRange(
-                                          0, listItemCount) as Iterable);
-                                    }
-                                    if (buyRemArray != null) {
-                                      totalMaxRemArray.addAll(buyRemArray.getRange(
-                                          0, listItemCount) as Iterable);
-                                    }
-
-                                    var totalMaxRem = totalMaxRemArray.reduce(
-                                            (value, element) =>
-                                        int.parse(value) > int.parse(element)
-                                            ? value
-                                            : element);
-
-                                    var sellMaxRemArray = [];
-                                    sellMaxRemArray.addAll(
-                                        sellRemArray ?? [].getRange(0, listItemCount));
-                                    var sellMaxRem = sellMaxRemArray.reduce(
-                                            (value, element) =>
-                                        int.parse(value) > int.parse(element)
-                                            ? value
-                                            : element);
-
-                                    var buyMaxRemArray = [];
-                                    buyMaxRemArray.addAll(
-                                        buyRemArray ?? [].getRange(0, listItemCount));
-                                    var buyMaxRem = buyMaxRemArray.reduce(
-                                            (value, element) =>
-                                        int.parse(value) > int.parse(element)
-                                            ? value
-                                            : element);
-
-                                    return
-                                      // ScrollConfiguration(
-                                      // behavior: ScrollConfiguration.of(context)
-                                      //     .copyWith(scrollbars: false),
-                                      // child:
-                                      GridView.count(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        childAspectRatio: itemWidth / itemHeight,
-                                        crossAxisCount: 3,
-                                        children: [
-                                          Container(
-                                           // height:hogaListHeight,
-//height:hogaListHeight/2,
-                                      height:325,
-                                            child: ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: listItemCount,
-                        itemBuilder: (context, index) {
-
-                          int sellRem = 0;
-                          if (sellRemArray != null)
-                            sellRem =
-                                int.parse(sellRemArray[ index ]);
-                          int sellRatio = 0;
-
-                          if (int.parse(totalMaxRem) != 0) {
-                            sellRatio = (sellRem /
-                                int.parse(totalMaxRem) *
-                                1000)
-                                .toInt();
+                          if (sellRemArray != null) {
+                            totalMaxRemArray.addAll(sellRemArray.getRange(
+                                0, listItemCount) as Iterable);
+                          }
+                          if (buyRemArray != null) {
+                            totalMaxRemArray.addAll(buyRemArray.getRange(
+                                0, listItemCount) as Iterable);
                           }
 
-                          FontWeight sellWeight = FontWeight.normal;
-                          if (int.parse(sellMaxRem) == sellRem) {
-                            sellWeight = FontWeight.bold;
-                          }
+                          var totalMaxRem = totalMaxRemArray.reduce(
+                                  (value, element) =>
+                              int.parse(value) > int.parse(element)
+                                  ? value
+                                  : element);
 
-                          return Column(
-                            children: [
-                              Stack(
-                                children: [
-                                  Container(
-                                    height: listItemHeight,
-                                    padding: EdgeInsets.all(2),
-                                    alignment:
-                                    Alignment.centerRight,
-                                    child: AutoSizeText(
-                                      sellRem == 0
-                                          ? ''
-                                          : priceFormat
-                                          .format(sellRem),
-                                      maxLines: 1,
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: sellWeight),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: listItemHeight,
-                                    padding: EdgeInsets.only(
-                                        top: 3, bottom: 3),
-                                    //color: Colors.blue.withAlpha(30),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                            flex: 1000 - sellRatio,
-                                            child: Container()),
-                                        Expanded(
-                                            flex: sellRatio,
-                                            child: Container(
-                                                color: Colors.blue
-                                                    .withAlpha(
-                                                    50))),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Divider(
-                                  height: 1,
-                                  thickness: 1,
-                                  color: Colors.transparent),
-                            ],
-                          );
-                        },
-                                            ),
-                                          ),
+                          var sellMaxRemArray = [];
+                          sellMaxRemArray.addAll(
+                              sellRemArray ?? [].getRange(0, listItemCount));
+                          var sellMaxRem = sellMaxRemArray.reduce(
+                                  (value, element) =>
+                              int.parse(value) > int.parse(element)
+                                  ? value
+                                  : element);
 
-                                          ListView.builder(
-                                            physics: NeverScrollableScrollPhysics(),
-                                            itemCount: listItemCount,
-                                            itemBuilder: (context, index) {
-                        int sellClose = int.parse(beforeClose!);
-                        // int sellHoga =
-                        //     int.parse(sellHogaArray![4 - index]);
-                        int sellHoga =
-                        int.parse(sellHogaArray![index]);
+                          var buyMaxRemArray = [];
+                          buyMaxRemArray.addAll(
+                              buyRemArray ?? [].getRange(0, listItemCount));
+                          var buyMaxRem = buyMaxRemArray.reduce(
+                                  (value, element) =>
+                              int.parse(value) > int.parse(element)
+                                  ? value
+                                  : element);
 
-                        double sellRate =
-                            (sellClose - sellHoga).abs() /
-                                sellClose;
-
-                        Color sellColor = Colors.black;
-                        if (sellClose > sellHoga) {
-                          sellColor = Colors.blue;
-                        } else if (sellClose < sellHoga) {
-                          sellColor = Colors.red;
-                        } else {
-                          Colors.black;
-                          // sellColor = _hogaControllerMore.isDarkMode.value ? Colors.white : Colors.black;
-                        }
-
-                        Border sellBorder = Border.all(
-                            color: Colors.transparent, width: 0);
-                        if (int.parse(currentPrice == ''
-                            ? "0"
-                            : currentPrice) ==
-                            sellHoga) {
-                          sellBorder = Border.all(
-                              color: sellColor, width: 2);
-                        }
-
-                        return Column(
-                          children: [
-                            Stack(
+                          return
+                            // ScrollConfiguration(
+                            // behavior: ScrollConfiguration.of(context)
+                            //     .copyWith(scrollbars: false),
+                            // child:
+                            GridView.count(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              childAspectRatio: itemWidth / itemHeight,
+                              crossAxisCount: 3,
                               children: [
                                 Container(
-                                  height: listItemHeight,
-                                  padding: EdgeInsets.all(1),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: AutoSizeText(
-                                          sellHoga == 0
-                                              ? ''
-                                              : priceFormat
-                                              .format(sellHoga),
-                                          textAlign:
-                                          TextAlign.center,
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight:
-                                              FontWeight.bold,
-                                              fontSize: 15),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: AutoSizeText(
-                                          percentFormat.format(
-                                              sellRate) ==
-                                              '100.00%'
-                                              ? ''
-                                              : percentFormat
-                                              .format(sellRate),
-                                          maxLines: 1,
-                                          textAlign:
-                                          TextAlign.right,
-                                          style: TextStyle(
-                                              color: sellColor,
-                                              // fontSize:
-                                              //     15
-                                              fontSize: 12),
-                                        ),
-                                      ),
-                                    ],
+                                  // height:hogaListHeight,
+//height:hogaListHeight/2,
+                                  //constraints: BoxConstraints( minHeight:325),
+
+                                  height:325,
+
+                                  child: ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: listItemCount,
+                                    itemBuilder: (context, index) {
+
+                                      int sellRem = 0;
+                                      if (sellRemArray != null)
+                                        sellRem =
+                                            int.parse(sellRemArray[ index ]);
+                                      int sellRatio = 0;
+
+                                      if (int.parse(totalMaxRem) != 0) {
+                                        sellRatio = (sellRem /
+                                            int.parse(totalMaxRem) *
+                                            1000)
+                                            .toInt();
+                                      }
+
+                                      FontWeight sellWeight = FontWeight.normal;
+                                      if (int.parse(sellMaxRem) == sellRem) {
+                                        sellWeight = FontWeight.bold;
+                                      }
+
+                                      return Column(
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                height: listItemHeight,
+                                                padding: EdgeInsets.all(2),
+                                                alignment:
+                                                Alignment.centerRight,
+                                                child: AutoSizeText(
+                                                  sellRem == 0
+                                                      ? ''
+                                                      : priceFormat
+                                                      .format(sellRem),
+                                                  maxLines: 1,
+                                                  textAlign: TextAlign.right,
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: sellWeight),
+                                                ),
+                                              ),
+                                              Container(
+                                                height: listItemHeight,
+                                                padding: EdgeInsets.only(
+                                                    top: 3, bottom: 3),
+                                                //color: Colors.blue.withAlpha(30),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                        flex: 1000 - sellRatio,
+                                                        child: Container()),
+                                                    Expanded(
+                                                        flex: sellRatio,
+                                                        child: Container(
+                                                            color: Colors.blue
+                                                                .withAlpha(
+                                                                50))),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Divider(
+                                              height: 1,
+                                              thickness: 1,
+                                              color: Colors.transparent),
+                                        ],
+                                      );
+                                    },
                                   ),
                                 ),
-                                InkWell(
-                                  child: Container(
-                                    height: listItemHeight,
-                                    decoration: BoxDecoration(
-                                        border: sellBorder),
-                                  ),
-                                  onTap: () {
-                                    /*OrderConfirmDialog.move(
+
+                                ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: listItemCount,
+                                  itemBuilder: (context, index) {
+                                    int sellClose = int.parse(beforeClose!);
+                                    // int sellHoga =
+                                    //     int.parse(sellHogaArray![4 - index]);
+                                    int sellHoga =
+                                    int.parse(sellHogaArray![index]);
+
+                                    double sellRate =
+                                        (sellClose - sellHoga).abs() /
+                                            sellClose;
+
+                                    Color sellColor = Colors.black;
+                                    if (sellClose > sellHoga) {
+                                      sellColor = Colors.blue;
+                                    } else if (sellClose < sellHoga) {
+                                      sellColor = Colors.red;
+                                    } else {
+                                      Colors.black;
+                                      // sellColor = _hogaControllerMore.isDarkMode.value ? Colors.white : Colors.black;
+                                    }
+
+                                    Border sellBorder = Border.all(
+                                        color: Colors.transparent, width: 0);
+                                    if (int.parse(currentPrice == ''
+                                        ? "0"
+                                        : currentPrice) ==
+                                        sellHoga) {
+                                      sellBorder = Border.all(
+                                          color: sellColor, width: 2);
+                                    }
+
+                                    return Column(
+                                      children: [
+                                        Stack(
+                                          children: [
+                                            Container(
+                                              height: listItemHeight,
+                                              padding: EdgeInsets.all(1),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: AutoSizeText(
+                                                      sellHoga == 0
+                                                          ? ''
+                                                          : priceFormat
+                                                          .format(sellHoga),
+                                                      textAlign:
+                                                      TextAlign.center,
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                          FontWeight.bold,
+                                                          fontSize: 15),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    child: AutoSizeText(
+                                                      percentFormat.format(
+                                                          sellRate) ==
+                                                          '100.00%'
+                                                          ? ''
+                                                          : percentFormat
+                                                          .format(sellRate),
+                                                      maxLines: 1,
+                                                      textAlign:
+                                                      TextAlign.right,
+                                                      style: TextStyle(
+                                                          color: sellColor,
+                                                          // fontSize:
+                                                          //     15
+                                                          fontSize: 12),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            InkWell(
+                                              child: Container(
+                                                height: listItemHeight,
+                                                decoration: BoxDecoration(
+                                                    border: sellBorder),
+                                              ),
+                                              onTap: () {
+                                                /*OrderConfirmDialog.move(
                                             context,
                                             _hogaController.sise.value,
                                             sellHogaArray[4 - index],
@@ -462,286 +464,286 @@ class PricePage extends StatelessWidget {
                                               }
                                             },
                                           )..show();*/
-                                    bool asd = true;
+                                                bool asd = true;
 
-                                    /// _goToTransPage(sellHogaArray[4 - index], asd);
+                                                /// _goToTransPage(sellHogaArray[4 - index], asd);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        Divider(
+                                            height: 1,
+                                            thickness: 1,
+                                            color: Colors.transparent)
+                                      ],
+                                    );
                                   },
                                 ),
-                              ],
-                            ),
-                            Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: Colors.transparent)
-                          ],
-                        );
-                                            },
-                                          ),
 
-                                          Obx(() {
-                                            // if (_hogaController.hogaInfo.value == null) {
-                                            //   return Container();
-                                            // }
-                                            //전일 거래량
-                                            //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                                            // double preDayVolume = double.parse(
-                                            //     (master[_hogaController.jmCode.value]
-                                            //             ?.preDayVolume) ??
-                                            //         '0');
-                                            double preDayVolume = double.parse(
-                          _hogaController.hoga2.value.volume ?? '0');
-                                            //2024.02 벌고해 프로젝트_개편관련_김진겸 end
-                                            //정적 상한가 (시가의 +10%)
-                                            double svi_uplmtprice = double.parse(
-                          _hogaController.hoga2.value.open ?? '0') *
-                          0.01;
-                                            svi_uplmtprice =
-                          (svi_uplmtprice + svi_uplmtprice * 0.1)
-                              .roundToDouble() *
-                              100;
-                                            //svi_uplmtprice += svi_uplmtprice*0.10;
+                                Obx(() {
+                                  // if (_hogaController.hogaInfo.value == null) {
+                                  //   return Container();
+                                  // }
+                                  //전일 거래량
+                                  //2024.02 벌고해 프로젝트_개편관련_김진겸 start
+                                  // double preDayVolume = double.parse(
+                                  //     (master[_hogaController.jmCode.value]
+                                  //             ?.preDayVolume) ??
+                                  //         '0');
+                                  double preDayVolume = double.parse(
+                                      _hogaController.hoga2.value.volume ?? '0');
+                                  //2024.02 벌고해 프로젝트_개편관련_김진겸 end
+                                  //정적 상한가 (시가의 +10%)
+                                  double svi_uplmtprice = double.parse(
+                                      _hogaController.hoga2.value.open ?? '0') *
+                                      0.01;
+                                  svi_uplmtprice =
+                                      (svi_uplmtprice + svi_uplmtprice * 0.1)
+                                          .roundToDouble() *
+                                          100;
+                                  //svi_uplmtprice += svi_uplmtprice*0.10;
 
-                                            //정적 하한가 (시가의 -10%)
-                                            double svi_dnlmtprice = double.parse(
-                          _hogaController.hoga2.value.open ?? '0') *
-                          0.01;
-                                            //svi_dnlmtprice -= svi_dnlmtprice*0.1;
-                                            svi_dnlmtprice =
-                          (svi_dnlmtprice - svi_dnlmtprice * 0.1)
-                              .roundToDouble() *
-                              100;
+                                  //정적 하한가 (시가의 -10%)
+                                  double svi_dnlmtprice = double.parse(
+                                      _hogaController.hoga2.value.open ?? '0') *
+                                      0.01;
+                                  //svi_dnlmtprice -= svi_dnlmtprice*0.1;
+                                  svi_dnlmtprice =
+                                      (svi_dnlmtprice - svi_dnlmtprice * 0.1)
+                                          .roundToDouble() *
+                                          100;
 
-                                            //상한가
-                                            double uplmtprice = double.parse(
-                        //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                        //double uplmtprice = double.parse(_hogaController.hoga.value.upPrice ?? '0');
-                          _hogaController.hoga2.value.upPrice ?? '0');
-                                            //하한가
-                                            //double dnlmtprice = double.parse(_hogaController.hoga.value.downPrice ??'0');
-                                            double dnlmtprice = double.parse(
-                          _hogaController.hoga2.value.downPrice ?? '0');
-                                            //2024.02 벌고해 프로젝트_개편관련_김진겸 end
-                                            //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                                            //기준가
-                                            // double recprice = double.parse(
-                                            //     master[_hogaController.hoga.value]
-                                            //             ?.basePrice ??
-                                            //         '0');
-                                            double jnilclose =
-                                            // double.parse(_hogaController.hoga2.value.jnilclose ?? '0');
-                                            double.parse(
-                          _hogaController.hoga2.value.basePrice ??
-                              '0');
-                                            //2024.02 벌고해 프로젝트_개편관련_김진겸 end
-                                            //시가
-                                            double open = double.parse(
-                          _hogaController.hoga2.value.open ?? '0');
-                                            //고가
-                                            double high = double.parse(
-                          _hogaController.hoga2.value.high ?? '0');
-                                            //저가
-                                            double low = double.parse(
-                          _hogaController.hoga2.value.low ?? '0');
+                                  //상한가
+                                  double uplmtprice = double.parse(
+                                    //2024.02 벌고해 프로젝트_개편관련_김진겸 start
+                                    //double uplmtprice = double.parse(_hogaController.hoga.value.upPrice ?? '0');
+                                      _hogaController.hoga2.value.upPrice ?? '0');
+                                  //하한가
+                                  //double dnlmtprice = double.parse(_hogaController.hoga.value.downPrice ??'0');
+                                  double dnlmtprice = double.parse(
+                                      _hogaController.hoga2.value.downPrice ?? '0');
+                                  //2024.02 벌고해 프로젝트_개편관련_김진겸 end
+                                  //2024.02 벌고해 프로젝트_개편관련_김진겸 start
+                                  //기준가
+                                  // double recprice = double.parse(
+                                  //     master[_hogaController.hoga.value]
+                                  //             ?.basePrice ??
+                                  //         '0');
+                                  double jnilclose =
+                                  // double.parse(_hogaController.hoga2.value.jnilclose ?? '0');
+                                  double.parse(
+                                      _hogaController.hoga2.value.basePrice ??
+                                          '0');
+                                  //2024.02 벌고해 프로젝트_개편관련_김진겸 end
+                                  //시가
+                                  double open = double.parse(
+                                      _hogaController.hoga2.value.open ?? '0');
+                                  //고가
+                                  double high = double.parse(
+                                      _hogaController.hoga2.value.high ?? '0');
+                                  //저가
+                                  double low = double.parse(
+                                      _hogaController.hoga2.value.low ?? '0');
 
-                                            return Container(
-                        //padding: EdgeInsets.fromLTRB(10, 5, 10, 10),
-                        alignment: Alignment.bottomCenter,
-                        color: Color(0XFFF4F5F8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(height:hogaListHeight/8 -1,
-                                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                child:Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    sise1('start','전일거래량'),
-                                    sise1('end','1,530,900'),
-                                    sise1('start','거래대금'),
-                                    sise1('end','673억원'),
-                                  ],
-                                )
-                            ),
-                            Divider(height: 1, thickness: 1, color: Colors.grey),
-                            Container(height:hogaListHeight/8 -1,
-                                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                child:Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    sise2('기준가','${priceFormat.format(jnilclose)}'),
-                                    sise2('상한가','${priceFormat.format(uplmtprice)}'),
-                                    sise2('하한가','${priceFormat.format(dnlmtprice)}'),
-                                  ],
-                                )
-                            ),
-                            Divider(height: 1, thickness: 1, color: Colors.grey),
-                            Expanded(child:Container(padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                child:Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    sise3('시',open,'test',jnilclose ),
-                                    sise3('고',high,'test',jnilclose),
-                                    sise3('저',low,'test',jnilclose)
-                                  ],
-                                ))),
-                            Divider(height: 1, thickness: 1, color: Colors.grey),
-                            Container(height:hogaListHeight/20 -1,
-                                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                child:Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    sise2('외인비율','${_hogaController.hoga2.value.frgnEhrt}%'),
-                                  ],
-                                ))
-
-                          ],
-                        ),
-                                            );
-                                          }),
-                                          Obx(() {
-                                            // if (_hogaController.contract.value.array.isEmpty) {
-                                            //   return Container();
-                                            // }
-
-                                            double degree =
-                                            _hogaController.contract.value.array.isEmpty
-                          ? 0
-                          : double.parse(_hogaController.contract
-                          .value.array.first.chdegree);
-
-                                            return Container(
-                        height: listItemHeight,
-                        //padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
-                        child: Column(
-                          children: [
-                            //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                            Expanded(
-                              // padding: EdgeInsets.only(bottom: 5),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    //padding: EdgeInsets.symmetric(vertical: 5),
-                                    padding: EdgeInsets.all(5),
-                                    color: Color(0xFFedeff2),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
+                                  return Container(
+                                    //padding: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                    alignment: Alignment.bottomCenter,
+                                    color: Color(0XFFF4F5F8),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(
-                                          '체결강도',
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 12),
+                                        Container(height:hogaListHeight/8 -1,
+                                            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                            child:Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                sise1('start','전일거래량'),
+                                                sise1('end','1,530,900'),
+                                                sise1('start','거래대금'),
+                                                sise1('end','673억원'),
+                                              ],
+                                            )
                                         ),
-                                        AutoSizeText(
-                                          '$degree%',
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 12),
+                                        Divider(height: 1, thickness: 1, color: Colors.grey),
+                                        Container(height:hogaListHeight/8 -1,
+                                            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                            child:Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                sise2('기준가','${priceFormat.format(jnilclose)}'),
+                                                sise2('상한가','${priceFormat.format(uplmtprice)}'),
+                                                sise2('하한가','${priceFormat.format(dnlmtprice)}'),
+                                              ],
+                                            )
+                                        ),
+                                        Divider(height: 1, thickness: 1, color: Colors.grey),
+                                        Expanded(child:Container(padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                            child:Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                sise3('시',open,'test',jnilclose ),
+                                                sise3('고',high,'test',jnilclose),
+                                                sise3('저',low,'test',jnilclose)
+                                              ],
+                                            ))),
+                                        Divider(height: 1, thickness: 1, color: Colors.grey),
+                                        Container(height:hogaListHeight/20 -1,
+                                            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                            child:Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                sise2('외인비율','${_hogaController.hoga2.value.frgnEhrt}%'),
+                                              ],
+                                            ))
+
+                                      ],
+                                    ),
+                                  );
+                                }),
+                                Obx(() {
+                                  // if (_hogaController.contract.value.array.isEmpty) {
+                                  //   return Container();
+                                  // }
+
+                                  double degree =
+                                  _hogaController.contract.value.array.isEmpty
+                                      ? 0
+                                      : double.parse(_hogaController.contract
+                                      .value.array.first.chdegree);
+
+                                  return Container(
+                                    height: listItemHeight,
+                                    //padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
+                                    child: Column(
+                                      children: [
+                                        //2024.02 벌고해 프로젝트_개편관련_김진겸 start
+                                        Expanded(
+                                          // padding: EdgeInsets.only(bottom: 5),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                //padding: EdgeInsets.symmetric(vertical: 5),
+                                                padding: EdgeInsets.all(5),
+                                                color: Color(0xFFedeff2),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      '체결강도',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 12),
+                                                    ),
+                                                    AutoSizeText(
+                                                      '$degree%',
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 12),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Expanded(
+                                                  child: ListView.builder(
+                                                      physics: AlwaysScrollableScrollPhysics(),
+                                                      itemCount: _hogaController.contract.value.array.length,
+                                                      itemBuilder: (context, index) {
+                                                        return cheList(_hogaController.contract.value.array[index]);
+                                                      }))
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  Expanded(
-                                      child: ListView.builder(
-                                          physics: AlwaysScrollableScrollPhysics(),
-                                          itemCount: _hogaController.contract.value.array.length,
-                                          itemBuilder: (context, index) {
-                                            return cheList(_hogaController.contract.value.array[index]);
-                                          }))
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                                            );
-                                          }),
-                                          ListView.builder(
-                                            physics: NeverScrollableScrollPhysics(),
-                                            itemCount: listItemCount,
-                                            itemBuilder: (context, index) {
-                        int buyClose = int.parse(beforeClose!);
-                        int buyHoga =
-                        int.parse(buyHogaArray![index]);
-                        double buyRate =
-                            (buyClose - buyHoga).abs() / buyClose;
+                                  );
+                                }),
+                                ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: listItemCount,
+                                  itemBuilder: (context, index) {
+                                    int buyClose = int.parse(beforeClose!);
+                                    int buyHoga =
+                                    int.parse(buyHogaArray![index]);
+                                    double buyRate =
+                                        (buyClose - buyHoga).abs() / buyClose;
 
-                        Color buyColor = Colors.black;
-                        if (buyClose > buyHoga) {
-                          buyColor = Colors.blue;
-                        } else if (buyClose < buyHoga) {
-                          buyColor = Colors.red;
-                        } else {
-                          Colors.black;
-                          //buyColor = _hogaControllerMore.isDarkMode.value ? LightColors.basic : Colors.black;
-                        }
+                                    Color buyColor = Colors.black;
+                                    if (buyClose > buyHoga) {
+                                      buyColor = Colors.blue;
+                                    } else if (buyClose < buyHoga) {
+                                      buyColor = Colors.red;
+                                    } else {
+                                      Colors.black;
+                                      //buyColor = _hogaControllerMore.isDarkMode.value ? LightColors.basic : Colors.black;
+                                    }
 
-                        Border buyBorder = Border.all(
-                            color: Colors.transparent, width: 0);
-                        if (int.parse(currentPrice == ''
-                            ? "0"
-                            : currentPrice) ==
-                            buyHoga) {
-                          buyBorder =
-                              Border.all(color: buyColor, width: 2);
-                        }
+                                    Border buyBorder = Border.all(
+                                        color: Colors.transparent, width: 0);
+                                    if (int.parse(currentPrice == ''
+                                        ? "0"
+                                        : currentPrice) ==
+                                        buyHoga) {
+                                      buyBorder =
+                                          Border.all(color: buyColor, width: 2);
+                                    }
 
-                        return Column(
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  height: listItemHeight,
-                                  padding: EdgeInsets.all(1),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: AutoSizeText(
-                                          buyHoga == 0
-                                              ? ''
-                                              : priceFormat
-                                              .format(buyHoga),
-                                          maxLines: 1,
-                                          textAlign:
-                                          TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight:
-                                              FontWeight.bold,
-                                              fontSize: 15),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: AutoSizeText(
-                                          percentFormat.format(
-                                              buyRate) ==
-                                              '100.00%'
-                                              ? ''
-                                              : percentFormat
-                                              .format(buyRate),
-                                          maxLines: 1,
-                                          textAlign:
-                                          TextAlign.right,
-                                          style: TextStyle(
-                                              color: buyColor,
-                                              // fontSize:
-                                              //     15
-                                              fontSize: 12),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                InkWell(
-                                  child: Container(
-                                    height: listItemHeight,
-                                    decoration: BoxDecoration(
-                                        border: buyBorder),
-                                  ),
-                                  onTap: () {
-                                    /*OrderConfirmDialog.move(
+                                    return Column(
+                                      children: [
+                                        Stack(
+                                          children: [
+                                            Container(
+                                              height: listItemHeight,
+                                              padding: EdgeInsets.all(1),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: AutoSizeText(
+                                                      buyHoga == 0
+                                                          ? ''
+                                                          : priceFormat
+                                                          .format(buyHoga),
+                                                      maxLines: 1,
+                                                      textAlign:
+                                                      TextAlign.center,
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                          FontWeight.bold,
+                                                          fontSize: 15),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    child: AutoSizeText(
+                                                      percentFormat.format(
+                                                          buyRate) ==
+                                                          '100.00%'
+                                                          ? ''
+                                                          : percentFormat
+                                                          .format(buyRate),
+                                                      maxLines: 1,
+                                                      textAlign:
+                                                      TextAlign.right,
+                                                      style: TextStyle(
+                                                          color: buyColor,
+                                                          // fontSize:
+                                                          //     15
+                                                          fontSize: 12),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            InkWell(
+                                              child: Container(
+                                                height: listItemHeight,
+                                                decoration: BoxDecoration(
+                                                    border: buyBorder),
+                                              ),
+                                              onTap: () {
+                                                /*OrderConfirmDialog.move(
                                             context,
                                             _hogaController.sise.value,
                                             buyHogaArray[index],
@@ -758,97 +760,97 @@ class PricePage extends StatelessWidget {
                                               }
                                             },
                                           )..show();*/
-                                    bool asd = true;
-                                    //_goToTransPage(buyHogaArray[index], asd);
+                                                bool asd = true;
+                                                //_goToTransPage(buyHogaArray[index], asd);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        Divider(
+                                            height: 1,
+                                            thickness: 1,
+                                            color: Colors.transparent),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: listItemCount,
+                                  itemBuilder: (context, index) {
+                                    int buyRem = int.parse(buyRemArray != null
+                                        ? buyRemArray[index]
+                                        : '');
+                                    int buyRatio = 0;
+
+                                    if (int.parse(totalMaxRem) != 0) {
+                                      buyRatio = (buyRem /
+                                          int.parse(totalMaxRem) *
+                                          1000)
+                                          .toInt();
+                                    }
+
+                                    FontWeight buyWeight = FontWeight.normal;
+                                    if (int.parse(buyMaxRem) == buyRem) {
+                                      buyWeight = FontWeight.bold;
+                                    }
+
+                                    return Column(
+                                      children: [
+                                        Stack(
+                                          children: [
+                                            Container(
+                                              height: listItemHeight,
+                                              padding: EdgeInsets.all(1),
+                                              alignment: Alignment.centerLeft,
+                                              child: AutoSizeText(
+                                                buyRem == 0
+                                                    ? ''
+                                                    : priceFormat
+                                                    .format(buyRem),
+                                                maxLines: 1,
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                  // color: _hogaControllerMore.isDarkMode.value
+                                                  //     ? LightColors.basic
+                                                  //     : Colors.black,
+                                                    fontSize: 12,
+                                                    fontWeight: buyWeight),
+                                              ),
+                                            ),
+                                            Container(
+                                              height: listItemHeight,
+                                              padding: EdgeInsets.only(
+                                                  top: 3, bottom: 3),
+                                              // color: Colors.red.withAlpha(30),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                      flex: buyRatio,
+                                                      child: Container(
+                                                          color: Colors.red
+                                                              .withAlpha(50))),
+                                                  Expanded(
+                                                      flex: 1000 - buyRatio,
+                                                      child: Container()),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Divider(
+                                            height: 1,
+                                            thickness: 1,
+                                            color: Colors.transparent),
+                                      ],
+                                    );
                                   },
                                 ),
                               ],
-                            ),
-                            Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: Colors.transparent),
-                          ],
-                        );
-                                            },
-                                          ),
-                                          ListView.builder(
-                                            physics: NeverScrollableScrollPhysics(),
-                                            itemCount: listItemCount,
-                                            itemBuilder: (context, index) {
-                        int buyRem = int.parse(buyRemArray != null
-                            ? buyRemArray[index]
-                            : '');
-                        int buyRatio = 0;
-
-                        if (int.parse(totalMaxRem) != 0) {
-                          buyRatio = (buyRem /
-                              int.parse(totalMaxRem) *
-                              1000)
-                              .toInt();
-                        }
-
-                        FontWeight buyWeight = FontWeight.normal;
-                        if (int.parse(buyMaxRem) == buyRem) {
-                          buyWeight = FontWeight.bold;
-                        }
-
-                        return Column(
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  height: listItemHeight,
-                                  padding: EdgeInsets.all(1),
-                                  alignment: Alignment.centerLeft,
-                                  child: AutoSizeText(
-                                    buyRem == 0
-                                        ? ''
-                                        : priceFormat
-                                        .format(buyRem),
-                                    maxLines: 1,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      // color: _hogaControllerMore.isDarkMode.value
-                                      //     ? LightColors.basic
-                                      //     : Colors.black,
-                                        fontSize: 12,
-                                        fontWeight: buyWeight),
-                                  ),
-                                ),
-                                Container(
-                                  height: listItemHeight,
-                                  padding: EdgeInsets.only(
-                                      top: 3, bottom: 3),
-                                  // color: Colors.red.withAlpha(30),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                          flex: buyRatio,
-                                          child: Container(
-                                              color: Colors.red
-                                                  .withAlpha(50))),
-                                      Expanded(
-                                          flex: 1000 - buyRatio,
-                                          child: Container()),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: Colors.transparent),
-                          ],
-                        );
-                                            },
-                                          ),
-                                        ],
-                                      )
-                                    ;
-                                  }),
-                                ),
+                            )
+                          ;
+                        }),
+                      ),
 
 
                     ],
@@ -934,6 +936,16 @@ class PricePage extends StatelessWidget {
     );
   }
 
+  Color valueColor(String sign){
+    if(sign == '1' ||sign == '2'){
+      return Colors.red;
+    }else if(sign == '4' || sign == '5'){
+      return Colors.blue;
+    }else{
+      return  Colors.black;
+    }
+
+  }
   // 호가 실시간
   void requestRealHoga(String websocketKey, String jmCode) async {
 
@@ -1055,11 +1067,11 @@ Widget news(String title, String imagePath) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                Text(title, style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
-                const Text('연합뉴스 | 2022/04/29 15:32',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF7D7E85))),
-              ])),
+                    Text(title, style: const TextStyle(fontSize: 16)),
+                    const SizedBox(height: 8),
+                    const Text('연합뉴스 | 2022/04/29 15:32',
+                        style: TextStyle(fontSize: 12, color: Color(0xFF7D7E85))),
+                  ])),
           Container(
               margin: const EdgeInsets.only(left: 15),
               width: 72,
@@ -1082,7 +1094,7 @@ Widget restof() {
           SizedBox(
             height: 76,
             child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               title('기업정보'),
               const Text('KOSPI | 금융업 | 시가총액 870.98조원',
                   style: TextStyle(fontSize: 12, color: Color(0xFF50505B))),
