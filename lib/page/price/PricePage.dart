@@ -47,8 +47,9 @@ class PricePage extends StatelessWidget {
   PricePage(String selectedJmCode, String selectedJmName) {
     selectedJm = [selectedJmCode, selectedJmName];
     _requestData(selectedJm[0]);
-    requestPRPR(selectedJm[0]);
-    requestChe(selectedJm[0]);
+    _hogaController.requestPRPR(selectedJm[0]);
+    _hogaController.requestChe(selectedJm[0]);
+    _hogaController.requestHoga(selectedJm[0]);
   }
 
   void _setupWebSocket() async {
@@ -63,10 +64,10 @@ class PricePage extends StatelessWidget {
           if (data['Data'] != null && data['Data']['websocketkey'] != null) {
             _websocketKey = data['Data']['websocketkey'];
             print('WebSocket Key: $_websocketKey');
-            //requestRealHoga(_websocketKey,selectedJm[0]);
+            requestRealHoga(_websocketKey,selectedJm[0]);
             requestRealChe(_websocketKey,selectedJm[0]);
 
-            _hogaController.requestHoga();
+
             await _requestReal(_websocketKey, selectedJm[0]);
           } else {
             if (data['TrCode'] == "H0STCNT0") {
@@ -213,10 +214,6 @@ class PricePage extends StatelessWidget {
                           _controller.siseList[0].PRDY_CTRT, // 전일 대비율
                           _controller.siseList[0].PRDY_VRSS_SIGN // 전일 대비 부호
                           ),
-                      Container(height: 16, color: const Color(0xFFF7F8FA)),
-                      //Container(height: 500,child: HogaPage()),
-
-
 
                      Container(
                                   // height: hogaListHeight*1.3,
@@ -322,7 +319,10 @@ class PricePage extends StatelessWidget {
                                           Container(
                                            // height:hogaListHeight,
 //height:hogaListHeight/2,
+                                          //constraints: BoxConstraints( minHeight:325),
+
                                       height:325,
+
                                             child: ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: listItemCount,
@@ -889,54 +889,7 @@ class PricePage extends StatelessWidget {
                                   }),
                                 ),
 
-                      Container(height: 16, color: const Color(0xFFF7F8FA)),
-                      //기업 정보
-                      Container(
-                          padding:
-                              const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 40.0),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 76,
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        title('기업정보'),
-                                        const Text(
-                                            'KOSPI | 금융업 | 시가총액 870.98조원',
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xFF50505B))),
-                                      ]),
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    tag('#갤럭시'),
-                                    tag('#갤럭시워치'),
-                                  ],
-                                )
-                              ])),
 
-                      Container(height: 16, color: const Color(0xFFF7F8FA)),
-
-                      //뉴스
-                      Container(
-                          width: double.infinity,
-                          padding:
-                              const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 28.0),
-                          child: Column(
-                            children: [
-                              title('회사소식'),
-                              news('배터리 열받아도 불나지 않도록',
-                                  'assets/images/image1.png'),
-                              news('에어부산, 내달부터 부산발 일본 동남아노선 3개 운항 재개',
-                                  'assets/images/image2.png'),
-                              news('서울버스 총파업 현실화되나', 'assets/images/image3.png')
-                            ],
-                          ))
                     ],
                   )),
             ],
@@ -1013,24 +966,30 @@ class PricePage extends StatelessWidget {
           AutoSizeText(
             cheData.volume,
             maxLines: 1,
-            style: TextStyle(color: cheData.sign == '1' || cheData.sign == '2'
-                ? Colors.red
-                : cheData.sign == '4' || cheData.sign == '5'
-                ? Colors.blue
-                : Colors.black, fontSize: 12),
+            style: TextStyle(color: valueColor(cheData.sign), fontSize: 12),
           ),
         ],
       ),
     );
   }
 
+  Color valueColor(String sign){
+    if(sign == '1' ||sign == '2'){
+      return Colors.red;
+    }else if(sign == '4' || sign == '5'){
+      return Colors.blue;
+    }else{
+      return  Colors.black;
+    }
+
+  }
   // 호가 실시간
   void requestRealHoga(String websocketKey, String jmCode) async {
-    final url = 'http://203.109.30.207:10001/requestReal';
+
     final headers = {
       'Content-Type': 'application/json',
     };
-
+    final url = 'http://203.109.30.207:10001/requestReal';
     final body = jsonEncode({
       'header': {'sessionKey': websocketKey, 'tr_type': '1'},
       'objCommInput': {"tr_id": "H0STASP0", 'tr_key': jmCode},
@@ -1038,11 +997,23 @@ class PricePage extends StatelessWidget {
       'trCode': '/uapi/domestic-stock/v1/quotations/requestReal',
     });
 
+    //러쉬테스트용
+    // const url = 'http://203.109.30.207:10001/rushtest';
+    // final body = jsonEncode({
+    //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+    //   "rqName": "",
+    //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
+    //   "objCommInput": {"count": "2", "tr_id": "H0STASP0"}
+    // });
+
     final response =
     await http.post(Uri.parse(url), headers: headers, body: body);
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
+      String decodedBody = utf8.decode(response.bodyBytes);
+      var decodedJson = jsonDecode(decodedBody);
+
     } else {
       print('Request failed with status: ${response.statusCode}');
     }
@@ -1061,6 +1032,15 @@ class PricePage extends StatelessWidget {
       "rqName": "",
       "trCode": "/uapi/domestic-stock/v1/quotations/requestReal"
     });
+
+    // const url = 'http://203.109.30.207:10001/rushtest';
+    // final body = jsonEncode({
+    //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+    //   "rqName": "",
+    //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
+    //   "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
+    // });
+
     final response =
     await http.post(Uri.parse(url), headers: headers, body: body);
 
@@ -1072,73 +1052,9 @@ class PricePage extends StatelessWidget {
       print('Request failed with status: ${response.statusCode}');
     }
   }
-  // 현재가
-  void requestPRPR(String jmCode) async {
-    final url = 'http://203.109.30.207:10001/request';
-    final headers = {
-      'Content-Type': 'application/json',
-    };
-
-    final body = jsonEncode({
-      'header': {"tr_id": ""},
-      'objCommInput': {"SHCODE":jmCode},
-      'rqName': '',
-      'trCode': "/uapi/domestic-stock/v1/quotations/S0004"
-    });
-    final response =
-    await http.post(Uri.parse(url), headers: headers, body: body);
-
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-
-      String decodedBody = utf8.decode(response.bodyBytes);
-      var decodedJson = jsonDecode(decodedBody);
-      _hogaController.hoga2.value =
-          HogaData2.fromJSON(decodedJson['Data']['output'], jmCode);
-      _hogaController.currentPrice.value = _hogaController.hoga2.value.price ?? '0';
-    } else {
-      print('Request failed with status: ${response.statusCode}');
-    }
-  }
-
-  // 체결
-  Future<CheData> requestChe(String jmCode) async {
-    final url = 'http://203.109.30.207:10001/request';
-    final headers = {
-      'Content-Type': 'application/json',
-    };
-
-    final body = jsonEncode({
-      "header": {
-        "tr_id" : ""
-      },
-      "objCommInput": {
-        "FID_COND_MRKT_DIV_CODE" : "J",
-        "FID_INPUT_ISCD" : jmCode
-      },
-      "rqName": "",
-      "trCode":"/uapi/domestic-stock/v1/quotations/inquire-ccnl"
-    });
-    final response = await http.post(Uri.parse(url),headers: headers, body: body);
-
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-
-      String decodedBody = utf8.decode(response.bodyBytes);
-      var decodedJson = jsonDecode(decodedBody);
-
-      //contract.value.array.add(T1301Array.fromJson(decodedJson['Data']['output']));
-      _hogaController.contract.value = CheData.fromJSON(decodedJson['Data']['output']);
-      CheData t1301Output = CheData.fromJSON(decodedJson['Data']['output']);
-      return t1301Output;
 
 
-    }else {
-      print('Request failed with status: ${response.statusCode}');
-      throw Exception('Request failed with status: ${response.statusCode}');
-    }
 
-  }
 
 }
 

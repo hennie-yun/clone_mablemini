@@ -53,7 +53,7 @@ class HogaPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder(
-             future: _hogaController.requestHoga(),
+             future: _hogaController.requestHoga("005930"),
            // future:requestRealHoga(webSocketkey),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {

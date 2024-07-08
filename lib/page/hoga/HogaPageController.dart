@@ -73,7 +73,7 @@ class HogaPageController extends GetxController {
 
   }
 // 호가
-  Future<HogaData> requestHoga() async {
+  Future<HogaData> requestHoga(String jmCode) async {
     //체결 데이터를 다 받고 난 뒤
     //CheData t1301Output = await requestChe();
 
@@ -88,7 +88,7 @@ class HogaPageController extends GetxController {
         "tr_id" : ""
       },
       "objCommInput": {
-        "SHCODE" : "005930"
+        "SHCODE" : jmCode
       },
       "rqName": "",
       "trCode": "/uapi/domestic-stock/v1/quotations/S0003"
@@ -111,7 +111,7 @@ class HogaPageController extends GetxController {
   }
 
   // 체결
-  Future<CheData> requestChe() async {
+  Future<CheData> requestChe(String jmCode) async {
     final url = 'http://203.109.30.207:10001/request';
     final headers = {
       'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ class HogaPageController extends GetxController {
       },
       "objCommInput": {
         "FID_COND_MRKT_DIV_CODE" : "J",
-        "FID_INPUT_ISCD" : "000660"
+        "FID_INPUT_ISCD" : jmCode
       },
       "rqName": "",
       "trCode":"/uapi/domestic-stock/v1/quotations/inquire-ccnl"
@@ -147,6 +147,35 @@ class HogaPageController extends GetxController {
       throw Exception('Request failed with status: ${response.statusCode}');
     }
 
+  }
+
+  // 현재가
+  void requestPRPR(String jmCode) async {
+    final url = 'http://203.109.30.207:10001/request';
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    final body = jsonEncode({
+      'header': {"tr_id": ""},
+      'objCommInput': {"SHCODE":jmCode},
+      'rqName': '',
+      'trCode': "/uapi/domestic-stock/v1/quotations/S0004"
+    });
+    final response =
+    await http.post(Uri.parse(url), headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+
+      String decodedBody = utf8.decode(response.bodyBytes);
+      var decodedJson = jsonDecode(decodedBody);
+      hoga2.value =
+          HogaData2.fromJSON(decodedJson['Data']['output'], jmCode);
+      currentPrice.value = hoga2.value.price ?? '0';
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+    }
   }
 
   void updateCheData(CheData newData) {
