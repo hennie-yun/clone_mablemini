@@ -75,9 +75,9 @@ class HogaPageController extends GetxController {
 // 호가
   Future<HogaData> requestHoga() async {
     //체결 데이터를 다 받고 난 뒤
-    CheData t1301Output = await requestChe();
+    //CheData t1301Output = await requestChe();
 
-
+    HogaData hogaData = HogaData();
     final url = 'http://203.109.30.207:10001/request';
     final headers = {
       'Content-Type': 'application/json',
@@ -95,19 +95,19 @@ class HogaPageController extends GetxController {
     });
     final response = await http.post(Uri.parse(url),headers: headers, body: body);
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-
-      String decodedBody = utf8.decode(response.bodyBytes);
-      var decodedJson = jsonDecode(decodedBody);
-      hoga.value  = HogaData.fromJSON(decodedJson['Data']['output']);
-      HogaData hogaData = HogaData.fromJSON(decodedJson['Data']['output']);
-      return hogaData;
-    }else {
-      print('Request failed with status: ${response.statusCode}');
-      throw Exception('Request failed with status: ${response.statusCode}');
-    }
-
+    // if (response.statusCode == 200) {
+    //   final responseData = jsonDecode(response.body);
+    //
+    //   String decodedBody = utf8.decode(response.bodyBytes);
+    //   var decodedJson = jsonDecode(decodedBody);
+    //   hoga.value  = HogaData.fromJSON(decodedJson['Data']['output']);
+    //   HogaData hogaData = HogaData.fromJSON(decodedJson['Data']['output']);
+    //   return hogaData;
+    // }else {
+    //   print('Request failed with status: ${response.statusCode}');
+    //   throw Exception('Request failed with status: ${response.statusCode}');
+    // }
+return hogaData;
   }
 
   // 체결
@@ -123,7 +123,7 @@ class HogaPageController extends GetxController {
       },
       "objCommInput": {
         "FID_COND_MRKT_DIV_CODE" : "J",
-        "FID_INPUT_ISCD" : "005930"
+        "FID_INPUT_ISCD" : "000660"
       },
       "rqName": "",
       "trCode":"/uapi/domestic-stock/v1/quotations/inquire-ccnl"

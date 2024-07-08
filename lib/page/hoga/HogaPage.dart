@@ -29,6 +29,7 @@ class HogaPage extends StatelessWidget {
   final NumberFormat percentFormat = new NumberFormat('###,##0.00%');
   final DateFormat dateFormat = new DateFormat('yyyyMMdd');
 
+
   @override
   Widget build(BuildContext context) {
     setupWebSocket('005930');
@@ -45,13 +46,15 @@ class HogaPage extends StatelessWidget {
     final double hogaListHeight = MediaQuery.of(context).size.height - 88 - 64;
     _controller.jmCode.value = '005930';
 
+
     // return Container(
     //   width: double.infinity,
     // );
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder(
-            future: _controller.requestHoga(),
+             future: _controller.requestHoga(),
+           // future:requestRealHoga(webSocketkey),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
@@ -584,9 +587,9 @@ class HogaPage extends StatelessWidget {
                                             child:Column(
                                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                               children: [
-                                                sise3('시','${priceFormat.format(open)}','test'),
-                                                sise3('고','${priceFormat.format(high)}','test'),
-                                                sise3('저','${priceFormat.format(low)}','test')
+                                                sise3('시',open,'test',jnilclose ),
+                                                sise3('고',high,'test',jnilclose),
+                                                sise3('저',low,'test',jnilclose)
                                                ],
                                             ))),
                                         Divider(height: 1, thickness: 1, color: Colors.grey),
@@ -868,9 +871,9 @@ class HogaPage extends StatelessWidget {
                                   );
                                 }),
                                 Obx(() {
-                                  if (_controller.contract.value.array.isEmpty) {
-                                    return Container();
-                                  }
+                                  // if (_controller.contract.value.array.isEmpty) {
+                                  //   return Container();
+                                  // }
 
                                   double degree =
                                       _controller.contract.value.array.isEmpty
@@ -916,7 +919,7 @@ class HogaPage extends StatelessWidget {
                                               Expanded(
                                                   child: ListView.builder(
                                                       physics: AlwaysScrollableScrollPhysics(),
-                                                      itemCount: 30,
+                                                      itemCount: _controller.contract.value.array.length,
                                                       itemBuilder: (context, index) {
                                                         return cheList(_controller.contract.value.array[index]);
                                                       }))
@@ -1129,14 +1132,14 @@ class HogaPage extends StatelessWidget {
     );
   }
 
-  Widget sise1(String alignment, String text){
+  Widget sise1(String alignment, String? text,){
     MainAxisAlignment mainalignment = MainAxisAlignment.start;
     if(alignment == 'end'){
       mainalignment = MainAxisAlignment.end;
     }else{
       mainalignment = MainAxisAlignment.start;
     }
-   return Row( mainAxisAlignment: mainalignment,children: [ Text(text,style:TextStyle(fontSize: 10))]);
+   return Row( mainAxisAlignment: mainalignment,children: [ Text(text ?? '',style:TextStyle(fontSize: 10))]);
   }
 
   Widget sise2(String text, String text2){
@@ -1150,7 +1153,12 @@ class HogaPage extends StatelessWidget {
     }
     return Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text(text,style:TextStyle(fontSize: 10,color:color)),Text(text2,style:TextStyle(fontSize: 10,color:color))]);
   }
-  Widget sise3(String text, String text2, String text3){
+  Widget sise3(String text, double price, String text3, double basePrice){
+
+    double doublePercent = (basePrice - price)/basePrice*100;
+    String percent = doublePercent.abs().toStringAsFixed(2);
+    var formatPrice = priceFormat.format(price);
+
     var color;
     if(text == '시'){
       color = Colors.green;
@@ -1159,6 +1167,7 @@ class HogaPage extends StatelessWidget {
     }else{
       color = Colors.blue;
     }
+
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Container(
           width:16,
@@ -1170,10 +1179,13 @@ class HogaPage extends StatelessWidget {
           ),
           child:Center(child:Column(children:[Text(text,style:TextStyle(fontSize: 10, color:Colors.white, fontWeight: FontWeight.bold))]))),
       //Text(text),
-      Column(children: [Text(text2,style:TextStyle(fontSize: 10)),Text(text3,style:TextStyle(fontSize: 10))],)],);
+      Column(children: [Text(formatPrice,style:TextStyle(fontSize: 10)),Text('$percent%',style:TextStyle(fontSize: 10, color: doublePercent < 0 ? Colors.red : doublePercent > 0 ? Colors.blue : Colors.black))],)],);
 
   }
-  Widget cheList(CheDataArray cheData) {
+  Widget cheList(CheDataArray? cheData) {
+    if(cheData == null){
+      return Container();
+    }
 
 
     return Container(
@@ -1211,7 +1223,7 @@ class HogaPage extends StatelessWidget {
   // }
 
   /// WebSocket 설정 및 데이터 요청
-  Future<void> setupWebSocket(String jmCode) async {
+  void setupWebSocket(String jmCode) async {
     try {
       // 연결
       channel = WebSocketChannel.connect(
@@ -1232,9 +1244,7 @@ class HogaPage extends StatelessWidget {
           if (data['TrCode'] == "H0STASP0") {
             _controller.hoga.value = HogaData.fromJSON(data['Data']);
           }else if(data['TrCode'] == "H0STCNT0"){
-           //var degree = _controller.contract.value.array.first.chdegree;
             _controller.contract.value.array.insert(0,CheDataArray.fromJson(data['Data']));
-           // _controller.contract.value.array.first.chdegree = degree;
             if(_controller.contract.value.array.length >= 30){
               _controller. contract.value.array.removeLast();
             }
@@ -1252,6 +1262,8 @@ class HogaPage extends StatelessWidget {
       print('WebSocket setup error: $e');
     }
   }
+
+
 
   // 호가 실시간
   void requestRealHoga(String websocketKey) async {

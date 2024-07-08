@@ -55,15 +55,15 @@ class HogaData{
   final String? TOTAL_ASKP_RSQN;
   final String? TOTAL_BIDP_RSQN;
 
-  List<String>? buyHogas = []; // 매수호가 1~10
-  List<String>? buyRems = []; // 매수호가수량 1~10
-  List<String>? sellHogas = []; // 매도호가 1~10
-  List<String>? sellRems = []; // 매도호가수량 1~10
+  // List<String>? buyHogas = []; // 매수호가 1~10
+  // List<String>? buyRems = []; // 매수호가수량 1~10
+  // List<String>? sellHogas = []; // 매도호가 1~10
+  // List<String>? sellRems = []; // 매도호가수량 1~10
 
-  // List<String>? buyHogas; // 매수호가 1~10
-  // List<String>? buyRems ; // 매수호가수량 1~10
-  // List<String>? sellHogas; // 매도호가 1~10
-  // List<String>? sellRems; // 매도호가수량 1~10
+  List<String>? buyHogas; // 매수호가 1~10
+  List<String>? buyRems ; // 매수호가수량 1~10
+  List<String>? sellHogas; // 매도호가 1~10
+  List<String>? sellRems; // 매도호가수량 1~10
 
   HogaData({
     //매도호가
@@ -116,21 +116,21 @@ class HogaData{
 
     this.TOTAL_ASKP_RSQN,
     this.TOTAL_BIDP_RSQN,
-    this.buyHogas,
-    this.buyRems,
-    this.sellHogas,
-    this.sellRems
+    // this.buyHogas,
+    // this.buyRems,
+    // this.sellHogas,
+    // this.sellRems
 
-    // List<String>? buyHogas,
-    // List<String>?  buyRems,
-    // List<String>? sellHogas,
-    // List<String>? sellRems
+    List<String>? buyHogas,
+    List<String>?  buyRems,
+    List<String>? sellHogas,
+    List<String>? sellRems
 
-  });
-      // : this.buyHogas = buyHogas ?? List<String>.filled(10, ''),
-      //   this.buyRems = buyRems ?? List<String>.filled(10, ''),
-      //   this.sellHogas = sellHogas ?? List<String>.filled(10, ''),
-      //   this.sellRems = sellRems ?? List<String>.filled(10, '');
+  })
+      : this.buyHogas = buyHogas ?? List<String>.filled(10, '0'),
+        this.buyRems = buyRems ?? List<String>.filled(10, '0'),
+        this.sellHogas = sellHogas ?? List<String>.filled(10, '0'),
+        this.sellRems = sellRems ?? List<String>.filled(10, '0');
 
   factory HogaData.fromJSON(Map<String, dynamic> json) {
     List<String> buyHogas = []; // 매수호가 1~10
