@@ -6,8 +6,10 @@ class FavPageController extends GetxController {
 
   var siseList = <SiseData>[].obs;
   var siseRealList = [].obs;
-  var hasRealData = false.obs;
-
+  // var hasRealData = false.obs;
+  /// 통신 플래그
+  var isRequest = false.obs;
+  bool isFirst = true;
 
   final List<Map<String, String>> jmCodes = [
     {"jmCode": "000660", "jmName": "SK 하이닉스"},
@@ -30,9 +32,11 @@ class FavPageController extends GetxController {
   }
 
   void init() {
+    isFirst = true;
+    isRequest.value = false;
     siseList.clear();
     siseRealList.clear();
-    hasRealData.value = false;
+    // hasRealData.value = false;
     selectedJmCode.value = [];
   }
 }

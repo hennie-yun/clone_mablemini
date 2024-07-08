@@ -16,7 +16,6 @@ import '../price/PricePage.dart';
 import 'FavPageController.dart';
 
 class FavPage extends StatelessWidget {
-  // GlobalController _globalController = Get.put(GlobalController());
 
   final FavPageController _controller = Get.put(FavPageController());
   late WebSocketChannel _webSocketChannel;
@@ -24,7 +23,7 @@ class FavPage extends StatelessWidget {
 
   FavPage() {
     _controller.init();
-    _requestData();
+
   }
 
   void _setupWebSocket() async {
@@ -39,9 +38,10 @@ class FavPage extends StatelessWidget {
             _websocketKey = data['Data']['websocketkey'];
             print('WebSocket Key: $_websocketKey');
             await _requestReal(_websocketKey);
+
           } else {
             if (data['TrCode'] == "H0STCNT0") {
-              _controller.hasRealData.value = true;
+              _controller.isRequest .value = true;
 
               String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
               String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
@@ -141,7 +141,11 @@ class FavPage extends StatelessWidget {
   }
 
   Future<void> _requestData() async {
-    for (int i = 0; i < _controller.jmCodes.length; i++) {
+    if (_controller.isRequest.value == false || _controller.isFirst) {
+      _controller.isFirst = false;
+      _controller.isRequest.value = true;
+
+      for (int i = 0; i < _controller.jmCodes.length; i++) {
       final headers = {'Content-Type': 'application/json;charset=utf-8'};
       final body = jsonEncode({
         "trCode": "/uapi/domestic-stock/v1/quotations/S0004",
@@ -167,8 +171,9 @@ class FavPage extends StatelessWidget {
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
-    }
+    } }
     _setupWebSocket();
+
   }
 
   Future<void> _requestReal(String websocketKey) async {
@@ -202,76 +207,111 @@ class FavPage extends StatelessWidget {
     }
   }
 
+  Future<void> fetchData() async {
+    try {
+      _controller.isRequest.value = true;
+      await _requestData();
+    } finally {
+      _controller.isRequest.value = false;
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(() {
-        return ListView.builder(
-          itemCount: _controller.siseList.length,
-          itemBuilder: (context, index) {
-            final siseData = _controller.siseList[index];
-            return GestureDetector(
-              onTap: () {
-                Get.find<GlobalController>().setCurrWidget(
-                  PricePage(
-                    _controller.jmCodes[index]['jmCode']!,
-                    _controller.jmCodes[index]['jmName']!,
-                  ),
-                );
-                Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                height: 72,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      margin: const EdgeInsets.only(right: 12),
-                      decoration: const BoxDecoration(shape: BoxShape.circle),
-                      child: ClipOval(
-                        child: Image.asset('assets/images/mmini.png'),
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        _controller.jmCodes[index]['jmName']!,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
+      body: FutureBuilder(
+        future: fetchData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error loading data'));
+          } else {
+            return Obx(() {
+                if (_controller.siseList.isEmpty) {
+                  return Center(child: Text('No data available'));
+                } else {
+                  return ListView.builder(
+                    itemCount: _controller.siseList.length,
+                    itemBuilder: (context, index) {
+                      final siseData = _controller.siseList[index];
+                      return GestureDetector(
+                        onTap: () {
+
+
+                          Get.find<GlobalController>().setCurrWidget(
+                            PricePage(
+                              _controller.jmCodes[index]['jmCode']!,
+                              _controller.jmCodes[index]['jmName']!,
+                            ),
+                          );
+                          Get.find<GlobalController>().setSelectecJm(
+                              _controller.jmCodes[index]['jmCode']!,
+                              _controller.jmCodes[index]['jmName']!);
+
+                          Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          height: 72,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                margin: const EdgeInsets.only(right: 12),
+                                decoration: const BoxDecoration(shape: BoxShape.circle),
+                                child: ClipOval(
+                                  child: Image.asset('assets/images/mmini.png'),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  _controller.jmCodes[index]['jmName']!,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+
+                                  makePrice(
+                                    siseData.PRDY_VRSS,
+                                    siseData.PRDY_CTRT,
+                                    siseData.PRDY_VRSS_SIGN,
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                        makePrice(
-                          siseData.PRDY_VRSS, // 전일 대비
-                          siseData.PRDY_CTRT, // 전일 대비율
-                          siseData.PRDY_VRSS_SIGN, // 전일 대비 부호
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                      );
+                    },
+                  );
+                }
+              },
             );
-          },
-        );
-      }),
+          }
+        },
+      ),
     );
   }
 }
+
+
 
 String formatNumber(int number) {
   final formatter = NumberFormat('#,###');
