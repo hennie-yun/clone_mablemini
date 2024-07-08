@@ -22,7 +22,7 @@ class HogaPage extends StatelessWidget {
   //     Uri.parse('ws://203.109.30.207:10001/connect'));
   WebSocketChannel? channel;
 
-  final HogaPageController _controller = Get.put(HogaPageController());
+  final HogaPageController _hogaController = Get.put(HogaPageController());
 
   /// 포맷팅
   final NumberFormat priceFormat = new NumberFormat('###,###');
@@ -33,7 +33,7 @@ class HogaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     setupWebSocket('005930');
-    //String jmCode = _controller.jmCode.value;
+    //String jmCode = _hogaController.jmCode.value;
 
     // 현재가 단일종목
     requestPRPR();
@@ -44,7 +44,7 @@ class HogaPage extends StatelessWidget {
 
     // 탭 높이, 앱바 높이 제외
     final double hogaListHeight = MediaQuery.of(context).size.height - 88 - 64;
-    _controller.jmCode.value = '005930';
+    _hogaController.jmCode.value = '005930';
 
 
     // return Container(
@@ -53,7 +53,7 @@ class HogaPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder(
-             future: _controller.requestHoga(),
+             future: _hogaController.requestHoga(),
            // future:requestRealHoga(webSocketkey),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -70,23 +70,23 @@ class HogaPage extends StatelessWidget {
                         // height: hogaListHeight*1.3,
                         height: hogaListHeight,
                         child: Obx(() {
-                          if (_controller.hoga.value == null) {
+                          if (_hogaController.hoga.value == null) {
                             // request1101();
                             //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                            //requestFHKST01010200(_controller.jmCode.value);
+                            //requestFHKST01010200(_hogaController.jmCode.value);
 
-                            print('_controller.hoga.value가 null');
+                            print('_hogaController.hoga.value가 null');
 
-                            ///requestT1101(_controller.jmCode.value);
+                            ///requestT1101(_hogaController.jmCode.value);
                             //2024.02 벌고해 프로젝트_개편관련_김진겸 end
                             return Container();
                           }
-                          if (_controller.currentPrice.value == "") {
+                          if (_hogaController.currentPrice.value == "") {
                             //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                            //requestFHKST01010200(_controller.jmCode.value);
-                            print('_controller.currentPrice.value 가 ""');
+                            //requestFHKST01010200(_hogaController.jmCode.value);
+                            print('_hogaController.currentPrice.value 가 ""');
 
-                            ///requestT1101(_controller.jmCode.value);
+                            ///requestT1101(_hogaController.jmCode.value);
                             //2024.02 벌고해 프로젝트_개편관련_김진겸 end
                             return Container();
                           }
@@ -96,36 +96,36 @@ class HogaPage extends StatelessWidget {
                           var listItemCount = 10;
                           var listItemHeight = (itemHeight / listItemCount) - 1;
 
-                          var currentPrice = _controller.currentPrice.value;
+                          var currentPrice = _hogaController.currentPrice.value;
                           //2024.02 벌고해 프로젝트_개편관련_김진겸 start
                           /*
                                 var beforeClose =
-                                    _controller.hoga.value.close ?? '';
+                                    _hogaController.hoga.value.close ?? '';
                                 var sellHogaArray =
-                                    _controller.hoga.value.sellHogas ?? [];
+                                    _hogaController.hoga.value.sellHogas ?? [];
                                 var sellRemArray =
-                                    _controller.hoga.value.sellRems ?? [];
+                                    _hogaController.hoga.value.sellRems ?? [];
                                 var buyHogaArray =
-                                    _controller.hoga.value.buyHogas ?? [];
+                                    _hogaController.hoga.value.buyHogas ?? [];
                                 var buyRemArray =
-                                    _controller.hoga.value.buyRems ?? [];
+                                    _hogaController.hoga.value.buyRems ?? [];
                                 */
-                          //var beforeClose = _controller.hoga.value.jnilclose ?? '';
-                          // var sellHogaArray = _controller.hoga.value.offerho ?? [];
-                          // var sellRemArray = _controller.hoga.value.offerrem ?? [];
-                          // var buyHogaArray = _controller.hoga.value.bidho ?? [];
-                          // var buyRemArray = _controller.hoga.value.bidrem ?? [];
+                          //var beforeClose = _hogaController.hoga.value.jnilclose ?? '';
+                          // var sellHogaArray = _hogaController.hoga.value.offerho ?? [];
+                          // var sellRemArray = _hogaController.hoga.value.offerrem ?? [];
+                          // var buyHogaArray = _hogaController.hoga.value.bidho ?? [];
+                          // var buyRemArray = _hogaController.hoga.value.bidrem ?? [];
 
                           var beforeClose =
-                              _controller.hoga2.value.basePrice ?? '';
+                              _hogaController.hoga2.value.basePrice ?? '';
                           var sellHogaArray =
-                              _controller.hoga.value.sellHogas ?? [];
+                              _hogaController.hoga.value.sellHogas ?? [];
                           var sellRemArray =
-                              _controller.hoga.value.sellRems ?? [];
+                              _hogaController.hoga.value.sellRems ?? [];
                           var buyHogaArray =
-                              _controller.hoga.value.buyHogas ?? [];
+                              _hogaController.hoga.value.buyHogas ?? [];
                           var buyRemArray =
-                              _controller.hoga.value.buyRems ?? [];
+                              _hogaController.hoga.value.buyRems ?? [];
 
                           //2024.02 벌고해 프로젝트_개편관련_김진겸 end
 
@@ -269,7 +269,7 @@ class HogaPage extends StatelessWidget {
                                 //           sellColor = Colors.red;
                                 //         } else {
                                 //           Colors.black;
-                                //           // sellColor = _controllerMore.isDarkMode.value ? Colors.white : Colors.black;
+                                //           // sellColor = _hogaControllerMore.isDarkMode.value ? Colors.white : Colors.black;
                                 //         }
                                 //
                                 //         Border sellBorder = Border.all(
@@ -336,7 +336,7 @@ class HogaPage extends StatelessWidget {
                                 //                   onTap: () {
                                 //                     /*OrderConfirmDialog.move(
                                 //               context,
-                                //               _controller.sise.value,
+                                //               _hogaController.sise.value,
                                 //               sellHogaArray[4 - index],
                                 //               1,
                                 //               onConfirm: () {
@@ -388,7 +388,7 @@ class HogaPage extends StatelessWidget {
                                       sellColor = Colors.red;
                                     } else {
                                       Colors.black;
-                                      // sellColor = _controllerMore.isDarkMode.value ? Colors.white : Colors.black;
+                                      // sellColor = _hogaControllerMore.isDarkMode.value ? Colors.white : Colors.black;
                                     }
 
                                     Border sellBorder = Border.all(
@@ -456,7 +456,7 @@ class HogaPage extends StatelessWidget {
                                               onTap: () {
                                                 /*OrderConfirmDialog.move(
                                           context,
-                                          _controller.sise.value,
+                                          _hogaController.sise.value,
                                           sellHogaArray[4 - index],
                                           1,
                                           onConfirm: () {
@@ -487,21 +487,21 @@ class HogaPage extends StatelessWidget {
                                 ),
 
                                 Obx(() {
-                                  // if (_controller.hogaInfo.value == null) {
+                                  // if (_hogaController.hogaInfo.value == null) {
                                   //   return Container();
                                   // }
                                   //전일 거래량
                                   //2024.02 벌고해 프로젝트_개편관련_김진겸 start
                                   // double preDayVolume = double.parse(
-                                  //     (master[_controller.jmCode.value]
+                                  //     (master[_hogaController.jmCode.value]
                                   //             ?.preDayVolume) ??
                                   //         '0');
                                   double preDayVolume = double.parse(
-                                      _controller.hoga2.value.volume ?? '0');
+                                      _hogaController.hoga2.value.volume ?? '0');
                                   //2024.02 벌고해 프로젝트_개편관련_김진겸 end
                                   //정적 상한가 (시가의 +10%)
                                   double svi_uplmtprice = double.parse(
-                                          _controller.hoga2.value.open ?? '0') *
+                                          _hogaController.hoga2.value.open ?? '0') *
                                       0.01;
                                   svi_uplmtprice =
                                       (svi_uplmtprice + svi_uplmtprice * 0.1)
@@ -511,7 +511,7 @@ class HogaPage extends StatelessWidget {
 
                                   //정적 하한가 (시가의 -10%)
                                   double svi_dnlmtprice = double.parse(
-                                          _controller.hoga2.value.open ?? '0') *
+                                          _hogaController.hoga2.value.open ?? '0') *
                                       0.01;
                                   //svi_dnlmtprice -= svi_dnlmtprice*0.1;
                                   svi_dnlmtprice =
@@ -522,34 +522,34 @@ class HogaPage extends StatelessWidget {
                                   //상한가
                                   double uplmtprice = double.parse(
                                       //2024.02 벌고해 프로젝트_개편관련_김진겸 start
-                                      //double uplmtprice = double.parse(_controller.hoga.value.upPrice ?? '0');
-                                      _controller.hoga2.value.upPrice ?? '0');
+                                      //double uplmtprice = double.parse(_hogaController.hoga.value.upPrice ?? '0');
+                                      _hogaController.hoga2.value.upPrice ?? '0');
                                   //하한가
-                                  //double dnlmtprice = double.parse(_controller.hoga.value.downPrice ??'0');
+                                  //double dnlmtprice = double.parse(_hogaController.hoga.value.downPrice ??'0');
                                   double dnlmtprice = double.parse(
-                                      _controller.hoga2.value.downPrice ?? '0');
+                                      _hogaController.hoga2.value.downPrice ?? '0');
                                   //2024.02 벌고해 프로젝트_개편관련_김진겸 end
                                   //2024.02 벌고해 프로젝트_개편관련_김진겸 start
                                   //기준가
                                   // double recprice = double.parse(
-                                  //     master[_controller.hoga.value]
+                                  //     master[_hogaController.hoga.value]
                                   //             ?.basePrice ??
                                   //         '0');
                                   double jnilclose =
-                                      // double.parse(_controller.hoga2.value.jnilclose ?? '0');
+                                      // double.parse(_hogaController.hoga2.value.jnilclose ?? '0');
                                       double.parse(
-                                          _controller.hoga2.value.basePrice ??
+                                          _hogaController.hoga2.value.basePrice ??
                                               '0');
                                   //2024.02 벌고해 프로젝트_개편관련_김진겸 end
                                   //시가
                                   double open = double.parse(
-                                      _controller.hoga2.value.open ?? '0');
+                                      _hogaController.hoga2.value.open ?? '0');
                                   //고가
                                   double high = double.parse(
-                                      _controller.hoga2.value.high ?? '0');
+                                      _hogaController.hoga2.value.high ?? '0');
                                   //저가
                                   double low = double.parse(
-                                      _controller.hoga2.value.low ?? '0');
+                                      _hogaController.hoga2.value.low ?? '0');
 
                                   return Container(
                                     //padding: EdgeInsets.fromLTRB(10, 5, 10, 10),
@@ -598,7 +598,7 @@ class HogaPage extends StatelessWidget {
                                             child:Column(
                                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                               children: [
-                                                sise2('외인비율','${_controller.hoga2.value.frgnEhrt}%'),
+                                                sise2('외인비율','${_hogaController.hoga2.value.frgnEhrt}%'),
                                               ],
                                             ))
                                         // Container(
@@ -755,7 +755,7 @@ class HogaPage extends StatelessWidget {
                                         //     child: Divider(
                                         //       height: 1,
                                         //       thickness: 1,
-                                        //       // color: _controllerMore.isDarkMode.value
+                                        //       // color: _hogaControllerMore.isDarkMode.value
                                         //       //     ? dDividerColor
                                         //       //     : mLightGray
                                         //     )),
@@ -871,14 +871,14 @@ class HogaPage extends StatelessWidget {
                                   );
                                 }),
                                 Obx(() {
-                                  // if (_controller.contract.value.array.isEmpty) {
+                                  // if (_hogaController.contract.value.array.isEmpty) {
                                   //   return Container();
                                   // }
 
                                   double degree =
-                                      _controller.contract.value.array.isEmpty
+                                      _hogaController.contract.value.array.isEmpty
                                           ? 0
-                                          : double.parse(_controller.contract
+                                          : double.parse(_hogaController.contract
                                               .value.array.first.chdegree);
 
                                   return Container(
@@ -919,9 +919,9 @@ class HogaPage extends StatelessWidget {
                                               Expanded(
                                                   child: ListView.builder(
                                                       physics: AlwaysScrollableScrollPhysics(),
-                                                      itemCount: _controller.contract.value.array.length,
+                                                      itemCount: _hogaController.contract.value.array.length,
                                                       itemBuilder: (context, index) {
-                                                        return cheList(_controller.contract.value.array[index]);
+                                                        return cheList(_hogaController.contract.value.array[index]);
                                                       }))
                                             ],
                                           ),
@@ -947,7 +947,7 @@ class HogaPage extends StatelessWidget {
                                       buyColor = Colors.red;
                                     } else {
                                       Colors.black;
-                                      //buyColor = _controllerMore.isDarkMode.value ? LightColors.basic : Colors.black;
+                                      //buyColor = _hogaControllerMore.isDarkMode.value ? LightColors.basic : Colors.black;
                                     }
 
                                     Border buyBorder = Border.all(
@@ -1015,7 +1015,7 @@ class HogaPage extends StatelessWidget {
                                               onTap: () {
                                                 /*OrderConfirmDialog.move(
                                           context,
-                                          _controller.sise.value,
+                                          _hogaController.sise.value,
                                           buyHogaArray[index],
                                           1,
                                           onConfirm: () {
@@ -1081,7 +1081,7 @@ class HogaPage extends StatelessWidget {
                                                 maxLines: 1,
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
-                                                    // color: _controllerMore.isDarkMode.value
+                                                    // color: _hogaControllerMore.isDarkMode.value
                                                     //     ? LightColors.basic
                                                     //     : Colors.black,
                                                     fontSize: 12,
@@ -1211,13 +1211,13 @@ class HogaPage extends StatelessWidget {
   //   await T1101().fetchT1101(
   //       fetchComplete: (T1101Output item) {
   //         //2024.02 벌고해 프로젝트_개편관련_김진겸 end
-  //         _controller.hoga.value = item;
+  //         _hogaController.hoga.value = item;
   //
-  //         _controller.currentPrice.value = item.price!;
+  //         _hogaController.currentPrice.value = item.price!;
   //         // Future.delayed(
   //         //     Duration(seconds: 1), () => _startRealFHKST01010200(jmCode));
-  //         _controller.hoga.value;
-  //         return _controller.hoga.value;
+  //         _hogaController.hoga.value;
+  //         return _hogaController.hoga.value;
   //       },
   //       jmCode: jmCode);
   // }
@@ -1242,13 +1242,13 @@ class HogaPage extends StatelessWidget {
             requestRealChe(websocketKey);
           }
           if (data['TrCode'] == "H0STASP0") {
-            _controller.hoga.value = HogaData.fromJSON(data['Data']);
+            _hogaController.hoga.value = HogaData.fromJSON(data['Data']);
           }else if(data['TrCode'] == "H0STCNT0"){
-            _controller.contract.value.array.insert(0,CheDataArray.fromJson(data['Data']));
-            if(_controller.contract.value.array.length >= 30){
-              _controller. contract.value.array.removeLast();
+            _hogaController.contract.value.array.insert(0,CheDataArray.fromJson(data['Data']));
+            if(_hogaController.contract.value.array.length >= 30){
+              _hogaController. contract.value.array.removeLast();
             }
-            //_controller.updateCheData(_controller.contract.value);
+            //_hogaController.updateCheData(_hogaController.contract.value);
           }
         } else {
           print('No Data in message');
@@ -1338,7 +1338,7 @@ class HogaPage extends StatelessWidget {
   //
   //     String decodedBody = utf8.decode(response.bodyBytes);
   //     var decodedJson = jsonDecode(decodedBody);
-  //     _controller.hoga.value  = HogaData.fromJSON(decodedJson['Data']['output']);
+  //     _hogaController.hoga.value  = HogaData.fromJSON(decodedJson['Data']['output']);
   //
   //   }else {
   //     print('Request failed with status: ${response.statusCode}');
@@ -1366,9 +1366,9 @@ class HogaPage extends StatelessWidget {
 
       String decodedBody = utf8.decode(response.bodyBytes);
       var decodedJson = jsonDecode(decodedBody);
-      _controller.hoga2.value =
+      _hogaController.hoga2.value =
           HogaData2.fromJSON(decodedJson['Data']['output'], '005930');
-      _controller.currentPrice.value = _controller.hoga2.value.price ?? '0';
+      _hogaController.currentPrice.value = _hogaController.hoga2.value.price ?? '0';
     } else {
       print('Request failed with status: ${response.statusCode}');
     }

@@ -77,7 +77,7 @@ class HogaPageController extends GetxController {
     //체결 데이터를 다 받고 난 뒤
     //CheData t1301Output = await requestChe();
 
-    HogaData hogaData = HogaData();
+    //HogaData hogaData = HogaData();
     final url = 'http://203.109.30.207:10001/request';
     final headers = {
       'Content-Type': 'application/json',
@@ -95,19 +95,19 @@ class HogaPageController extends GetxController {
     });
     final response = await http.post(Uri.parse(url),headers: headers, body: body);
 
-    // if (response.statusCode == 200) {
-    //   final responseData = jsonDecode(response.body);
-    //
-    //   String decodedBody = utf8.decode(response.bodyBytes);
-    //   var decodedJson = jsonDecode(decodedBody);
-    //   hoga.value  = HogaData.fromJSON(decodedJson['Data']['output']);
-    //   HogaData hogaData = HogaData.fromJSON(decodedJson['Data']['output']);
-    //   return hogaData;
-    // }else {
-    //   print('Request failed with status: ${response.statusCode}');
-    //   throw Exception('Request failed with status: ${response.statusCode}');
-    // }
-return hogaData;
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+
+      String decodedBody = utf8.decode(response.bodyBytes);
+      var decodedJson = jsonDecode(decodedBody);
+      hoga.value  = HogaData.fromJSON(decodedJson['Data']['output']);
+      HogaData hogaData = HogaData.fromJSON(decodedJson['Data']['output']);
+      return hogaData;
+    }else {
+      print('Request failed with status: ${response.statusCode}');
+      throw Exception('Request failed with status: ${response.statusCode}');
+    }
+//return hogaData;
   }
 
   // 체결

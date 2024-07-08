@@ -151,70 +151,70 @@ class FavPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-         return ListView.builder(
-                itemCount: _controller.siseList.length,
-                itemBuilder: (context, index) {
-                  final siseData = _controller.siseList[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Get.find<GlobalController>().setCurrWidget(
-                        PricePage(
-                          _controller.jmCodes[index]['jmCode']!,
-                          _controller.jmCodes[index]['jmName']!,
-                        ),
-                      );
-                      Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
+        return ListView.builder(
+          itemCount: _controller.siseList.length,
+          itemBuilder: (context, index) {
+            final siseData = _controller.siseList[index];
+            return GestureDetector(
+              onTap: () {
+                Get.find<GlobalController>().setCurrWidget(
+                  PricePage(
+                    _controller.jmCodes[index]['jmCode']!,
+                    _controller.jmCodes[index]['jmName']!,
+                  ),
+                );
+                Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
 
 
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      height: 72,
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            margin: const EdgeInsets.only(right: 12),
-                            decoration:
-                                const BoxDecoration(shape: BoxShape.circle),
-                            child: ClipOval(
-                              child: Image.asset('assets/images/mmini.png'),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              _controller.jmCodes[index]['jmName']!,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              makePrice(
-                                siseData.PRDY_VRSS, // 전일 대비
-                                siseData.PRDY_CTRT, // 전일 대비율
-                                siseData.PRDY_VRSS_SIGN, // 전일 대비 부호
-                              ),
-                            ],
-                          ),
-                        ],
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                height: 72,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      margin: const EdgeInsets.only(right: 12),
+                      decoration:
+                      const BoxDecoration(shape: BoxShape.circle),
+                      child: ClipOval(
+                        child: Image.asset('assets/images/mmini.png'),
                       ),
                     ),
-                  );
-                },
-              );
+                    Expanded(
+                      child: Text(
+                        _controller.jmCodes[index]['jmName']!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                        makePrice(
+                          siseData.PRDY_VRSS, // 전일 대비
+                          siseData.PRDY_CTRT, // 전일 대비율
+                          siseData.PRDY_VRSS_SIGN, // 전일 대비 부호
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
       }),
     );
   }
