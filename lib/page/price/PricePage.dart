@@ -4,166 +4,237 @@ import 'package:clone_mablemini/comm/SiseData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:intl/intl.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+
 import 'PricePageController.dart';
 
-
 class PricePage extends StatelessWidget {
+  final PricePageController _controller = PricePageController();
 
-  //컨트롤러
-  PricePageController _controller = PricePageController();
+  late WebSocketChannel _webSocketChannel;
+  late String _websocketKey;
+  List selectedJm = [];
 
-  // 전역으로 사용할 WebSocket key
-  String websocketKey = "";
-
-  //웹소켓 채널 생성
-  WebSocketChannel? channel;
-
-  //웹소켓 연결
-  void connectWebSocket() {
-    print('웹소켓 연결');
-    if (channel != null) {
-      channel!.sink.close(); // 기존 채널이 열려 있다면 닫기
-    }
-    channel = WebSocketChannel.connect(
-      Uri.parse('ws://203.109.30.207:10001/connect'),
-    );
-
-    channel!.stream.listen(
-          (message) {
-        print('Received message: $message');
-        final data = jsonDecode(message);
-        if (data['Data'] != null) {
-          websocketKey = data['Data']['websocketkey'];
-          print('WebSocket Key: $websocketKey');
-          if (websocketKey.isNotEmpty) {
-            getSiseData(websocketKey);
-          }
-          if (data['Trcode'] == "H0STCNT0") {
-          SiseData siseData = SiseData.fromJson(data);
-          _controller.siseList.add(siseData);
-          }
-        } else {
-          print('No Data in message');
-        }
-      },
-      onError: (error) {
-        print('WebSocket error: $error');
-      },
-      onDone: () {
-        print('WebSocket connection closed');
-        Future.delayed(Duration(seconds: 1), () => connectWebSocket());
-      },
-    );
+  PricePage(String selectedJmCode, String selectedJmName) {
+    selectedJm = [selectedJmCode, selectedJmName];
+    _requestData(selectedJm[0]);
   }
 
-  //시세데이터 얻기
-  void getSiseData(String websocketKey) async {
-    const baseUrl = "http://203.109.30.207:10001/requestReal";
+  void _setupWebSocket() async {
+    try {
+      _webSocketChannel = WebSocketChannel.connect(
+          Uri.parse('ws://203.109.30.207:10001/connect'));
 
-    print('WebSocket Key: $websocketKey');
+      _webSocketChannel.stream.listen((message) async {
+        try {
+          final data = jsonDecode(message);
+          if (data['Data'] != null && data['Data']['websocketkey'] != null) {
+            _websocketKey = data['Data']['websocketkey'];
+            print('WebSocket Key: $_websocketKey');
+            await _requestReal(_websocketKey, selectedJm[0]);
+          } else {
+            if (data['TrCode'] == "H0STCNT0") {
+              _controller.siseList.clear();
+              String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
+              String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
+              String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
+              String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
 
-    if (websocketKey.isEmpty) {
-      throw Exception('WebSocket Key is empty');
+              SiseData newData = SiseData(
+                STCK_PRPR: STCK_PRPR,
+                PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                PRDY_VRSS: PRDY_VRSS,
+                PRDY_CTRT: PRDY_CTRT,
+                JmName: selectedJm[1],
+              );
+
+              _controller.siseList.add(newData);
+            }
+          }
+        } catch (e) {
+          print('Error processing WebSocket message: $e');
+        }
+      }, onError: (error) {
+        print('WebSocket error: $error');
+      }, onDone: () {
+        print('WebSocket connection closed');
+      });
+    } catch (e) {
+      print('WebSocket connection error: $e');
     }
+  }
 
-    var jsonData = jsonEncode({
-      "header": {
-        "sessionKey": websocketKey,
-        "tr_type": "1",
-      },
-      "objCommInput": {"tr_id": "H0STCNT0", "tr_key": "005930"},
-      "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
+  Future<void> _requestData(String value) async {
+    print(value);
+    final headers = {'Content-Type': 'application/json;charset=utf-8'};
+    final body = jsonEncode({
+      "trCode": "/uapi/domestic-stock/v1/quotations/S0004",
       "rqName": "",
+      "header": {"tr_id": "1"},
+      "objCommInput": {"SHCODE": value}
     });
 
-    Uri uri = Uri.parse('$baseUrl');
-
     final response = await http.post(
-      uri,
-      headers: {"Content-Type": "application/json;charset=UTF-8"},
-      body: jsonData,
+      Uri.parse('http://203.109.30.207:10001/request'),
+      headers: headers,
+      body: body,
     );
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
-      print(responseData);
+      if (responseData['TrCode'] ==
+          "/uapi/domestic-stock/v1/quotations/S0004") {
+        SiseData siseData =
+            SiseData.fromJson(responseData["Data"]["output"], value);
+        print(siseData);
+        _controller.siseList.add(siseData);
+      }
     } else {
-      throw Exception('Failed to fetch data');
+      print('Request failed with status: ${response.statusCode}');
+    }
+
+    _setupWebSocket();
+  }
+
+  Future<void> _requestReal(String websocketKey, String jmCode) async {
+    const url = 'http://203.109.30.207:10001/requestReal';
+
+    final headers = {'Content-Type': 'application/json;charset=utf-8'};
+
+    final body = jsonEncode({
+      "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
+      "rqName": "",
+      "header": {"sessionKey": websocketKey, "tr_type": "1"},
+      "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
+    });
+    final response =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+    } else {
+      print('Request failed with status: ${response.statusCode}');
     }
   }
 
-  PricePage() {
-    connectWebSocket();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child:  Obx(() => Column(
-          children: [
-            // 현재가
-            Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 30,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("삼성증권", style: TextStyle(fontSize: 22)),
-                          Container(
-                            height: 30,
-                            width: 30,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.grey.withOpacity(0.1),
+      body: SingleChildScrollView(child: Obx(() {
+        if (_controller.siseList.isEmpty) {
+          return Center(child: CircularProgressIndicator());
+        } else {
+          return Column(
+            children: [
+              Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 30,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(selectedJm[1], style: TextStyle(fontSize: 22)),
+                            Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey.withOpacity(0.1),
+                              ),
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () {},
+                                iconSize: 24.0,
+                                icon: const Icon(Icons.push_pin_outlined),
+                              ),
                             ),
-                            child: IconButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {},
-                              iconSize: 24.0,
-                              icon: const Icon(Icons.push_pin_outlined),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                      Text(
+                        '${formatNumber(int.parse( _controller.siseList[0].STCK_PRPR))}원',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
+                        ),
+                      ),
+                      makePrice(
+                          _controller.siseList[0].PRDY_VRSS, // 전일 대비
+                          _controller.siseList[0].PRDY_CTRT, // 전일 대비율
+                          _controller.siseList[0].PRDY_VRSS_SIGN // 전일 대비 부호
+                          ),
+                      Container(height: 16, color: const Color(0xFFF7F8FA)),
 
-                   Row(
-                      children: [
-                        // todo) 실시간현재가 값
-                        Text( _controller.siseList[0].value.STCK_PRPR,
-                            style: TextStyle(
-                                fontSize: 32, fontWeight: FontWeight.w700)),
-                        Text('원',
-                            style: TextStyle(
-                              fontSize: 28,
-                            )),
-                      ],
-                    ),
+                      //기업 정보
+                      Container(
+                          padding:
+                              const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 40.0),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 76,
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        title('기업정보'),
+                                        const Text(
+                                            'KOSPI | 금융업 | 시가총액 870.98조원',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xFF50505B))),
+                                      ]),
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    tag('#갤럭시'),
+                                    tag('#갤럭시워치'),
+                                  ],
+                                )
+                              ])),
 
-                    // todo) 실시간현재가 값
-                    Text('▲ 400원 (0.61%)',
-                        style:
-                            TextStyle(fontSize: 16, color: Color(0xFFF24430)))
-                  ],
-                )),
-          ],
-        )),
-      ),
+                      Container(height: 16, color: const Color(0xFFF7F8FA)),
+
+                      //뉴스
+                      Container(
+                          width: double.infinity,
+                          padding:
+                              const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 28.0),
+                          child: Column(
+                            children: [
+                              title('회사소식'),
+                              news('배터리 열받아도 불나지 않도록',
+                                  'assets/images/image1.png'),
+                              news('에어부산, 내달부터 부산발 일본 동남아노선 3개 운항 재개',
+                                  'assets/images/image2.png'),
+                              news('서울버스 총파업 현실화되나', 'assets/images/image3.png')
+                            ],
+                          ))
+                    ],
+                  )),
+            ],
+          );
+        }
+      })),
     );
   }
+}
+
+
+String formatNumber(int number) {
+  final formatter = NumberFormat('#,###');
+  return formatter.format(number);
 }
 
 Widget tag(String title) {
@@ -264,7 +335,30 @@ Widget restof() {
           ],
         ))
   ]);
-
-
 }
 
+String sign = '';
+
+Widget makePrice(String prc, String prct, String updwn) {
+  Color updwnColor = updownColor(updwn);
+
+  return Row(children: [
+    Text(sign, style: TextStyle(color: updwnColor, fontSize: 12)),
+    Text('$prc원', style: TextStyle(color: updwnColor, fontSize: 12)),
+    Text(' ($prct%)', style: TextStyle(color: updwnColor, fontSize: 12)),
+  ]);
+}
+
+Color updownColor(String updwn) {
+  var updown = int.parse(updwn);
+
+  if (updown < 3) {
+    sign = '▲ ';
+    return const Color(0xFFF24430);
+  } else if (updown == 3) {
+    return const Color(0xFF50505B);
+  } else {
+    sign = '▼ ';
+    return const Color(0xFF4881FF);
+  }
+}
