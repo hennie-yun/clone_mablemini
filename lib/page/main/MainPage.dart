@@ -5,11 +5,15 @@ import '../../manager/GlobalController.dart';
 import '../fav/FavPage.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
+import '../price/PricePageController.dart';
 
 
 class MainPage extends StatelessWidget {
   final GlobalController _globalCtrl = Get.find<GlobalController>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final PricePageController _pricecontroller = PricePageController();
+
 
   MainPage({super.key});
 
@@ -61,6 +65,8 @@ class MainPage extends StatelessWidget {
   Widget setAppBar() {
     return Obx(() {
       String titleWidget = '';
+      String jmCode = '';
+
       List<Widget> actions = [];
 
       switch (_globalCtrl.selectedIndex.value) {
@@ -78,7 +84,8 @@ class MainPage extends StatelessWidget {
           ];
           break;
         case 1:
-          titleWidget = '';
+          titleWidget = _globalCtrl.selectedJmName.value;
+          jmCode = _globalCtrl.selectedJmCode.value;
           actions = [
             IconButton(
               icon: Icon(Icons.notification_add_outlined),
@@ -105,7 +112,14 @@ class MainPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0.0,
-        title: Text(titleWidget),
+        title: jmCode.isNotEmpty ?
+        Container(
+          child : Column(
+            children: [
+              Text('$titleWidget($jmCode)'),
+            ],
+          )
+        ) : Text('$titleWidget') ,
         actions: actions,
       );
     });
@@ -116,7 +130,7 @@ class MainPage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: PreferredSize(
-          preferredSize: const Size(double.infinity, 64),
+          preferredSize: const Size(double.infinity, 56),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: setAppBar(),

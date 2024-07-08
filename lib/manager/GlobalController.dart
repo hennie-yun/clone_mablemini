@@ -13,5 +13,13 @@ class GlobalController extends GetxController {
     currentWidget.value = widget;
   }
 
+  RxString selectedJmCode = ''.obs;
 
+  RxString selectedJmName = ''.obs;
+
+
+  void setSelectecJm(String jmCode, String jmName) {
+    selectedJmCode.value = jmCode;
+    selectedJmName.value = jmName;
+  }
 }
