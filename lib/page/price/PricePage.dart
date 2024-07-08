@@ -45,6 +45,7 @@ class PricePage extends StatelessWidget {
   List selectedJm = [];
 
   PricePage(String selectedJmCode, String selectedJmName) {
+    _controller.init();
     selectedJm = [selectedJmCode, selectedJmName];
     _requestData(selectedJm[0]);
     requestPRPR(selectedJm[0]);
@@ -67,7 +68,7 @@ class PricePage extends StatelessWidget {
             requestRealChe(_websocketKey,selectedJm[0]);
 
             _hogaController.requestHoga();
-            await _requestReal(_websocketKey, selectedJm[0]);
+            await _requestReal(_websocketKey,  selectedJm[0]);
           } else {
             if (data['TrCode'] == "H0STCNT0") {
               _controller.siseList.clear();
@@ -81,7 +82,7 @@ class PricePage extends StatelessWidget {
                 PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
                 PRDY_VRSS: PRDY_VRSS,
                 PRDY_CTRT: PRDY_CTRT,
-                JmName: selectedJm[1],
+                JmName:  selectedJm[1],
               );
 
               _controller.siseList.add(newData);
@@ -177,46 +178,6 @@ class PricePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        height: 30,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(selectedJm[1], style: TextStyle(fontSize: 22)),
-                            // Container(
-                            //   height: 30,
-                            //   width: 30,
-                            //   decoration: BoxDecoration(
-                            //     shape: BoxShape.circle,
-                            //     color: Colors.grey.withOpacity(0.1),
-                            //   ),
-                            //   child: IconButton(
-                            //     padding: EdgeInsets.zero,
-                            //     onPressed: () {},
-                            //     iconSize: 24.0,
-                            //     icon: const Icon(Icons.push_pin_outlined),
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '${formatNumber(int.parse( _controller.siseList[0].STCK_PRPR))}원',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 32,
-                        ),
-                      ),
-                      makePrice(
-                          _controller.siseList[0].PRDY_VRSS, // 전일 대비
-                          _controller.siseList[0].PRDY_CTRT, // 전일 대비율
-                          _controller.siseList[0].PRDY_VRSS_SIGN // 전일 대비 부호
-                          ),
-                      Container(height: 16, color: const Color(0xFFF7F8FA)),
-                      //Container(height: 500,child: HogaPage()),
-
-
 
                      Container(
                                   // height: hogaListHeight*1.3,
