@@ -237,6 +237,7 @@ class FavPage extends StatelessWidget {
                     Expanded(
                       child: Text(
                         _controller.jmCodes[index]['jmName']!,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,

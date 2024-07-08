@@ -46,7 +46,7 @@ class MainPage extends StatelessWidget {
               _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
               break;
             case 1:
-              _globalCtrl.setCurrWidget(PricePage("000660", "SK 하이닉스"));
+              _globalCtrl.setCurrWidget(PricePage("000660", "SK 하이닉스")); //-> 걍 이동 시킬때는 하이닉스
               break;
             case 2:
               _globalCtrl.setCurrWidget(MorePage());
@@ -103,6 +103,7 @@ class MainPage extends StatelessWidget {
 
       return AppBar(
         backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0.0,
         title: Text(titleWidget),
         actions: actions,

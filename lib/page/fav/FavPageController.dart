@@ -15,7 +15,7 @@ class FavPageController extends GetxController {
     {"jmCode": "035420", "jmName": "네이버"},
     {"jmCode": "035720", "jmName": "카카오"},
     {"jmCode": "005490", "jmName": "POSCO홀딩스"},
-    {"jmCode": "252670", "jmName": "KODEX 200"},
+    {"jmCode": "252670", "jmName": "KODEX 200 선물인버스"},
     {"jmCode": "055550", "jmName": "신한지주"},
     {"jmCode": "373220", "jmName": "LG에너지솔루션"},
     {"jmCode": "005930", "jmName": "삼성전자"},
