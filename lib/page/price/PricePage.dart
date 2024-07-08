@@ -1267,6 +1267,7 @@ Color updownColor(String updwn) {
     sign = '▲ ';
     return const Color(0xFFF24430);
   } else if (updown == 3) {
+    sign = "";
     return const Color(0xFF50505B);
   } else {
     sign = '▼ ';
