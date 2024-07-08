@@ -12,4 +12,6 @@ class GlobalController extends GetxController {
   void setCurrWidget(Widget widget) {
     currentWidget.value = widget;
   }
+
+
 }

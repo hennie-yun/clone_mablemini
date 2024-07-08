@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 
+import '../../comm/SiseData.dart';
+
 class FavPageController extends GetxController {
 
-  var siseList = [].obs;
+  var siseList = <SiseData>[].obs;
   var siseRealList = [].obs;
   var hasRealData = false.obs;
 
@@ -15,9 +17,16 @@ class FavPageController extends GetxController {
   ];
 
   // 선택된 항목의 jmCode를 저장할 변수
-  var selectedJmCode = ''.obs;
+  var selectedJmCode = <String>[].obs;
 
-  String setSelectedJmCode(String jmCode) {
-    return selectedJmCode.value = jmCode;
+  void setSelectedJmCode(List<String> jmCode) {
+    selectedJmCode.value = jmCode;
+  }
+
+  void init() {
+    siseList.clear();
+    siseRealList.clear();
+    hasRealData.value = false;
+    selectedJmCode.value = [];
   }
 }

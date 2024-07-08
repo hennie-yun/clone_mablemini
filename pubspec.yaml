@@ -38,6 +38,7 @@ dependencies:
   http: ^1.2.0
   get: ^4.6.6
   web_socket_channel: ^2.4.0
+  intl: ^0.18.0
 
 
 dev_dependencies:
