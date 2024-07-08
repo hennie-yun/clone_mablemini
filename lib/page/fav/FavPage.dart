@@ -39,11 +39,8 @@ class FavPage extends StatelessWidget {
             _websocketKey = data['Data']['websocketkey'];
             print('WebSocket Key: $_websocketKey');
             await _requestReal(_websocketKey);
-          }
-
-          else {
+          } else {
             if (data['TrCode'] == "H0STCNT0") {
-
               _controller.hasRealData.value = true;
 
               String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
@@ -51,8 +48,8 @@ class FavPage extends StatelessWidget {
               String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
               String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
 
-              String jmCodeToUpdate = data['Data']['MKSC_SHRN_ISCD'];
-              String? jmNameToUpdate;
+              String jmCodeToUpdate = data['Data']['MKSC_SHRN_ISCD']; //종목코드
+              String? jmNameToUpdate; // 이름 삽입
 
               for (int i = 0; i < _controller.jmCodes.length; i++) {
                 if (_controller.jmCodes[i]['jmCode'] == jmCodeToUpdate) {
@@ -73,10 +70,63 @@ class FavPage extends StatelessWidget {
                   break;
                 }
               }
-
             }
           }
 
+          //러쉬테스트 용 -> 안에 데이터값 이름 뭔지 몰라서 데이터 정확X
+
+          // String? trCode;
+          //
+          //   var outputString = data['output'];
+          //   Map<String, dynamic> outputData = json.decode(outputString);
+          //
+          //   if (outputData.containsKey('TrCode')) {
+          //     trCode = outputData['TrCode'].toString();
+          //   }
+          //
+          //   if (trCode == "H0STCNT0") {
+          //     final Map<String, String>? jmCodeEntry =
+          //         _controller.jmCodes.firstWhereOrNull(
+          //       (entry) => entry['jmCode'] == data["trKey"],
+          //     );
+          //
+          //     if (jmCodeEntry != null) {
+          //       String STCK_PRPR =
+          //           outputData['Data']['STCK_PRPR'].toString(); //현재가
+          //       String PRDY_VRSS_SIGN = outputData['Data']['PRDY_VRSS_SIGN']
+          //           .toString(); // 등락기호 표시용
+          //       String PRDY_VRSS =
+          //           outputData['Data']['OPRC_VRSS_PRPR'].toString(); //전일대비 가격
+          //       String PRDY_CTRT = outputData['Data']
+          //               ['PRDY_VOL_VRSS_ACML_VOL_RATE']
+          //           .toString(); //몇프로
+          //
+          //       String jmCodeToUpdate =
+          //           outputData['Data']['MKSC_SHRN_ISCD'].toString(); // 종목코드
+          //       String? jmNameToUpdate;
+          //
+          //       for (int i = 0; i < _controller.jmCodes.length; i++) {
+          //         if (_controller.jmCodes[i]['jmCode'] == jmCodeToUpdate) {
+          //           jmNameToUpdate = _controller.jmCodes[i]['jmName'];
+          //           break;
+          //         }
+          //       }
+          //
+          //       for (int i = 0; i <  _controller.siseList.length; i++) {
+          //         if (_controller.siseList[i].JmName == jmNameToUpdate) {
+          //           _controller.siseList[i] = SiseData(
+          //             STCK_PRPR: STCK_PRPR,
+          //             PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+          //             PRDY_VRSS: PRDY_VRSS,
+          //             PRDY_CTRT: PRDY_CTRT,
+          //             JmName: jmNameToUpdate,
+          //           );
+          //           break;
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
         } catch (e) {
           print('Error processing WebSocket message: $e');
         }
@@ -89,8 +139,6 @@ class FavPage extends StatelessWidget {
       print('WebSocket connection error: $e');
     }
   }
-
-
 
   Future<void> _requestData() async {
     for (int i = 0; i < _controller.jmCodes.length; i++) {
@@ -124,97 +172,101 @@ class FavPage extends StatelessWidget {
   }
 
   Future<void> _requestReal(String websocketKey) async {
-
     for (int i = 0; i < _controller.jmCodes.length; i++) {
-      const url = 'http://203.109.30.207:10001/requestReal';
-
       final headers = {'Content-Type': 'application/json;charset=utf-8'};
 
+      const url = 'http://203.109.30.207:10001/requestReal';
       final body = jsonEncode({
         "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
         "rqName": "",
         "header": {"sessionKey": websocketKey, "tr_type": "1"},
         "objCommInput": {"tr_key": _controller.jmCodes[i]["jmCode"], "tr_id": "H0STCNT0"}
       });
+
+      //러쉬테스트용
+      //const url = 'http://203.109.30.207:10001/rushtest';
+      // final body = jsonEncode({
+      //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+      //   "rqName": "",
+      //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
+      //   "objCommInput": {"count": "2", "tr_id": "HOSTCNTO"}
+      // });
+
       final response =
-      await http.post(Uri.parse(url), headers: headers, body: body);
+          await http.post(Uri.parse(url), headers: headers, body: body);
 
       if (response.statusCode == 200) {
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-         return ListView.builder(
-                itemCount: _controller.siseList.length,
-                itemBuilder: (context, index) {
-                  final siseData = _controller.siseList[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Get.find<GlobalController>().setCurrWidget(
-                        PricePage(
-                          _controller.jmCodes[index]['jmCode']!,
-                          _controller.jmCodes[index]['jmName']!,
-                        ),
-                      );
-                      Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
-
-
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      height: 72,
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            margin: const EdgeInsets.only(right: 12),
-                            decoration:
-                                const BoxDecoration(shape: BoxShape.circle),
-                            child: ClipOval(
-                              child: Image.asset('assets/images/mmini.png'),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              _controller.jmCodes[index]['jmName']!,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              makePrice(
-                                siseData.PRDY_VRSS, // 전일 대비
-                                siseData.PRDY_CTRT, // 전일 대비율
-                                siseData.PRDY_VRSS_SIGN, // 전일 대비 부호
-                              ),
-                            ],
-                          ),
-                        ],
+        return ListView.builder(
+          itemCount: _controller.siseList.length,
+          itemBuilder: (context, index) {
+            final siseData = _controller.siseList[index];
+            return GestureDetector(
+              onTap: () {
+                Get.find<GlobalController>().setCurrWidget(
+                  PricePage(
+                    _controller.jmCodes[index]['jmCode']!,
+                    _controller.jmCodes[index]['jmName']!,
+                  ),
+                );
+                Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                height: 72,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      margin: const EdgeInsets.only(right: 12),
+                      decoration: const BoxDecoration(shape: BoxShape.circle),
+                      child: ClipOval(
+                        child: Image.asset('assets/images/mmini.png'),
                       ),
                     ),
-                  );
-                },
-              );
+                    Expanded(
+                      child: Text(
+                        _controller.jmCodes[index]['jmName']!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                        makePrice(
+                          siseData.PRDY_VRSS, // 전일 대비
+                          siseData.PRDY_CTRT, // 전일 대비율
+                          siseData.PRDY_VRSS_SIGN, // 전일 대비 부호
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
       }),
     );
   }
@@ -248,6 +300,7 @@ Color updownColor(String updwn) {
     sign = '▲ ';
     return const Color(0xFFF24430);
   } else if (updown == 3) {
+    sign = "";
     return const Color(0xFF50505B);
   } else {
     sign = '▼ ';

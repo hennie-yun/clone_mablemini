@@ -104,12 +104,6 @@ class MainPage extends StatelessWidget {
       return AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        leading: titleWidget == ''
-            ? IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-                onPressed: () {},
-              )
-            : null,
         title: Text(titleWidget),
         actions: actions,
       );
