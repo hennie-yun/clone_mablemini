@@ -11,6 +11,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../comm/SiseData.dart';
 
+import '../../manager/GlobalController.dart';
+import '../price/PricePage.dart';
 import 'FavPageController.dart';
 
 class FavPage extends StatelessWidget {
@@ -155,11 +157,14 @@ class FavPage extends StatelessWidget {
                   final siseData = _controller.siseList[index];
                   return GestureDetector(
                     onTap: () {
+                      Get.find<GlobalController>().setCurrWidget(
+                        PricePage(
+                          _controller.jmCodes[index]['jmCode']!,
+                          _controller.jmCodes[index]['jmName']!,
+                        ),
+                      );
+                      Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
 
-
-                      // _globalController.currentWidget.value =  (PricePage(_controller.jmCodes[index]['jmCode']!,
-                      //     _controller.jmCodes[index]['jmName']!));
-                      // _globalController.selectedIndex.value = 1;
 
                     },
                     child: Container(
