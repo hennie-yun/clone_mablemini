@@ -134,8 +134,9 @@ class MainPage extends StatelessWidget {
             Row(
               children: [
                 Text(titleWidget,
-                    style: TextStyle(fontSize: 18)),
-                Icon(Icons.search, size: 18)
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                SizedBox(width: 5),
+                Icon(Icons.search, size: 16)
               ],
             ),
             Row(
@@ -149,7 +150,8 @@ class MainPage extends StatelessWidget {
                   _globalCtrl.selectedSiseList[0].PRDY_VRSS_SIGN,
                 ),
               ],
-            )
+            ),
+            SizedBox(height : 10)
           ],
         ));
   }
@@ -167,7 +169,10 @@ class MainPage extends StatelessWidget {
       prct = prct.replaceAll("-", ""); // '-' 기호 제거
     }
 
-    return Row(children: [
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+      SizedBox(width: 8),
       Text(sign, style: TextStyle(color: updwnColor, fontSize: 12)),
       Text('$prc원', style: TextStyle(color: updwnColor, fontSize: 12)),
       Text(' ($prct%)', style: TextStyle(color: updwnColor, fontSize: 12)),
@@ -181,7 +186,7 @@ class MainPage extends StatelessWidget {
       sign = '▲ ';
       return const Color(0xFFF24430);
     } else if (updown == 3) {
-      sign = "";
+      sign = "-";
       return const Color(0xFF50505B);
     } else {
       sign = '▼ ';

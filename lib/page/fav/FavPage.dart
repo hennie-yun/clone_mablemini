@@ -37,7 +37,6 @@ class FavPage extends StatelessWidget {
             print('WebSocket Key: $_websocketKey');
             await _requestReal(_websocketKey);
 
-            print(data);
           } else {
               if (data['TrCode'] == "H0STCNT0") {
                 _controller.isRequest .value = true;
@@ -71,7 +70,7 @@ class FavPage extends StatelessWidget {
                 }
               }
 
-            //<<<<<<<<<<<<<<<<<<<<<<<<<러쉬테스트 용 -> 안에 데이터값 이름 뭔지 몰라서 데이터 정확X
+            // <<<<<<<<<<<<<<<<<<<<<<<<<러쉬테스트 용 -> 안에 데이터값 이름 뭔지 몰라서 데이터 정확X
             // String? trCode;
             //
             // var outputString = data['output'];
@@ -143,7 +142,8 @@ class FavPage extends StatelessWidget {
             //   }
             //
             // }
-            //<<<<<<<<<<<<<<<<<<<<<러쉬테스트용
+
+            // <<<<<<<<<<<<<<<<<<<<<러쉬테스트용
 
 
           }
