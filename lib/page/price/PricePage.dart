@@ -29,7 +29,7 @@ class PricePage extends StatelessWidget {
 
   final PricePageController _controller = PricePageController();
 
-  // final HogaPageController _hogaController = Get.put(HogaPageController());
+ // final HogaPageController _hogaController = Get.put(HogaPageController());
   final HogaPageController _hogaController = HogaPageController();
   /// 포맷팅
   final NumberFormat priceFormat = new NumberFormat('###,###');
@@ -65,7 +65,7 @@ class PricePage extends StatelessWidget {
             _websocketKey = data['Data']['websocketkey'];
             print('WebSocket Key: $_websocketKey');
             requestRealHoga(_websocketKey,selectedJm[0]);
-            requestRealChe(_websocketKey,selectedJm[0]);
+            //requestRealChe(_websocketKey,selectedJm[0]);
 
 
             await _requestReal(_websocketKey, selectedJm[0]);
@@ -86,13 +86,61 @@ class PricePage extends StatelessWidget {
               );
 
               _controller.siseList.add(newData);
+
+              _hogaController.currentPrice.value = _controller.siseList[0].STCK_PRPR;
               _hogaController.contract.value.array.insert(0,CheDataArray.fromJson(data['Data']));
               if(_hogaController.contract.value.array.length >= 30){
                 _hogaController. contract.value.array.removeLast();
               }
             }
-            if (data['TrCode'] == "H0STASP0") {
+            if (data['TrCode'] == "H0STASP0" ) {
               _hogaController.hoga.value = HogaData.fromJSON(data['Data']);
+            }
+
+
+            if(data['trKey'] == '031860' ){
+              var rushData = jsonDecode(data['output']);
+
+              // 호가 러쉬테스트
+              if(rushData['TrCode'] == "H0STASP0" ) {
+                if (rushData != null && rushData['Data'] != null) {
+                  print(data['num']);
+                  _hogaController.hoga.value =
+                      HogaData.fromJSON(rushData['Data']);
+
+                  print('호가 rushtest');
+                }
+              }
+
+              // 체결 러쉬테스트
+              if(rushData['TrCode'] == "H0STCNT0" ) {
+                if (rushData != null && rushData['Data'] != null) {
+                  print(data['num']);
+                  _controller.siseList.clear();
+                  String STCK_PRPR = rushData['Data']['STCK_PRPR'] ?? '';
+                  String PRDY_VRSS_SIGN = rushData['Data']['PRDY_VRSS_SIGN'] ?? '';
+                  String PRDY_VRSS = rushData['Data']['PRDY_VRSS'] ?? '';
+                  String PRDY_CTRT = rushData['Data']['PRDY_CTRT'] ?? '';
+
+                  SiseData newData = SiseData(
+                    STCK_PRPR: STCK_PRPR,
+                    PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                    PRDY_VRSS: PRDY_VRSS,
+                    PRDY_CTRT: PRDY_CTRT,
+                    JmName: selectedJm[1],
+                  );
+
+                  _controller.siseList.add(newData);
+
+                  _hogaController.currentPrice.value = _controller.siseList[0].STCK_PRPR;
+                  _hogaController.contract.value.array.insert(0,CheDataArray.fromJson(rushData['Data']));
+                  if(_hogaController.contract.value.array.length >= 30){
+                    _hogaController. contract.value.array.removeLast();
+                  }
+
+                  print('체결 rushtest');
+                }
+              }
             }
           }
         } catch (e) {
@@ -141,16 +189,27 @@ class PricePage extends StatelessWidget {
   }
 
   Future<void> _requestReal(String websocketKey, String jmCode) async {
-    const url = 'http://203.109.30.207:10001/requestReal';
+
 
     final headers = {'Content-Type': 'application/json;charset=utf-8'};
 
+    const url = 'http://203.109.30.207:10001/requestReal';
     final body = jsonEncode({
       "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
-      "rqName": "",
+       "rqName": "",
       "header": {"sessionKey": websocketKey, "tr_type": "1"},
       "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
     });
+
+    // 체결 러쉬테스트
+    // const url = 'http://203.109.30.207:10001/rushtest';
+    // final body = jsonEncode({
+    //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+    //   "rqName": "",
+    //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
+    //   "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
+    // });
+
     final response =
     await http.post(Uri.parse(url), headers: headers, body: body);
 
@@ -209,27 +268,27 @@ class PricePage extends StatelessWidget {
                           var listItemCount = 10;
                           var listItemHeight = (itemHeight / listItemCount)-1 ;
 
-                          print('높이');
-                          print('hogaListHeight');
-                          print(hogaListHeight);
-                          print('itemHeight');
-                          print(itemHeight);
-                          print('listItemHeight');
-                          print(listItemHeight);
+                                    print('높이');
+                                    print('hogaListHeight');
+                                    print(hogaListHeight);
+                                    print('itemHeight');
+                                    print(itemHeight);
+                                    print('listItemHeight');
+                                    print(listItemHeight);
 
-                          var currentPrice = _hogaController.currentPrice.value;
+                                    var currentPrice = _hogaController.currentPrice.value;
 
 
-                          var beforeClose =
-                              _hogaController.hoga2.value.basePrice ?? '';
-                          var sellHogaArray =
-                              _hogaController.hoga.value.sellHogas ?? [];
-                          var sellRemArray =
-                              _hogaController.hoga.value.sellRems ?? [];
-                          var buyHogaArray =
-                              _hogaController.hoga.value.buyHogas ?? [];
-                          var buyRemArray =
-                              _hogaController.hoga.value.buyRems ?? [];
+                                    var beforeClose =
+                                        _hogaController.hoga2.value.basePrice ?? '0';
+                                    var sellHogaArray =
+                                        _hogaController.hoga.value.sellHogas ?? [];
+                                    var sellRemArray =
+                                        _hogaController.hoga.value.sellRems ?? [];
+                                    var buyHogaArray =
+                                        _hogaController.hoga.value.buyHogas ?? [];
+                                    var buyRemArray =
+                                        _hogaController.hoga.value.buyRems ?? [];
 
                           //2024.02 벌고해 프로젝트_개편관련_김진겸 end
 
@@ -916,7 +975,6 @@ class PricePage extends StatelessWidget {
       return Container();
     }
 
-
     return Container(
       padding: EdgeInsets.all(5),
       child: Row(
@@ -927,7 +985,7 @@ class PricePage extends StatelessWidget {
             style: TextStyle(color: Colors.black, fontSize: 12),
           ),
           AutoSizeText(
-            cheData.volume,
+            formatNumber(int.parse(cheData.volume)),
             maxLines: 1,
             style: TextStyle(color: valueColor(cheData.sign), fontSize: 12),
           ),
@@ -947,7 +1005,7 @@ class PricePage extends StatelessWidget {
 
   }
   // 호가 실시간
-  void requestRealHoga(String websocketKey, String jmCode) async {
+  Future<void> requestRealHoga(String websocketKey, String jmCode) async {
 
     final headers = {
       'Content-Type': 'application/json',
@@ -984,11 +1042,11 @@ class PricePage extends StatelessWidget {
 
   // 체결 실시간
   void requestRealChe(String websocketKey, String jmCode) async {
-    final url = 'http://203.109.30.207:10001/requestReal';
+
     final headers = {
       'Content-Type': 'application/json',
     };
-
+    final url = 'http://203.109.30.207:10001/requestReal';
     final body = jsonEncode({
       "header": {"sessionKey": websocketKey, "tr_type": "1"},
       "objCommInput": {"tr_id": "H0STCNT0", "tr_key": jmCode},

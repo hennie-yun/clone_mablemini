@@ -139,15 +139,15 @@ class HogaData{
     List<String> sellRems = []; // 매도호가수량 1~10
 
     for (int i = 0; i <10; i++) {
-      buyHogas.add((json['BIDP${i + 1}'] as String).trim());
-      buyRems.add((json['BIDP_RSQN${i + 1}'] as String).trim());
+      buyHogas.add((json['BIDP${i + 1}'] ?? 0 as String).trim());
+      buyRems.add((json['BIDP_RSQN${i + 1}'] ?? 0 as String).trim());
       // sellHogas.add((json['ASKP${i + 1}'] as String).trim());
       // sellRems.add((json['ASKP_RSQN${i + 1}'] as String).trim());
     }
 
     for (int i = 9; i >= 0; i--) {
-      sellHogas.add((json['ASKP${i + 1}'] as String).trim());
-      sellRems.add((json['ASKP_RSQN${i + 1}'] as String).trim());
+      sellHogas.add((json['ASKP${i + 1}'] ?? 0 as String).trim());
+      sellRems.add((json['ASKP_RSQN${i + 1}'] ?? 0 as String).trim());
     }
 
     return HogaData(

@@ -32,11 +32,11 @@ class HogaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setupWebSocket('005930');
+    //setupWebSocket('005930');
     //String jmCode = _hogaController.jmCode.value;
 
     // 현재가 단일종목
-    requestPRPR();
+    //requestPRPR();
 
     /// 호가 리스트
     //높이는 미더어쿼리 높이 - ([메인 탭 높이] + [상단바, 탭, 하단버튼 높이] + [마진패딩 등으로 밀리는 높이])
