@@ -32,6 +32,11 @@ class PricePage extends StatelessWidget {
   final NumberFormat percentFormat = new NumberFormat('###,##0.00%');
   final DateFormat dateFormat = new DateFormat('yyyyMMdd');
 
+  /// 체결 실시간 현재가 color
+  var cheFlag = false;
+  var prePrice = '0';
+  var priceColor = Colors.black;
+
   late WebSocketChannel _webSocketChannel;
 
   late String _websocketKey;
@@ -78,10 +83,13 @@ class PricePage extends StatelessWidget {
 
               _controller.siseList.add(newData);
 
+
               _hogaController.currentPrice.value =
                   _controller.siseList[0].STCK_PRPR;
               _hogaController.contract.value.array
                   .insert(0, CheDataArray.fromJson(data['Data']));
+              cheFlag = true;
+              //realCtngVolColor(_hogaController.contract.value.array.first.volume);
               if (_hogaController.contract.value.array.length >= 30) {
                 _hogaController.contract.value.array.removeLast();
               }
@@ -531,7 +539,6 @@ class PricePage extends StatelessWidget {
                                     _hogaController.hoga2.value.low ?? '0');
 
                                 return Container(
-                                  //padding: EdgeInsets.fromLTRB(10, 5, 10, 10),
                                   alignment: Alignment.bottomCenter,
                                   color: Color(0XFFF4F5F8),
                                   child: Column(
@@ -648,8 +655,10 @@ class PricePage extends StatelessWidget {
                                                   AutoSizeText(
                                                     '$degree%',
                                                     maxLines: 1,
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
+                                                    style:  TextStyle(
+                                                        color:
+                                                        //valueColor(_hogaController.contract.value.array.first.sign),
+                                                         Colors.black,
                                                         fontSize: 12),
                                                   ),
                                                 ],
@@ -938,6 +947,7 @@ class PricePage extends StatelessWidget {
     if (cheData == null) {
       return Container();
     }
+    cheFlag == true ? realPriceColor(cheData.price) : null;
 
     return Container(
       padding: EdgeInsets.all(5),
@@ -951,13 +961,27 @@ class PricePage extends StatelessWidget {
           AutoSizeText(
             formatNumber(int.parse(cheData.volume)),
             maxLines: 1,
-            style: TextStyle(color: valueColor(cheData.sign), fontSize: 12),
+            style: TextStyle(color:
+                cheFlag == false ? valueColor(cheData.sign) : priceColor
+                , fontSize: 12),
           ),
         ],
       ),
     );
   }
 
+  realPriceColor(String nowPrice){
+    int intPrePrice = int.parse(prePrice);
+    int intNowPrice = int.parse(nowPrice);
+
+      if (intPrePrice < intNowPrice) {
+        priceColor = Colors.red;
+      } else if (intPrePrice > intNowPrice) {
+        priceColor = Colors.blue;
+      }
+
+    prePrice = nowPrice;
+  }
   Color valueColor(String sign) {
     if (sign == '1' || sign == '2') {
       return Colors.red;
