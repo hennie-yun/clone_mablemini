@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../manager/GlobalController.dart';
 import '../fav/FavPage.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
 import '../price/PricePageController.dart';
-
+import 'NoPricePage.dart';
 
 class MainPage extends StatelessWidget {
   final GlobalController _globalCtrl = Get.find<GlobalController>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final PricePageController _pricecontroller = PricePageController();
 
 
-  MainPage({super.key});
 
   Widget setBottom() {
     return Obx(() {
@@ -47,12 +46,18 @@ class MainPage extends StatelessWidget {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
             case 0:
+
               _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
               break;
             case 1:
-              _globalCtrl.setCurrWidget(PricePage("000660", "SK 하이닉스")); //-> 걍 이동 시킬때는 하이닉스
+              _globalCtrl.selectedSiseList.clear();
+              _globalCtrl.selectedJmCode.value ='';
+              _globalCtrl.selectedJmName.value = '';
+              _globalCtrl.setCurrWidget(
+                  NoPricePage()); //-> 걍 이동 할때는 현재가 X
               break;
             case 2:
+
               _globalCtrl.setCurrWidget(MorePage());
               break;
           }
@@ -67,7 +72,7 @@ class MainPage extends StatelessWidget {
       String titleWidget = '';
       String jmCode = '';
 
-      List<Widget> actions = [];
+      List<Widget>? actions = [];
 
       switch (_globalCtrl.selectedIndex.value) {
         case 0:
@@ -86,7 +91,7 @@ class MainPage extends StatelessWidget {
         case 1:
           titleWidget = _globalCtrl.selectedJmName.value;
           jmCode = _globalCtrl.selectedJmCode.value;
-          actions = [
+          actions = _globalCtrl.selectedJmName.value.isNotEmpty ? [
             IconButton(
               icon: Icon(Icons.notification_add_outlined),
               onPressed: () {},
@@ -95,7 +100,7 @@ class MainPage extends StatelessWidget {
               icon: Icon(Icons.share),
               onPressed: () {},
             ),
-          ];
+          ] : null;
           break;
         case 2:
           titleWidget = '더보기';
@@ -112,17 +117,76 @@ class MainPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0.0,
-        title: jmCode.isNotEmpty ?
-        Container(
-          child : Column(
-            children: [
-              Text('$titleWidget($jmCode)'),
-            ],
-          )
-        ) : Text('$titleWidget') ,
+        title: jmCode.isNotEmpty
+            ? currentPriceAppbar(titleWidget)
+            : Text('$titleWidget'),
         actions: actions,
       );
     });
+  }
+
+  Widget currentPriceAppbar(String titleWidget) {
+    return Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(titleWidget,
+                    style: TextStyle(fontSize: 18)),
+                Icon(Icons.search, size: 18)
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                    '${formatNumber(int.parse(_globalCtrl.selectedSiseList[0].STCK_PRPR.toString()))}원',
+                    style: TextStyle(fontSize: 16)),
+                makePrice(
+                  _globalCtrl.selectedSiseList[0].PRDY_VRSS,
+                  _globalCtrl.selectedSiseList[0].PRDY_CTRT,
+                  _globalCtrl.selectedSiseList[0].PRDY_VRSS_SIGN,
+                ),
+              ],
+            )
+          ],
+        ));
+  }
+  String formatNumber(int number) {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(number);
+  }
+
+  String sign = '';
+
+  Widget makePrice(String prc, String prct, String updwn) {
+    Color updwnColor = updownColor(updwn);
+    if (prc.contains("-") || prct.contains("-")) {
+      prc = prc.replaceAll("-", ""); // '-' 기호 제거
+      prct = prct.replaceAll("-", ""); // '-' 기호 제거
+    }
+
+    return Row(children: [
+      Text(sign, style: TextStyle(color: updwnColor, fontSize: 12)),
+      Text('$prc원', style: TextStyle(color: updwnColor, fontSize: 12)),
+      Text(' ($prct%)', style: TextStyle(color: updwnColor, fontSize: 12)),
+    ]);
+  }
+
+  Color updownColor(String updwn) {
+    var updown = int.parse(updwn);
+
+    if (updown < 3) {
+      sign = '▲ ';
+      return const Color(0xFFF24430);
+    } else if (updown == 3) {
+      sign = "";
+      return const Color(0xFF50505B);
+    } else {
+      sign = '▼ ';
+      return const Color(0xFF4881FF);
+    }
   }
 
   @override
@@ -135,7 +199,7 @@ class MainPage extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: setAppBar(),
           )),
-        extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Obx(() {
           return _globalCtrl.currentWidget.value;

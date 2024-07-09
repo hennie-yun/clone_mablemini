@@ -1,3 +1,4 @@
+import 'package:clone_mablemini/comm/SiseData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -13,13 +14,19 @@ class GlobalController extends GetxController {
     currentWidget.value = widget;
   }
 
-  RxString selectedJmCode = ''.obs;
+  var selectedJmCode = ''.obs;
 
-  RxString selectedJmName = ''.obs;
+  var  selectedJmName = ''.obs;
 
+  RxList<SiseData> selectedSiseList = <SiseData>[].obs;
 
-  void setSelectecJm(String jmCode, String jmName) {
+  void setSelectecJm(String jmCode, String jmName, SiseData siseData) {
     selectedJmCode.value = jmCode;
     selectedJmName.value = jmName;
+    selectedSiseList.assignAll([siseData]);
+  }
+
+  void init () {
+
   }
 }

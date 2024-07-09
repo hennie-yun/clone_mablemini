@@ -221,7 +221,6 @@ class FavPage extends StatelessWidget {
     final response =
         await http.post(Uri.parse(url), headers: headers, body: body);
     if (response.statusCode == 200) {
-      print("response.statusCode == 200");
     } else {
       print('Request failed with status: ${response.statusCode}');
     }
