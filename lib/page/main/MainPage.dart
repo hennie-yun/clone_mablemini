@@ -1,3 +1,4 @@
+import 'package:clone_mablemini/page/fav/FavPageController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +14,7 @@ class MainPage extends StatelessWidget {
   final GlobalController _globalCtrl = Get.find<GlobalController>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final FavPageController _favCtrl = FavPageController();
 
 
 
@@ -80,7 +82,9 @@ class MainPage extends StatelessWidget {
           actions = [
             IconButton(
               icon: Icon(Icons.add),
-              onPressed: () {},
+              onPressed: () {
+                _favCtrl.isRushTest.value = true;
+              },
             ),
             IconButton(
               icon: Icon(Icons.create_outlined),
