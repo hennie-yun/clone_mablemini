@@ -1207,20 +1207,6 @@ class HogaPage extends StatelessWidget {
     );
   }
 
-  // Future<T1101Output?> requestT1101(String jmCode) async {
-  //   await T1101().fetchT1101(
-  //       fetchComplete: (T1101Output item) {
-  //         //2024.02 벌고해 프로젝트_개편관련_김진겸 end
-  //         _hogaController.hoga.value = item;
-  //
-  //         _hogaController.currentPrice.value = item.price!;
-  //         // Future.delayed(
-  //         //     Duration(seconds: 1), () => _startRealFHKST01010200(jmCode));
-  //         _hogaController.hoga.value;
-  //         return _hogaController.hoga.value;
-  //       },
-  //       jmCode: jmCode);
-  // }
 
   /// WebSocket 설정 및 데이터 요청
   void setupWebSocket(String jmCode) async {

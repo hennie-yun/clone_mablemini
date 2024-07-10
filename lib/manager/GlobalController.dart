@@ -26,6 +26,8 @@ class GlobalController extends GetxController {
     selectedSiseList.assignAll([siseData]);
   }
 
+  var isRushTest = false.obs;
+
   void init () {
 
   }
