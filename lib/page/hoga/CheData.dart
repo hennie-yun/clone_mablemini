@@ -1,29 +1,9 @@
 
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
-/// /////////////////////// ///
-///Ebest [주식]시세>주식시간대별체결조회 API///
-///확인함///
-////// 리스트 형식 output ///
-/// ////////////////////// ///
-
-///FHPST01060000Output
 class CheData {
   List<CheDataArray> array = [];
 
   CheData({required this.array});
 
-  /// Json -> TR8434OutputItem
-  // factory Che.fromJSON(Map<String, dynamic> jsonArray) {
-  //   List<T1301Array> array = [];
-  //   for (int i = 0; i < jsonArray.length; i++) {
-  //     T1301Array item = T1301Array.fromJson(jsonArray[i]);
-  //     array.add(item);
-  //   }
-  //
-  //   return Che(array: array);
-  // }
   factory CheData.fromJSON(List<dynamic> jsonArray) {
     List<CheDataArray> array = [];
     for (int i = 0; i < jsonArray.length; i++) {
@@ -54,7 +34,6 @@ class CheDataArray {
 
   });
 
-  /// json(Map) -> TR1301
   factory CheDataArray.fromJson(
       Map<String, dynamic> json,
       ) {

@@ -44,7 +44,7 @@ class HogaPage extends StatelessWidget {
 
     // 탭 높이, 앱바 높이 제외
     final double hogaListHeight = MediaQuery.of(context).size.height - 88 - 64;
-    _hogaController.jmCode.value = '005930';
+    //_hogaController.jmCode.value = '005930';
 
 
     // return Container(

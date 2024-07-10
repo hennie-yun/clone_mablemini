@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../fav/FavPageController.dart';
 import '../hoga/CheData.dart';
 import '../hoga/HogaData.dart';
 import '../hoga/HogaData2.dart';
@@ -23,9 +24,8 @@ import 'PricePageController.dart';
 
 class PricePage extends StatelessWidget {
   final PricePageController _controller = PricePageController();
-
-  // final HogaPageController _hogaController = Get.put(HogaPageController());
   final HogaPageController _hogaController = HogaPageController();
+  final FavPageController _fevController = Get.find<FavPageController>();
 
   /// 포맷팅
   final NumberFormat priceFormat = new NumberFormat('###,###');
@@ -932,6 +932,7 @@ class PricePage extends StatelessWidget {
             Text('$percent%',
                 style: TextStyle(
                     fontSize: 10,
+                    fontWeight: FontWeight.bold,
                     color: doublePercent < 0
                         ? Colors.red
                         : doublePercent > 0
@@ -997,22 +998,29 @@ class PricePage extends StatelessWidget {
     final headers = {
       'Content-Type': 'application/json',
     };
-    final url = 'http://203.109.30.207:10001/requestReal';
-    final body = jsonEncode({
-      'header': {'sessionKey': websocketKey, 'tr_type': '1'},
-      'objCommInput': {"tr_id": "H0STASP0", 'tr_key': jmCode},
-      'rqName': '',
-      'trCode': '/uapi/domestic-stock/v1/quotations/requestReal',
-    });
 
-    //러쉬테스트용
-    // const url = 'http://203.109.30.207:10001/rushtest';
-    // final body = jsonEncode({
-    //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
-    //   "rqName": "",
-    //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
-    //   "objCommInput": {"count": "2", "tr_id": "H0STASP0"}
-    // });
+    var url;
+    var body;
+
+    if(_fevController.isRushTest .value == false) {
+       url = 'http://203.109.30.207:10001/requestReal';
+       body = jsonEncode({
+        'header': {'sessionKey': websocketKey, 'tr_type': '1'},
+        'objCommInput': {"tr_id": "H0STASP0", 'tr_key': jmCode},
+        'rqName': '',
+        'trCode': '/uapi/domestic-stock/v1/quotations/requestReal',
+      });
+    }else{
+      //러쉬테스트용
+       url = 'http://203.109.30.207:10001/rushtest';
+       body = jsonEncode({
+        "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+        "rqName": "",
+        "header": {"sessionKey": websocketKey, "tr_type": "1"},
+        "objCommInput": {"count": "2", "tr_id": "H0STASP0"}
+      });
+    }
+
 
     final response =
         await http.post(Uri.parse(url), headers: headers, body: body);
@@ -1031,21 +1039,28 @@ class PricePage extends StatelessWidget {
     final headers = {
       'Content-Type': 'application/json',
     };
-    final url = 'http://203.109.30.207:10001/requestReal';
-    final body = jsonEncode({
-      "header": {"sessionKey": websocketKey, "tr_type": "1"},
-      "objCommInput": {"tr_id": "H0STCNT0", "tr_key": jmCode},
-      "rqName": "",
-      "trCode": "/uapi/domestic-stock/v1/quotations/requestReal"
-    });
 
-    // const url = 'http://203.109.30.207:10001/rushtest';
-    // final body = jsonEncode({
-    //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
-    //   "rqName": "",
-    //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
-    //   "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
-    // });
+    var url;
+    var body;
+
+    if(_fevController.isRushTest.value == false) {
+      url = 'http://203.109.30.207:10001/requestReal';
+       body = jsonEncode({
+        "header": {"sessionKey": websocketKey, "tr_type": "1"},
+        "objCommInput": {"tr_id": "H0STCNT0", "tr_key": jmCode},
+        "rqName": "",
+        "trCode": "/uapi/domestic-stock/v1/quotations/requestReal"
+      });
+    }else{
+      // 러쉬테스트
+       url = 'http://203.109.30.207:10001/rushtest';
+       body = jsonEncode({
+        "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+        "rqName": "",
+        "header": {"sessionKey": websocketKey, "tr_type": "1"},
+        "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
+      });
+    }
 
     final response =
         await http.post(Uri.parse(url), headers: headers, body: body);

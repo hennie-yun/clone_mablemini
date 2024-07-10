@@ -11,6 +11,8 @@ class FavPageController extends GetxController {
   var isRequest = false.obs;
   bool isFirst = true;
 
+  var isRushTest = false.obs;
+
   final List<Map<String, String>> jmCodes = [
     {"jmCode": "000660", "jmName": "SK 하이닉스"},
     {"jmCode": "005380", "jmName": "현대차"},
