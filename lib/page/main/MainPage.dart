@@ -9,11 +9,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../comm/SiseData.dart';
 import '../../manager/GlobalController.dart';
 import '../fav/FavPage.dart';
-import '../hoga/HogaPageController.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
-import '../price/PricePageController.dart';
-import 'NoPricePage.dart';
+
 import 'package:http/http.dart' as http;
 
 class MainPage extends StatelessWidget {
@@ -22,101 +20,71 @@ class MainPage extends StatelessWidget {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final FavPageController _favCtrl = FavPageController();
 
   late WebSocketChannel _webSocketChannel;
   late String _websocketKey;
 
-  // void _setupWebSocket() async {
-  //   try {
-  //     _webSocketChannel = WebSocketChannel.connect(
-  //         Uri.parse('ws://203.109.30.207:10001/connect'));
-  //
-  //     _webSocketChannel.stream.listen((message) async {
-  //       try {
-  //         final data = jsonDecode(message);
-  //         if (data['Data'] != null && data['Data']['websocketkey'] != null) {
-  //           _websocketKey = data['Data']['websocketkey'];
-  //           print('WebSocket Key: $_websocketKey');
-  //           await _requestReal(_websocketKey);
-  //
-  //         } else {
-  //           if (data['TrCode'] == "H0STCNT0") {
-  //
-  //             String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
-  //             String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
-  //             String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
-  //             String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
-  //
-  //             String jmCodeToUpdate = data['Data']['MKSC_SHRN_ISCD']; //종목코드
-  //             String? jmNameToUpdate; // 이름 삽입
-  //
-  //             for (int i = 0; i < _controller.jmCodes.length; i++) {
-  //               if (_controller.jmCodes[i]['jmCode'] == jmCodeToUpdate) {
-  //                 jmNameToUpdate = _controller.jmCodes[i]['jmName'];
-  //                 break;
-  //               }
-  //             }
-  //
-  //             for (int i = 0; i < _controller.siseList.length; i++) {
-  //               if (_controller.siseList[i].JmName == jmNameToUpdate) {
-  //                 _controller.siseList[i] = SiseData(
-  //                   STCK_PRPR: STCK_PRPR,
-  //                   PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
-  //                   PRDY_VRSS: PRDY_VRSS,
-  //                   PRDY_CTRT: PRDY_CTRT,
-  //                   JmName: _controller.siseList[i].JmName,
-  //                 );
-  //                 break;
-  //               }
-  //             }
-  //           }
-  //
-  //
-  //
-  //         }
-  //       } catch (e) {
-  //         print('Error processing WebSocket message: $e');
-  //       }
-  //     }, onError: (error) {
-  //       print('WebSocket error: $error');
-  //     }, onDone: () {
-  //       print('WebSocket connection closed');
-  //     });
-  //   } catch (e) {
-  //     print('WebSocket connection error: $e');
-  //   }
-  // }
-  //
-  // Future<void> _requestReal(String websocketKey) async {
-  //   for (int i = 0; i < _controller.jmCodes.length; i++) {
-  //     final headers = {'Content-Type': 'application/json;charset=utf-8'};
-  //
-  //     const url = 'http://203.109.30.207:10001/requestReal';
-  //     final body = jsonEncode({
-  //       "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
-  //       "rqName": "",
-  //       "header": {"sessionKey": websocketKey, "tr_type": "1"},
-  //       "objCommInput": {"tr_key": _controller.jmCodes[i]["jmCode"], "tr_id": "H0STCNT0"}
-  //     });
-  //
-  //     //러쉬테스트용
-  //     // const url = 'http://203.109.30.207:10001/rushtest';
-  //     // final body = jsonEncode({
-  //     //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
-  //     //   "rqName": "",
-  //     //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
-  //     //   "objCommInput": {"count": "2", "tr_id": "HOSTCNTO"}
-  //     // });
-  //
-  //     final response =
-  //     await http.post(Uri.parse(url), headers: headers, body: body);
-  //     if (response.statusCode == 200) {
-  //     } else {
-  //       print('Request failed with status: ${response.statusCode}');
-  //     }
-  //   }
-  // }
+  void _setupWebSocket(String jmCode) async {
+    try {
+      _webSocketChannel = WebSocketChannel.connect(
+          Uri.parse('ws://203.109.30.207:10001/connect'));
+
+      _webSocketChannel.stream.listen((message) async {
+        try {
+          final data = jsonDecode(message);
+          if (data['Data'] != null && data['Data']['websocketkey'] != null) {
+            _websocketKey = data['Data']['websocketkey'];
+            print('WebSocket Key: $_websocketKey');
+            await _requestReal(_websocketKey, jmCode);
+          } else {
+            if (data['TrCode'] == "H0STCNT0") {
+              String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
+              String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
+              String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
+              String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
+
+              _globalCtrl.selectedSiseList[0] = SiseData(
+                STCK_PRPR: STCK_PRPR,
+                PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                PRDY_VRSS: PRDY_VRSS,
+                PRDY_CTRT: PRDY_CTRT,
+                JmName: _globalCtrl.selectedJmName.value,
+              );
+
+              print(_globalCtrl.selectedSiseList[0].STCK_PRPR);
+            }
+          }
+        } catch (e) {
+          print('Error processing WebSocket message: $e');
+        }
+      }, onError: (error) {
+        print('WebSocket error: $error');
+      }, onDone: () {
+        print('WebSocket connection closed');
+      });
+    } catch (e) {
+      print('WebSocket connection error: $e');
+    }
+  }
+
+  Future<void> _requestReal(String websocketKey, String jmCode) async {
+    final headers = {'Content-Type': 'application/json;charset=utf-8'};
+
+    const url = 'http://203.109.30.207:10001/requestReal';
+    final body = jsonEncode({
+      "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
+      "rqName": "",
+      "header": {"sessionKey": websocketKey, "tr_type": "1"},
+      "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
+    });
+
+    final response =
+    await http.post(Uri.parse(url), headers: headers, body: body);
+    if (response.statusCode == 200) {
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+    }
+  }
 
   Widget setBottom() {
     return Obx(() {
@@ -132,7 +100,7 @@ class MainPage extends StatelessWidget {
             icon: _globalCtrl.selectedIndex.value == 1
                 ? Icon(Icons.insert_chart_rounded, color: Color(0XFFFFC700))
                 : Icon(Icons.insert_chart_outlined_rounded,
-                    color: Colors.black),
+                color: Colors.black),
             label: '현재가',
           ),
           BottomNavigationBarItem(
@@ -148,33 +116,20 @@ class MainPage extends StatelessWidget {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
             case 0:
-
               _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
               break;
             case 1:
-             var siseData = _controller.siseList[0];
-
-              // _globalCtrl.selectedSiseList.clear();
-              // _globalCtrl.selectedJmCode.value ='';
-              // _globalCtrl.selectedJmName.value = '';
-              _globalCtrl.selectedJmCode.value ='000660';
-              _globalCtrl.selectedJmName.value = 'SK 하이닉스';
+              var siseData = _controller.siseList[0];
               _globalCtrl.setCurrWidget(
-                  PricePage("000660","SK 하이닉스"));  //-> 걍 이동 할때는 현재가 X
-              Get.find<GlobalController>().setSelectecJm(
-                  '000660',
-                  'SK 하이닉스',
-                  siseData
-                // _controller.siseList[index]
-              );
+                  PricePage("000660", "SK 하이닉스")); //페이지 이동
 
-              Get.find<GlobalController>().selectedIndex.value =
-              1;
-
+              // 앱바 변경
+              Get.find<GlobalController>()
+                  .setSelectecJm('000660', 'SK 하이닉스', siseData);
+              Get.find<GlobalController>().selectedIndex.value = 1;
 
               break;
             case 2:
-
               _globalCtrl.setCurrWidget(MorePage());
               break;
           }
@@ -198,7 +153,8 @@ class MainPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                _favCtrl.isRushTest.value = true;
+                _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
+                FavPage().requestData();
               },
             ),
             IconButton(
@@ -208,37 +164,26 @@ class MainPage extends StatelessWidget {
           ];
           break;
         case 1:
+
+
           titleWidget = _globalCtrl.selectedJmName.value;
           jmCode = _globalCtrl.selectedJmCode.value;
-          actions = _globalCtrl.selectedJmName.value.isNotEmpty ? [
+          _setupWebSocket(jmCode);
+          actions = [
             IconButton(
               icon: Icon(Icons.notification_add_outlined),
               onPressed: () {
-                //final HogaPageController _hogaController = Get.find<HogaPageController>();
-
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
-               //PricePage(_globalCtrl.selectedJmCode.value,_globalCtrl.selectedJmName.value).setupWebSocket();
-                Get.find<GlobalController>().setCurrWidget(
-                  PricePage(
+                Get.find<GlobalController>().setCurrWidget(PricePage(
                     _globalCtrl.selectedJmCode.value,
-                    _globalCtrl.selectedJmName.value
-                  )
-                );
-                // if(_hogaController != null) {
-                //   if (_hogaController.webSocketChannel.value != null) {
-                //     _hogaController.webSocketChannel.value!.sink.close();
-                //     _hogaController.webSocketChannel.value = null;
-                //     _hogaController.setupWebSocket();
-                //   }
-                // }
-
+                    _globalCtrl.selectedJmName.value));
               },
             ),
             IconButton(
               icon: Icon(Icons.share),
               onPressed: () {},
             ),
-          ] : null;
+          ];
           break;
         case 2:
           titleWidget = '더보기';
@@ -289,10 +234,11 @@ class MainPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height : 10)
+            SizedBox(height: 10)
           ],
         ));
   }
+
   String formatNumber(int number) {
     final formatter = NumberFormat('#,###');
     return formatter.format(number);
@@ -307,9 +253,7 @@ class MainPage extends StatelessWidget {
       prct = prct.replaceAll("-", ""); // '-' 기호 제거
     }
 
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
+    return Row(mainAxisAlignment: MainAxisAlignment.start, children: [
       SizedBox(width: 8),
       Text(sign, style: TextStyle(color: updwnColor, fontSize: 12)),
       Text('$prc원', style: TextStyle(color: updwnColor, fontSize: 12)),
