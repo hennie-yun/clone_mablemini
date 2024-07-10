@@ -36,42 +36,80 @@ class FavPage extends StatelessWidget {
             _websocketKey = data['Data']['websocketkey'];
             print('WebSocket Key: $_websocketKey');
             await _requestReal(_websocketKey);
-
           } else {
-              if (data['TrCode'] == "H0STCNT0") {
-                _controller.isRequest .value = true;
 
-                String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
-                String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
-                String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
-                String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
+            if (data['TrCode'] != null && data['TrCode'] == "H0STCNT0") {
+              _controller.isRequest.value = true;
 
-                String jmCodeToUpdate = data['Data']['MKSC_SHRN_ISCD']; //종목코드
-                String? jmNameToUpdate; // 이름 삽입
+              String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
+              String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
+              String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
+              String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
 
-                for (int i = 0; i < _controller.jmCodes.length; i++) {
-                  if (_controller.jmCodes[i]['jmCode'] == jmCodeToUpdate) {
-                    jmNameToUpdate = _controller.jmCodes[i]['jmName'];
-                    break;
-                  }
-                }
+              String jmCodeToUpdate = data['Data']['MKSC_SHRN_ISCD']; //종목코드
+              String? jmNameToUpdate; // 이름 삽입
 
-                for (int i = 0; i < _controller.siseList.length; i++) {
-                  if (_controller.siseList[i].JmName == jmNameToUpdate) {
-                    _controller.siseList[i] = SiseData(
-                      STCK_PRPR: STCK_PRPR,
-                      PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
-                      PRDY_VRSS: PRDY_VRSS,
-                      PRDY_CTRT: PRDY_CTRT,
-                      JmName: _controller.siseList[i].JmName,
-                    );
-                    break;
-                  }
+              for (int i = 0; i < _controller.jmCodes.length; i++) {
+                if (_controller.jmCodes[i]['jmCode'] == jmCodeToUpdate) {
+                  jmNameToUpdate = _controller.jmCodes[i]['jmName'];
+                  break;
                 }
               }
 
+              for (int i = 0; i < _controller.siseList.length; i++) {
+                if (_controller.siseList[i].JmName == jmNameToUpdate) {
+                  _controller.siseList[i] = SiseData(
+                    STCK_PRPR: STCK_PRPR,
+                    PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                    PRDY_VRSS: PRDY_VRSS,
+                    PRDY_CTRT: PRDY_CTRT,
+                    JmName: _controller.siseList[i].JmName,
+                  );
+                  break;
+                }
+              }
+            }
+
+            else {
+              // 러쉬테스트 용 -> 안에 데이터값 이름 뭔지 몰라서 데이터 정확하지 않음
+              var outputString = data['output'];
+              Map<String, dynamic> outputData = json.decode(outputString);
 
 
+
+              // trKey 가 null 이 아니면 rush 테스트임
+              if (data["trKey"] != null) {
+                String? trCode;
+
+
+
+                if (outputData.containsKey('TrCode')) {
+                  trCode = outputData['TrCode'].toString();
+                }
+
+                if (trCode == "H0STCNT0") {
+                  var secondJmCode = outputData['Data']["MKSC_SHRN_ISCD"].toString();
+
+
+                    String STCK_PRPR = outputData['Data']['STCK_PRPR'].toString(); // 현재가
+                    String PRDY_VRSS_SIGN = outputData['Data']['PRDY_VRSS_SIGN'].toString(); // 등락기호 표시용
+                    String PRDY_VRSS = outputData['Data']['OPRC_VRSS_PRPR'].toString(); // 전일대비 가격
+                    String PRDY_CTRT = outputData['Data']['PRDY_VOL_VRSS_ACML_VOL_RATE'].toString(); // 몇프로
+
+                    for (int i = 0; i < _controller.siseList.length; i++) {
+                      _controller.siseList[i] = SiseData(
+                        STCK_PRPR: STCK_PRPR,
+                        PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                        PRDY_VRSS: PRDY_VRSS,
+                        PRDY_CTRT: PRDY_CTRT,
+                      );
+                    }
+                }
+              }
+            }
+
+
+            // <<<<<<<<<<<<<<<<<<<<<러쉬테스트용
           }
         } catch (e) {
           print('Error processing WebSocket message: $e');
@@ -86,7 +124,7 @@ class FavPage extends StatelessWidget {
     }
   }
 
-  Future<void> _requestData() async {
+  Future<void> requestData() async {
     if (_controller.isRequest.value == false || _controller.isFirst) {
       _controller.isFirst = false;
       _controller.isRequest.value = true;
@@ -124,32 +162,47 @@ class FavPage extends StatelessWidget {
   }
 
   Future<void> _requestReal(String websocketKey) async {
-    for (int i = 0; i < _controller.jmCodes.length; i++) {
-    final headers = {'Content-Type': 'application/json;charset=utf-8'};
+    var isRushTest = Get.find<GlobalController>().isRushTest.value;
 
-    const url = 'http://203.109.30.207:10001/requestReal';
-    final body = jsonEncode({
-      "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
+    final headers = {'Content-Type': 'application/json;charset=utf-8'};
+    final rushUrl = 'http://203.109.30.207:10001/rushtest';
+    final rushBody = jsonEncode({
+      "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
       "rqName": "",
       "header": {"sessionKey": websocketKey, "tr_type": "1"},
-      "objCommInput": {"tr_key": _controller.jmCodes[i]["jmCode"], "tr_id": "H0STCNT0"}
+      "objCommInput": {"count": "2", "tr_id": "HOSTCNTO"}
     });
 
-    //러쉬테스트용
-    // const url = 'http://203.109.30.207:10001/rushtest';
-    // final body = jsonEncode({
-    //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
-    //   "rqName": "",
-    //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
-    //   "objCommInput": {"count": "2", "tr_id": "HOSTCNTO"}
-    // });
+    http.Response response;
 
-    final response =
-        await http.post(Uri.parse(url), headers: headers, body: body);
-    if (response.statusCode == 200) {
+    if (isRushTest) {
+      response =
+          await http.post(Uri.parse(rushUrl), headers: headers, body: rushBody);
+      if (response.statusCode == 200) {
+      } else {
+        print('Rush test request failed with status: ${response.statusCode}');
+      }
     } else {
-      print('Request failed with status: ${response.statusCode}');
-    }
+      for (int i = 0; i < _controller.jmCodes.length; i++) {
+        final url = 'http://203.109.30.207:10001/requestReal';
+        final body = jsonEncode({
+          "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
+          "rqName": "",
+          "header": {"sessionKey": websocketKey, "tr_type": "1"},
+          "objCommInput": {
+            "tr_key": _controller.jmCodes[i]["jmCode"],
+            "tr_id": "H0STCNT0"
+          }
+        });
+
+        response =
+            await http.post(Uri.parse(url), headers: headers, body: body);
+        if (response.statusCode == 200) {
+        } else {
+          print(
+              'RequestReal request failed with status: ${response.statusCode}');
+        }
+      }
     }
   }
 
@@ -157,7 +210,7 @@ class FavPage extends StatelessWidget {
     try {
       _controller.isRequest.value = true;
       // _setupWebSocket();
-      await _requestData();
+      await requestData();
     } finally {
       _controller.isRequest.value = false;
     }
@@ -165,6 +218,8 @@ class FavPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var isRushTest = Get.find<GlobalController>().isRushTest.value;
+
     return Scaffold(
       body: FutureBuilder(
         future: fetchData(),
@@ -218,7 +273,7 @@ class FavPage extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Text(
-                                  siseData.JmName!,
+                                  isRushTest || siseData.JmName == null  ? _controller.jmCodes[index]["jmName"]! : siseData.JmName!,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w700,
@@ -226,6 +281,7 @@ class FavPage extends StatelessWidget {
                                   ),
                                 ),
                               ),
+
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -276,7 +332,8 @@ Widget makePrice(String prc, String prct, String updwn) {
 
   return Row(children: [
     Text(sign, style: TextStyle(color: updwnColor, fontSize: 12)),
-    Text('$prc원', style: TextStyle(color: updwnColor, fontSize: 12)),
+    Text('${formatNumber(int.parse('$prc'))}원',
+        style: TextStyle(color: updwnColor, fontSize: 12)),
     Text(' ($prct%)', style: TextStyle(color: updwnColor, fontSize: 12)),
   ]);
 }
