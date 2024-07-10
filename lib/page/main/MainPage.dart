@@ -1,22 +1,122 @@
+import 'dart:convert';
+
 import 'package:clone_mablemini/page/fav/FavPageController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../comm/SiseData.dart';
 import '../../manager/GlobalController.dart';
 import '../fav/FavPage.dart';
+import '../hoga/HogaPageController.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
 import '../price/PricePageController.dart';
 import 'NoPricePage.dart';
+import 'package:http/http.dart' as http;
 
 class MainPage extends StatelessWidget {
   final GlobalController _globalCtrl = Get.find<GlobalController>();
+  final FavPageController _controller = Get.put(FavPageController());
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final FavPageController _favCtrl = FavPageController();
 
+  late WebSocketChannel _webSocketChannel;
+  late String _websocketKey;
 
+  // void _setupWebSocket() async {
+  //   try {
+  //     _webSocketChannel = WebSocketChannel.connect(
+  //         Uri.parse('ws://203.109.30.207:10001/connect'));
+  //
+  //     _webSocketChannel.stream.listen((message) async {
+  //       try {
+  //         final data = jsonDecode(message);
+  //         if (data['Data'] != null && data['Data']['websocketkey'] != null) {
+  //           _websocketKey = data['Data']['websocketkey'];
+  //           print('WebSocket Key: $_websocketKey');
+  //           await _requestReal(_websocketKey);
+  //
+  //         } else {
+  //           if (data['TrCode'] == "H0STCNT0") {
+  //
+  //             String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
+  //             String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
+  //             String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
+  //             String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
+  //
+  //             String jmCodeToUpdate = data['Data']['MKSC_SHRN_ISCD']; //종목코드
+  //             String? jmNameToUpdate; // 이름 삽입
+  //
+  //             for (int i = 0; i < _controller.jmCodes.length; i++) {
+  //               if (_controller.jmCodes[i]['jmCode'] == jmCodeToUpdate) {
+  //                 jmNameToUpdate = _controller.jmCodes[i]['jmName'];
+  //                 break;
+  //               }
+  //             }
+  //
+  //             for (int i = 0; i < _controller.siseList.length; i++) {
+  //               if (_controller.siseList[i].JmName == jmNameToUpdate) {
+  //                 _controller.siseList[i] = SiseData(
+  //                   STCK_PRPR: STCK_PRPR,
+  //                   PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+  //                   PRDY_VRSS: PRDY_VRSS,
+  //                   PRDY_CTRT: PRDY_CTRT,
+  //                   JmName: _controller.siseList[i].JmName,
+  //                 );
+  //                 break;
+  //               }
+  //             }
+  //           }
+  //
+  //
+  //
+  //         }
+  //       } catch (e) {
+  //         print('Error processing WebSocket message: $e');
+  //       }
+  //     }, onError: (error) {
+  //       print('WebSocket error: $error');
+  //     }, onDone: () {
+  //       print('WebSocket connection closed');
+  //     });
+  //   } catch (e) {
+  //     print('WebSocket connection error: $e');
+  //   }
+  // }
+  //
+  // Future<void> _requestReal(String websocketKey) async {
+  //   for (int i = 0; i < _controller.jmCodes.length; i++) {
+  //     final headers = {'Content-Type': 'application/json;charset=utf-8'};
+  //
+  //     const url = 'http://203.109.30.207:10001/requestReal';
+  //     final body = jsonEncode({
+  //       "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
+  //       "rqName": "",
+  //       "header": {"sessionKey": websocketKey, "tr_type": "1"},
+  //       "objCommInput": {"tr_key": _controller.jmCodes[i]["jmCode"], "tr_id": "H0STCNT0"}
+  //     });
+  //
+  //     //러쉬테스트용
+  //     // const url = 'http://203.109.30.207:10001/rushtest';
+  //     // final body = jsonEncode({
+  //     //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+  //     //   "rqName": "",
+  //     //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
+  //     //   "objCommInput": {"count": "2", "tr_id": "HOSTCNTO"}
+  //     // });
+  //
+  //     final response =
+  //     await http.post(Uri.parse(url), headers: headers, body: body);
+  //     if (response.statusCode == 200) {
+  //     } else {
+  //       print('Request failed with status: ${response.statusCode}');
+  //     }
+  //   }
+  // }
 
   Widget setBottom() {
     return Obx(() {
@@ -52,11 +152,26 @@ class MainPage extends StatelessWidget {
               _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
               break;
             case 1:
-              _globalCtrl.selectedSiseList.clear();
-              _globalCtrl.selectedJmCode.value ='';
-              _globalCtrl.selectedJmName.value = '';
+             var siseData = _controller.siseList[0];
+
+              // _globalCtrl.selectedSiseList.clear();
+              // _globalCtrl.selectedJmCode.value ='';
+              // _globalCtrl.selectedJmName.value = '';
+              _globalCtrl.selectedJmCode.value ='000660';
+              _globalCtrl.selectedJmName.value = 'SK 하이닉스';
               _globalCtrl.setCurrWidget(
-                  NoPricePage()); //-> 걍 이동 할때는 현재가 X
+                  PricePage("000660","SK 하이닉스"));  //-> 걍 이동 할때는 현재가 X
+              Get.find<GlobalController>().setSelectecJm(
+                  '000660',
+                  'SK 하이닉스',
+                  siseData
+                // _controller.siseList[index]
+              );
+
+              Get.find<GlobalController>().selectedIndex.value =
+              1;
+
+
               break;
             case 2:
 
@@ -98,7 +213,26 @@ class MainPage extends StatelessWidget {
           actions = _globalCtrl.selectedJmName.value.isNotEmpty ? [
             IconButton(
               icon: Icon(Icons.notification_add_outlined),
-              onPressed: () {},
+              onPressed: () {
+                //final HogaPageController _hogaController = Get.find<HogaPageController>();
+
+                _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
+               //PricePage(_globalCtrl.selectedJmCode.value,_globalCtrl.selectedJmName.value).setupWebSocket();
+                Get.find<GlobalController>().setCurrWidget(
+                  PricePage(
+                    _globalCtrl.selectedJmCode.value,
+                    _globalCtrl.selectedJmName.value
+                  )
+                );
+                // if(_hogaController != null) {
+                //   if (_hogaController.webSocketChannel.value != null) {
+                //     _hogaController.webSocketChannel.value!.sink.close();
+                //     _hogaController.webSocketChannel.value = null;
+                //     _hogaController.setupWebSocket();
+                //   }
+                // }
+
+              },
             ),
             IconButton(
               icon: Icon(Icons.share),
