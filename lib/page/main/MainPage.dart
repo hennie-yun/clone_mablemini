@@ -152,17 +152,15 @@ class MainPage extends StatelessWidget {
 
       switch (_globalCtrl.selectedIndex.value) {
         case 0:
-          // if (_webSocketChannel != null) {
-          //   _webSocketChannel.sink.close();
-          // }
 
           titleWidget = '찜한주식';
           actions = [
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
+                print ('${_globalCtrl.isRushTest.value} -> ${!_globalCtrl.isRushTest.value}');
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
-                FavPage().requestData();
+                FavPage();
               },
             ),
             IconButton(
