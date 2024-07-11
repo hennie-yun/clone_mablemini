@@ -143,9 +143,9 @@ class PricePage extends StatelessWidget {
                       _controller.siseList[0].STCK_PRPR;
                   _hogaController.contract.value.array
                       .insert(0, CheDataArray.fromJson(rushData['Data']));
-                  if (_hogaController.contract.value.array.length >= 30) {
-                    _hogaController.contract.value.array.removeLast();
-                  }
+                  // if (_hogaController.contract.value.array.length >= 30) {
+                  //   _hogaController.contract.value.array.removeLast();
+                  // }
 
                   print('체결 rushtest');
                 }
