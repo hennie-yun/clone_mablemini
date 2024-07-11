@@ -196,6 +196,9 @@ class MainPage extends StatelessWidget {
               icon: Icon(Icons.notification_add_outlined),
               onPressed: () {
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
+                if(_globalCtrl.hogaWebSocketChannel.value != null){
+                  _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+                }
 
 
 

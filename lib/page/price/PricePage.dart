@@ -54,13 +54,10 @@ class PricePage extends StatelessWidget {
   }
 
   void setupWebSocket() async {
-if(_globalController.hogaWebSocketChannel.value != null){
-  print('기존에 웹소켓 있는 웹소켓');
-  print( _globalController.hogaWebSocketChannel.value);
-  _globalController.hogaWebSocketChannel.value?.sink.close();
-  print('기존에 웹소켓 있으면 끊기');
-  print( _globalController.hogaWebSocketChannel.value);
-}
+
+    if(_globalController.hogaWebSocketChannel.value != null){
+      _globalController.hogaWebSocketChannel.value?.sink.close();
+    }
 
     try {
       _globalController.hogaWebSocketChannel.value = WebSocketChannel.connect(
