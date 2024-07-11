@@ -20,15 +20,13 @@ class MainPage extends StatelessWidget {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
-  late WebSocketChannel _webSocketChannel;
+  // WebSocketChannel _webSocketChannel;
+  WebSocketChannel _webSocketChannel =
+      WebSocketChannel.connect(Uri.parse('ws://203.109.30.207:10001/connect'));
   late String _websocketKey;
 
   void _setupWebSocket(String jmCode) async {
     try {
-      _webSocketChannel = WebSocketChannel.connect(
-          Uri.parse('ws://203.109.30.207:10001/connect'));
-
       _webSocketChannel.stream.listen((message) async {
         try {
           final data = jsonDecode(message);
@@ -50,8 +48,6 @@ class MainPage extends StatelessWidget {
                 PRDY_CTRT: PRDY_CTRT,
                 JmName: _globalCtrl.selectedJmName.value,
               );
-
-              print(_globalCtrl.selectedSiseList[0].STCK_PRPR);
             }
           }
         } catch (e) {
@@ -79,7 +75,7 @@ class MainPage extends StatelessWidget {
     });
 
     final response =
-    await http.post(Uri.parse(url), headers: headers, body: body);
+        await http.post(Uri.parse(url), headers: headers, body: body);
     if (response.statusCode == 200) {
     } else {
       print('Request failed with status: ${response.statusCode}');
@@ -100,7 +96,7 @@ class MainPage extends StatelessWidget {
             icon: _globalCtrl.selectedIndex.value == 1
                 ? Icon(Icons.insert_chart_rounded, color: Color(0XFFFFC700))
                 : Icon(Icons.insert_chart_outlined_rounded,
-                color: Colors.black),
+                    color: Colors.black),
             label: '현재가',
           ),
           BottomNavigationBarItem(
@@ -120,8 +116,8 @@ class MainPage extends StatelessWidget {
               break;
             case 1:
               var siseData = _controller.siseList[0];
-              _globalCtrl.setCurrWidget(
-                  PricePage("000660", "SK 하이닉스")); //페이지 이동
+              _globalCtrl
+                  .setCurrWidget(PricePage("000660", "SK 하이닉스")); //페이지 이동
 
               // 앱바 변경
               Get.find<GlobalController>()
@@ -148,6 +144,10 @@ class MainPage extends StatelessWidget {
 
       switch (_globalCtrl.selectedIndex.value) {
         case 0:
+          if (_webSocketChannel != null) {
+            _webSocketChannel.sink.close();
+          }
+
           titleWidget = '찜한주식';
           actions = [
             IconButton(
@@ -164,8 +164,6 @@ class MainPage extends StatelessWidget {
           ];
           break;
         case 1:
-
-
           titleWidget = _globalCtrl.selectedJmName.value;
           jmCode = _globalCtrl.selectedJmCode.value;
           _setupWebSocket(jmCode);
@@ -174,6 +172,7 @@ class MainPage extends StatelessWidget {
               icon: Icon(Icons.notification_add_outlined),
               onPressed: () {
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
+
                 Get.find<GlobalController>().setCurrWidget(PricePage(
                     _globalCtrl.selectedJmCode.value,
                     _globalCtrl.selectedJmName.value));
@@ -184,6 +183,7 @@ class MainPage extends StatelessWidget {
               onPressed: () {},
             ),
           ];
+
           break;
         case 2:
           titleWidget = '더보기';
@@ -211,32 +211,32 @@ class MainPage extends StatelessWidget {
   Widget currentPriceAppbar(String titleWidget) {
     return Container(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                Text(titleWidget,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                SizedBox(width: 5),
-                Icon(Icons.search, size: 16)
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                    '${formatNumber(int.parse(_globalCtrl.selectedSiseList[0].STCK_PRPR.toString()))}원',
-                    style: TextStyle(fontSize: 16)),
-                makePrice(
-                  _globalCtrl.selectedSiseList[0].PRDY_VRSS,
-                  _globalCtrl.selectedSiseList[0].PRDY_CTRT,
-                  _globalCtrl.selectedSiseList[0].PRDY_VRSS_SIGN,
-                ),
-              ],
-            ),
-            SizedBox(height: 10)
+            Text(titleWidget,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            SizedBox(width: 5),
+            Icon(Icons.search, size: 16)
           ],
-        ));
+        ),
+        Row(
+          children: [
+            Text(
+                '${formatNumber(int.parse(_globalCtrl.selectedSiseList[0].STCK_PRPR.toString()))}원',
+                style: TextStyle(fontSize: 16)),
+            makePrice(
+              _globalCtrl.selectedSiseList[0].PRDY_VRSS,
+              _globalCtrl.selectedSiseList[0].PRDY_CTRT,
+              _globalCtrl.selectedSiseList[0].PRDY_VRSS_SIGN,
+            ),
+          ],
+        ),
+        SizedBox(height: 10)
+      ],
+    ));
   }
 
   String formatNumber(int number) {

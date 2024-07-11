@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import '../../comm/SiseData.dart';
 
 class FavPageController extends GetxController {
-
   var siseList = <SiseData>[].obs;
   var siseRealList = [].obs;
+
   // var hasRealData = false.obs;
   /// 통신 플래그
   var isRequest = false.obs;
@@ -24,6 +24,16 @@ class FavPageController extends GetxController {
     {"jmCode": "373220", "jmName": "LG에너지솔루션"},
     {"jmCode": "005930", "jmName": "삼성전자"},
     {"jmCode": "078150", "jmName": "HB테크놀로지"},
+    {"jmCode": "001470", "jmName": "삼부토건"},
+    {"jmCode": "032680", "jmName": "소프트센"},
+    {"jmCode": "123410", "jmName": "코리아에프티"},
+    {"jmCode": "000300", "jmName": "대유플러스"},
+    {"jmCode": "084680", "jmName": "이월드"},
+    {"jmCode": "039980", "jmName": "리노스"},
+    {"jmCode": "008700", "jmName": "아남전자"},
+    {"jmCode": "032620", "jmName": "유비케이"},
+    {"jmCode": "900280", "jmName": "골든센츄리"},
+    {"jmCode": "294630", "jmName": "서남"},
   ];
 
   // 선택된 항목의 jmCode를 저장할 변수
