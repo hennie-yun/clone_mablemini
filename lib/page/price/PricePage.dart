@@ -92,9 +92,9 @@ class PricePage extends StatelessWidget {
                   .insert(0, CheDataArray.fromJson(data['Data']));
               cheFlag = true;
               //realCtngVolColor(_hogaController.contract.value.array.first.volume);
-              if (_hogaController.contract.value.array.length >= 30) {
-                _hogaController.contract.value.array.removeLast();
-              }
+              // if (_hogaController.contract.value.array.length >= 30) {
+              //   _hogaController.contract.value.array.removeLast();
+              // }
             }
             if (data['TrCode'] == "H0STASP0") {
               _hogaController.hoga.value = HogaData.fromJSON(data['Data']);

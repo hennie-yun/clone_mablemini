@@ -20,14 +20,22 @@ class MainPage extends StatelessWidget {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // WebSocketChannel _webSocketChannel;
-  WebSocketChannel _webSocketChannel =
-      WebSocketChannel.connect(Uri.parse('ws://203.109.30.207:10001/connect'));
+   WebSocketChannel? _webSocketChannel;
+  // WebSocketChannel _webSocketChannel =
+  //     WebSocketChannel.connect(Uri.parse('ws://203.109.30.207:10001/connect'));
   late String _websocketKey;
 
   void _setupWebSocket(String jmCode) async {
+
+    if(_webSocketChannel != null){
+      _webSocketChannel!.sink.close();
+    }
+
     try {
-      _webSocketChannel.stream.listen((message) async {
+      _webSocketChannel =
+           WebSocketChannel.connect(Uri.parse('ws://203.109.30.207:10001/connect'));
+
+      _webSocketChannel?.stream.listen((message) async {
         try {
           final data = jsonDecode(message);
           if (data['Data'] != null && data['Data']['websocketkey'] != null) {
@@ -144,9 +152,9 @@ class MainPage extends StatelessWidget {
 
       switch (_globalCtrl.selectedIndex.value) {
         case 0:
-          if (_webSocketChannel != null) {
-            _webSocketChannel.sink.close();
-          }
+          // if (_webSocketChannel != null) {
+          //   _webSocketChannel.sink.close();
+          // }
 
           titleWidget = '찜한주식';
           actions = [
