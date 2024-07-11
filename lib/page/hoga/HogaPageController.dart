@@ -93,8 +93,12 @@ class HogaPageController extends GetxController {
 
       String decodedBody = utf8.decode(response.bodyBytes);
       var decodedJson = jsonDecode(decodedBody);
-      hoga.value  = HogaData.fromJSON(decodedJson['Data']['output']);
-      HogaData hogaData = HogaData.fromJSON(decodedJson['Data']['output']);
+
+      HogaData hogaData = HogaData();
+      if(decodedJson['Data']['output'] != null) {
+        hoga.value = HogaData.fromJSON(decodedJson['Data']['output']);
+        hogaData = HogaData.fromJSON(decodedJson['Data']['output']);
+      }
       return hogaData;
     }else {
       print('requestHoga failed with status: ${response.statusCode}');
