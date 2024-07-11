@@ -49,9 +49,7 @@ class PricePage extends StatelessWidget {
     selectedJm = [selectedJmCode, selectedJmName];
     _requestData(selectedJm[0]);
     _hogaController.requestPRPR(selectedJm[0]);
-
-      _hogaController.requestChe(selectedJm[0]);
-
+    _hogaController.requestChe(selectedJm[0]);
     _hogaController.requestHoga(selectedJm[0]);
   }
 
@@ -135,7 +133,7 @@ if(_globalController.hogaWebSocketChannel.value != null){
 
                   String STCK_PRPR = (rushData?['Data']?['STCK_PRPR'] ?? '') as String;
 
-                  _hogaController.currentPrice.value = STCK_PRPR;
+                  _hogaController.currentPrice.value = _controller.siseList[0].STCK_PRPR;
 
                   _hogaController.contract.value.array
                       .insert(0, CheDataArray.fromJson(rushData['Data']));
@@ -201,6 +199,7 @@ if(_globalController.hogaWebSocketChannel.value != null){
     var body;
 
     if(_globalController.isRushTest .value == false) {
+      print('그냥 호가 실시간 데이터');
     url = 'http://203.109.30.207:10001/requestReal';
      body = jsonEncode({
       "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
@@ -209,6 +208,7 @@ if(_globalController.hogaWebSocketChannel.value != null){
       "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
     });
     }else{
+      print('호가 페이지 러쉬테스트');
        //_hogaController.contract.value.array.clear();
       // 러쉬테스트
        url = 'http://203.109.30.207:10001/rushtest';

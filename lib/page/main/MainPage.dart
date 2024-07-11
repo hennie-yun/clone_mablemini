@@ -120,9 +120,15 @@ class MainPage extends StatelessWidget {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
             case 0:
+              if(_globalCtrl.hogaWebSocketChannel.value != null){
+                _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+              }
               _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
               break;
             case 1:
+              if(_globalCtrl.hogaWebSocketChannel.value != null){
+                _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+              }
               var siseData = _controller.siseList[0];
               _globalCtrl
                   .setCurrWidget(PricePage("000660", "SK 하이닉스")); //페이지 이동
@@ -134,6 +140,9 @@ class MainPage extends StatelessWidget {
 
               break;
             case 2:
+              if(_globalCtrl.hogaWebSocketChannel.value != null){
+                _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+              }
               _globalCtrl.setCurrWidget(MorePage());
               break;
           }
@@ -160,9 +169,7 @@ class MainPage extends StatelessWidget {
               onPressed: () {
                 print ('${_globalCtrl.isRushTest.value} -> ${!_globalCtrl.isRushTest.value}');
 
-                if(_globalCtrl.hogaWebSocketChannel.value != null){
-                  _globalCtrl.hogaWebSocketChannel.value?.sink.close();
-                }
+
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
                 FavPage();
               },
