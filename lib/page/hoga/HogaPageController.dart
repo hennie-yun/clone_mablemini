@@ -97,7 +97,7 @@ class HogaPageController extends GetxController {
       HogaData hogaData = HogaData.fromJSON(decodedJson['Data']['output']);
       return hogaData;
     }else {
-      print('Request failed with status: ${response.statusCode}');
+      print('requestHoga failed with status: ${response.statusCode}');
       throw Exception('Request failed with status: ${response.statusCode}');
     }
 //return hogaData;
@@ -136,7 +136,7 @@ class HogaPageController extends GetxController {
 
 
     }else {
-      print('Request failed with status: ${response.statusCode}');
+      print('requestChe failed with status: ${response.statusCode}');
       throw Exception('Request failed with status: ${response.statusCode}');
     }
 
@@ -167,7 +167,7 @@ class HogaPageController extends GetxController {
           HogaData2.fromJSON(decodedJson['Data']['output'], jmCode);
       currentPrice.value = hoga2.value.price ?? '0';
     } else {
-      print('Request failed with status: ${response.statusCode}');
+      print('requestPRPR failed with status: ${response.statusCode}');
     }
   }
 

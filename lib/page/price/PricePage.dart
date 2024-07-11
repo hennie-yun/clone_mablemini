@@ -191,7 +191,7 @@ class PricePage extends StatelessWidget {
         _controller.siseList.add(siseData);
       }
     } else {
-      print('Request failed with status: ${response.statusCode}');
+      print('_requestData failed with status: ${response.statusCode}');
     }
 
     setupWebSocket();
@@ -212,7 +212,7 @@ class PricePage extends StatelessWidget {
       "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
     });
     }else{
-      // 체결 러쉬테스트
+      // 러쉬테스트
        url = 'http://203.109.30.207:10001/rushtest';
        body = jsonEncode({
         "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
@@ -229,7 +229,7 @@ class PricePage extends StatelessWidget {
 
     if (response.statusCode == 200) {
     } else {
-      print('Request failed with status: ${response.statusCode}');
+      print('_requestReal failed with status: ${response.statusCode}');
     }
   }
 
@@ -1014,6 +1014,14 @@ class PricePage extends StatelessWidget {
 
     var url;
     var body;
+    //
+    // url = 'http://203.109.30.207:10001/requestReal';
+    // body = jsonEncode({
+    //   'header': {'sessionKey': websocketKey, 'tr_type': '1'},
+    //   'objCommInput': {"tr_id": "H0STASP0", 'tr_key': jmCode},
+    //   'rqName': '',
+    //   'trCode': '/uapi/domestic-stock/v1/quotations/requestReal',
+    // });
 
     if(_globalController.isRushTest .value == false) {
       url = 'http://203.109.30.207:10001/requestReal';
@@ -1024,14 +1032,15 @@ class PricePage extends StatelessWidget {
         'trCode': '/uapi/domestic-stock/v1/quotations/requestReal',
       });
     }else{
+      return;
       //러쉬테스트용
-      url = 'http://203.109.30.207:10001/rushtest';
-      body = jsonEncode({
-        "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
-        "rqName": "",
-        "header": {"sessionKey": websocketKey, "tr_type": "1"},
-        "objCommInput": {"count": "2", "tr_id": "H0STASP0"}
-      });
+      // url = 'http://203.109.30.207:10001/rushtest';
+      // body = jsonEncode({
+      //   "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+      //   "rqName": "",
+      //   "header": {"sessionKey": websocketKey, "tr_type": "1"},
+      //   "objCommInput": {"count": "2", "tr_id": "H0STASP0"}
+      // });
     }
 
 
@@ -1043,7 +1052,7 @@ class PricePage extends StatelessWidget {
       String decodedBody = utf8.decode(response.bodyBytes);
       var decodedJson = jsonDecode(decodedBody);
     } else {
-      print('Request failed with status: ${response.statusCode}');
+      print('requestRealHoga failed with status: ${response.statusCode}');
     }
   }
 
@@ -1056,24 +1065,32 @@ class PricePage extends StatelessWidget {
     var url;
     var body;
 
-    if(_fevController.isRushTest.value == false) {
-      url = 'http://203.109.30.207:10001/requestReal';
-      body = jsonEncode({
-        "header": {"sessionKey": websocketKey, "tr_type": "1"},
-        "objCommInput": {"tr_id": "H0STCNT0", "tr_key": jmCode},
-        "rqName": "",
-        "trCode": "/uapi/domestic-stock/v1/quotations/requestReal"
-      });
-    }else{
-      // 러쉬테스트
-      url = 'http://203.109.30.207:10001/rushtest';
-      body = jsonEncode({
-        "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
-        "rqName": "",
-        "header": {"sessionKey": websocketKey, "tr_type": "1"},
-        "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
-      });
-    }
+    url = 'http://203.109.30.207:10001/requestReal';
+    body = jsonEncode({
+      "header": {"sessionKey": websocketKey, "tr_type": "1"},
+      "objCommInput": {"tr_id": "H0STCNT0", "tr_key": jmCode},
+      "rqName": "",
+      "trCode": "/uapi/domestic-stock/v1/quotations/requestReal"
+    });
+
+    // if(_fevController.isRushTest.value == false) {
+    //   url = 'http://203.109.30.207:10001/requestReal';
+    //   body = jsonEncode({
+    //     "header": {"sessionKey": websocketKey, "tr_type": "1"},
+    //     "objCommInput": {"tr_id": "H0STCNT0", "tr_key": jmCode},
+    //     "rqName": "",
+    //     "trCode": "/uapi/domestic-stock/v1/quotations/requestReal"
+    //   });
+    // }else{
+    //   // 러쉬테스트
+    //   url = 'http://203.109.30.207:10001/rushtest';
+    //   body = jsonEncode({
+    //     "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+    //     "rqName": "",
+    //     "header": {"sessionKey": websocketKey, "tr_type": "1"},
+    //     "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
+    //   });
+    // }
 
     final response =
     await http.post(Uri.parse(url), headers: headers, body: body);
