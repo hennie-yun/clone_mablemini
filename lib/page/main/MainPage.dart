@@ -124,8 +124,8 @@ class MainPage extends StatelessWidget {
               if(_globalCtrl.hogaWebSocketChannel.value != null){ //-> 현재가에서 찜 클릭할 경우 호가 채널 닫아주기
                 _globalCtrl.hogaWebSocketChannel.value?.sink.close();
               }
-
               break;
+
             case 1:
               if(_globalCtrl.hogaWebSocketChannel.value != null){
                 _globalCtrl.hogaWebSocketChannel.value?.sink.close();
@@ -143,6 +143,7 @@ class MainPage extends StatelessWidget {
                 _globalCtrl.favWebSocketChannel.value?.sink.close();
               }
               break;
+
             case 2:
               _globalCtrl.setCurrWidget(MorePage());
               _globalCtrl.favWebSocketChannel.value ?? _globalCtrl.favWebSocketChannel.value?.sink.close();
@@ -168,8 +169,8 @@ class MainPage extends StatelessWidget {
 
           titleWidget = '찜한주식';
           actions = [
-            IconButton(
-              icon: Icon(Icons.add),
+            TextButton(
+
               onPressed: () {
                 print ('${_globalCtrl.isRushTest.value} -> ${!_globalCtrl.isRushTest.value}');
 
@@ -179,7 +180,7 @@ class MainPage extends StatelessWidget {
 
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
                 FavPage();
-              },
+              }, child: _globalCtrl.isRushTest.value == true ?  Text("러쉬테스트 ON ") : Text("러쉬테스트 OFF"),
             ),
             IconButton(
               icon: Icon(Icons.create_outlined),
@@ -192,8 +193,8 @@ class MainPage extends StatelessWidget {
           jmCode = _globalCtrl.selectedJmCode.value;
           _setupWebSocket(jmCode);
           actions = [
-            IconButton(
-              icon: Icon(Icons.notification_add_outlined),
+            TextButton(
+              child: _globalCtrl.isRushTest.value == true ?  Text("러쉬테스트 ON ") : Text("러쉬테스트 OFF"),
               onPressed: () {
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
                 if(_globalCtrl.hogaWebSocketChannel.value != null){
