@@ -107,8 +107,12 @@ class PricePage extends StatelessWidget {
               _hogaController.hoga.value = HogaData.fromJSON(data['Data']);
             }
 
+            // 러쉬테스트 데이터
             if (data['num'] != null) {
 
+
+              // 현재 종목코드와 러쉬테스트 데이터의 종목코드가 같을 경우만 업데이트.
+              if(data['trKey'] == selectedJm[0]){
 
               var rushData = jsonDecode(data['output']);
 
@@ -128,9 +132,11 @@ class PricePage extends StatelessWidget {
                 if (rushData != null && rushData['Data'] != null) {
                   print(data['num']);
 
-                  String STCK_PRPR = (rushData?['Data']?['STCK_PRPR'] ?? '') as String;
+                  String STCK_PRPR = (rushData?['Data']?['STCK_PRPR'] ??
+                      '') as String;
 
-                  _hogaController.currentPrice.value = _controller.siseList[0].STCK_PRPR;
+                  _hogaController.currentPrice.value =
+                      _controller.siseList[0].STCK_PRPR;
 
                   _hogaController.contract.value.array
                       .insert(0, CheDataArray.fromJson(rushData['Data']));
@@ -144,6 +150,7 @@ class PricePage extends StatelessWidget {
               }
             }
           }
+          }
         } catch (e) {
           print('Error processing WebSocket message: $e');
         }
@@ -155,6 +162,7 @@ class PricePage extends StatelessWidget {
     } catch (e) {
       print('WebSocket connection error: $e');
     }
+
   }
 
   Future<void> _requestData(String value) async {

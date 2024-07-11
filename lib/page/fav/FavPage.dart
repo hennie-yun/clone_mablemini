@@ -101,12 +101,15 @@ class FavPage extends StatelessWidget {
                       .toString(); // 몇프로
 
                   for (int i = 0; i < _controller.siseList.length; i++) {
-                    _controller.siseList[i] = SiseData(
-                      STCK_PRPR: STCK_PRPR,
-                      PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
-                      PRDY_VRSS: PRDY_VRSS,
-                      PRDY_CTRT: PRDY_CTRT,
-                    );
+                    // 현재 종목코드와 러쉬테스트 데이터의 종목코드가 같을 경우만 업데이트.
+                    if(data['trKey'] == _controller.jmCodes[i]['jmCode']) {
+                      _controller.siseList[i] = SiseData(
+                        STCK_PRPR: STCK_PRPR,
+                        PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                        PRDY_VRSS: PRDY_VRSS,
+                        PRDY_CTRT: PRDY_CTRT,
+                      );
+                    }
                   }
                 }
               }
