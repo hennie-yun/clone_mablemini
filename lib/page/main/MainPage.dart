@@ -161,6 +161,10 @@ class MainPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
+
+                if(_globalCtrl.hogaWebSocketChannel.value != null){
+                  _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+                }
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
                 FavPage().requestData();
               },

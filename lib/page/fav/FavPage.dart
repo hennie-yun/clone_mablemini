@@ -17,6 +17,8 @@ import 'FavPageController.dart';
 
 class FavPage extends StatelessWidget {
   final FavPageController _controller = Get.put(FavPageController());
+
+
   late WebSocketChannel _webSocketChannel;
   late String _websocketKey;
 
@@ -25,10 +27,23 @@ class FavPage extends StatelessWidget {
   }
 
   void _setupWebSocket() async {
-    try {
-      _webSocketChannel = WebSocketChannel.connect(
-          Uri.parse('ws://203.109.30.207:10001/connect'));
+    //final GlobalController _globalController =  Get.find<GlobalController>();
 
+    // if(_globalController.favWebSocketChannel.value != null){
+    //   print('기존에 웹소켓 있는 웹소켓');
+    //   print( _globalController.favWebSocketChannel.value);
+    //   _globalController.favWebSocketChannel.value?.sink.close();
+    //   print('기존에 웹소켓 있으면 끊기');
+    //   print( _globalController.favWebSocketChannel.value);
+    // }
+    try {
+      // _globalController.favWebSocketChannel.value = WebSocketChannel.connect(
+      //     Uri.parse('ws://203.109.30.207:10001/connect'));
+
+      _webSocketChannel = WebSocketChannel.connect(
+             Uri.parse('ws://203.109.30.207:10001/connect'));
+
+      // _globalController.favWebSocketChannel.value?.stream.listen((message) async {
       _webSocketChannel.stream.listen((message) async {
         try {
           final data = jsonDecode(message);

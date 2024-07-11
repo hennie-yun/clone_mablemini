@@ -40,7 +40,7 @@ class PricePage extends StatelessWidget {
   var prePrice = '0';
   var priceColor = Colors.black;
 
-  late WebSocketChannel _webSocketChannel;
+  //late WebSocketChannel _webSocketChannel;
 
   late String _websocketKey;
   List selectedJm = [];
@@ -49,16 +49,28 @@ class PricePage extends StatelessWidget {
     selectedJm = [selectedJmCode, selectedJmName];
     _requestData(selectedJm[0]);
     _hogaController.requestPRPR(selectedJm[0]);
-    _hogaController.requestChe(selectedJm[0]);
+
+      _hogaController.requestChe(selectedJm[0]);
+
     _hogaController.requestHoga(selectedJm[0]);
   }
 
   void setupWebSocket() async {
+if(_globalController.hogaWebSocketChannel.value != null){
+  print('기존에 웹소켓 있는 웹소켓');
+  print( _globalController.hogaWebSocketChannel.value);
+  _globalController.hogaWebSocketChannel.value?.sink.close();
+  print('기존에 웹소켓 있으면 끊기');
+  print( _globalController.hogaWebSocketChannel.value);
+}
+
     try {
-      _webSocketChannel = WebSocketChannel.connect(
+      _globalController.hogaWebSocketChannel.value = WebSocketChannel.connect(
           Uri.parse('ws://203.109.30.207:10001/connect'));
 
-      _webSocketChannel.stream.listen((message) async {
+      cheFlag = true;
+
+      _globalController.hogaWebSocketChannel.value?.stream.listen((message) async {
         try {
           final data = jsonDecode(message);
           if (data['Data'] != null && data['Data']['websocketkey'] != null) {
@@ -90,7 +102,7 @@ class PricePage extends StatelessWidget {
                   _controller.siseList[0].STCK_PRPR;
               _hogaController.contract.value.array
                   .insert(0, CheDataArray.fromJson(data['Data']));
-              cheFlag = true;
+
               //realCtngVolColor(_hogaController.contract.value.array.first.volume);
               // if (_hogaController.contract.value.array.length >= 30) {
               //   _hogaController.contract.value.array.removeLast();
@@ -101,9 +113,7 @@ class PricePage extends StatelessWidget {
             }
 
             if (data['num'] != null) {
-              if(data['num'] == 202){
-                print('오류');
-              }
+
 
               var rushData = jsonDecode(data['output']);
 
@@ -122,31 +132,18 @@ class PricePage extends StatelessWidget {
               if (rushData['TrCode'] == "H0STCNT0") {
                 if (rushData != null && rushData['Data'] != null) {
                   print(data['num']);
-                  _controller.siseList.clear();
-                  String STCK_PRPR = rushData['Data']['STCK_PRPR'] ?? '';
-                  String PRDY_VRSS_SIGN =
-                      rushData['Data']['PRDY_VRSS_SIGN'] ?? '';
-                  String PRDY_VRSS = rushData['Data']['PRDY_VRSS'] ?? '';
-                  String PRDY_CTRT = rushData['Data']['PRDY_CTRT'] ?? '';
 
-                  SiseData newData = SiseData(
-                    STCK_PRPR: STCK_PRPR,
-                    PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
-                    PRDY_VRSS: PRDY_VRSS,
-                    PRDY_CTRT: PRDY_CTRT,
-                    JmName: selectedJm[1],
-                  );
+                  String STCK_PRPR = (rushData?['Data']?['STCK_PRPR'] ?? '') as String;
 
-                  _controller.siseList.add(newData);
+                  _hogaController.currentPrice.value = STCK_PRPR;
 
-                  _hogaController.currentPrice.value =
-                      _controller.siseList[0].STCK_PRPR;
                   _hogaController.contract.value.array
                       .insert(0, CheDataArray.fromJson(rushData['Data']));
+
+                  //realCtngVolColor(_hogaController.contract.value.array.first.volume);
                   // if (_hogaController.contract.value.array.length >= 30) {
                   //   _hogaController.contract.value.array.removeLast();
                   // }
-
                   print('체결 rushtest');
                 }
               }
@@ -212,6 +209,7 @@ class PricePage extends StatelessWidget {
       "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
     });
     }else{
+       //_hogaController.contract.value.array.clear();
       // 러쉬테스트
        url = 'http://203.109.30.207:10001/rushtest';
        body = jsonEncode({

@@ -1,6 +1,7 @@
 import 'package:clone_mablemini/comm/SiseData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../page/fav/FavPage.dart';
 
@@ -13,6 +14,9 @@ class GlobalController extends GetxController {
   void setCurrWidget(Widget widget) {
     currentWidget.value = widget;
   }
+
+  var hogaWebSocketChannel = Rxn<WebSocketChannel>();
+  var favWebSocketChannel = Rxn<WebSocketChannel>();
 
   var selectedJmCode = ''.obs;
 
