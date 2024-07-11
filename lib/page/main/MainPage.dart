@@ -120,7 +120,12 @@ class MainPage extends StatelessWidget {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
             case 0:
+
               _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
+              if(_globalCtrl.hogaWebSocketChannel.value != null){ //-> 현재가에서 찜 클릭할 경우 호가 채널 닫아주기
+                _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+              }
+
               break;
             case 1:
               var siseData = _controller.siseList[0];
@@ -132,9 +137,15 @@ class MainPage extends StatelessWidget {
                   .setSelectecJm('000660', 'SK 하이닉스', siseData);
               Get.find<GlobalController>().selectedIndex.value = 1;
 
+              if(_globalCtrl.favWebSocketChannel.value != null){ //-> 찜에서 호가로 이동할 경우 찜에서 필요한 채널 닫아주기
+                _globalCtrl.favWebSocketChannel.value?.sink.close();
+              }
               break;
             case 2:
               _globalCtrl.setCurrWidget(MorePage());
+              _globalCtrl.favWebSocketChannel.value ?? _globalCtrl.favWebSocketChannel.value?.sink.close();
+              _globalCtrl.hogaWebSocketChannel.value ?? _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+
               break;
           }
         },
@@ -160,9 +171,10 @@ class MainPage extends StatelessWidget {
               onPressed: () {
                 print ('${_globalCtrl.isRushTest.value} -> ${!_globalCtrl.isRushTest.value}');
 
-                if(_globalCtrl.hogaWebSocketChannel.value != null){
-                  _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+                if(_globalCtrl.favWebSocketChannel.value != null){
+                  _globalCtrl.favWebSocketChannel.value?.sink.close();
                 }
+
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
                 FavPage();
               },
@@ -182,6 +194,8 @@ class MainPage extends StatelessWidget {
               icon: Icon(Icons.notification_add_outlined),
               onPressed: () {
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
+
+
 
                 Get.find<GlobalController>().setCurrWidget(PricePage(
                     _globalCtrl.selectedJmCode.value,
