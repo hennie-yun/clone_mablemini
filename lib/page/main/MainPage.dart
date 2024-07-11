@@ -170,7 +170,9 @@ class MainPage extends StatelessWidget {
           titleWidget = '찜한주식';
           actions = [
             TextButton(
-
+              style: ButtonStyle(
+                padding: MaterialStateProperty.all(EdgeInsets.zero),
+              ),
               onPressed: () {
                 print ('${_globalCtrl.isRushTest.value} -> ${!_globalCtrl.isRushTest.value}');
 
@@ -180,8 +182,7 @@ class MainPage extends StatelessWidget {
 
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
                 FavPage();
-              },
-              child: _globalCtrl.isRushTest.value == true ?  Text("러쉬ON ") : Text("러쉬OFF"),
+              }, child: _globalCtrl.isRushTest.value == true ?  Text("러쉬테스트 ON ") : Text("러쉬테스트 OFF"),
             ),
             IconButton(
               icon: Icon(Icons.create_outlined),
@@ -194,22 +195,29 @@ class MainPage extends StatelessWidget {
           jmCode = _globalCtrl.selectedJmCode.value;
           _setupWebSocket(jmCode);
           actions = [
-            TextButton(
-              child: _globalCtrl.isRushTest.value == true ?  Text("러쉬ON ") : Text("러쉬OFF"),
-              onPressed: () {
-                _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
-                if(_globalCtrl.hogaWebSocketChannel.value != null){
-                  _globalCtrl.hogaWebSocketChannel.value?.sink.close();
-                }
-                Get.find<GlobalController>().setCurrWidget(PricePage(
-                    _globalCtrl.selectedJmCode.value,
-                    _globalCtrl.selectedJmName.value));
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.share),
-              onPressed: () {},
-            ),
+
+               TextButton(
+                 style: ButtonStyle(
+                   padding: MaterialStateProperty.all(EdgeInsets.zero),
+                 ),
+                    child: _globalCtrl.isRushTest.value == true ?  Text("러쉬테스트 ON ") : Text("러쉬테스트 OFF"),
+                    onPressed: () {
+                      _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
+                      if(_globalCtrl.hogaWebSocketChannel.value != null){
+                        _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+                      }
+                      Get.find<GlobalController>().setCurrWidget(PricePage(
+                          _globalCtrl.selectedJmCode.value,
+                          _globalCtrl.selectedJmName.value));
+                    },
+                  ),
+
+
+                IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {},
+                ),
+
           ];
 
           break;
@@ -249,14 +257,12 @@ class MainPage extends StatelessWidget {
             SizedBox(width: 5),
             Icon(Icons.search, size: 16)
           ],
-        ), Row(
+        ),
+        Row(
           children: [
-            Flexible(
-              child: Text(
+            Text(
                 '${formatNumber(int.parse(_globalCtrl.selectedSiseList[0].STCK_PRPR.toString()))}원',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
+                style: TextStyle(fontSize: 16)),
             makePrice(
               _globalCtrl.selectedSiseList[0].PRDY_VRSS,
               _globalCtrl.selectedSiseList[0].PRDY_CTRT,
@@ -264,7 +270,6 @@ class MainPage extends StatelessWidget {
             ),
           ],
         ),
-
         SizedBox(height: 10)
       ],
     ));
