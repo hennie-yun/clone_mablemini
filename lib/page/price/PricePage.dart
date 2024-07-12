@@ -51,7 +51,7 @@ class PricePage extends StatelessWidget {
     //setupWebSocket();
   }
 
-  void setupWebSocket() async {
+  void setupWebSocket()  {
     if (_globalController.hogaWebSocketChannel.value != null) {
       _globalController.hogaWebSocketChannel.value?.sink.close();
     }
@@ -67,7 +67,7 @@ class PricePage extends StatelessWidget {
       cheFlag = true;
 
       _globalController.hogaWebSocketChannel.value?.stream.listen(
-          (message) async {
+          (message)  {
         try {
           final data = jsonDecode(message);
           if (data['Data'] != null && data['Data']['websocketkey'] != null) {
@@ -120,11 +120,14 @@ class PricePage extends StatelessWidget {
                 if (rushData['TrCode'] == "H0STASP0") {
                   if (rushData != null && rushData['Data'] != null) {
                     print(data['num']);
+                    print(' 호가 ${rushData['Data']['BIDP1']}');
+                    print(' 호가 ${rushData['Data']['BIDP2']}');
                     _hogaController.hoga.value =
                         HogaData.fromJSON(rushData['Data']);
 
                     print('호가 rushtest');
                   }
+
                 }
 
                 // 체결 러쉬테스트
