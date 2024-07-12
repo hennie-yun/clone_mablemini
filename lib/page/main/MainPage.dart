@@ -95,27 +95,25 @@ class MainPage extends StatelessWidget {
       return BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon: _globalCtrl.selectedIndex.value == 0
-                ? Icon(Icons.star_rounded, color: Color(0XFFFFC700))
-                : Icon(Icons.star_outline_rounded, color: Colors.black),
+            icon : Image.asset('assets/images/savedStock.png',  width: 15,
+              height: 15),
             label: '찜한주식',
           ),
           BottomNavigationBarItem(
-            icon: _globalCtrl.selectedIndex.value == 1
-                ? Icon(Icons.insert_chart_rounded, color: Color(0XFFFFC700))
-                : Icon(Icons.insert_chart_outlined_rounded,
-                    color: Colors.black),
+            icon : Image.asset('assets/images/wallet.png',  width: 15,
+              height: 15,),
+
             label: '현재가',
           ),
           BottomNavigationBarItem(
-            icon: _globalCtrl.selectedIndex.value == 2
-                ? Icon(Icons.more_horiz_rounded, color: Color(0XFFFFC700))
-                : Icon(Icons.more_horiz_rounded, color: Colors.black),
+            icon : Image.asset('assets/images/more.png',  width: 15,
+              height: 15),
+
             label: '더보기',
           ),
         ],
         currentIndex: _globalCtrl.selectedIndex.value,
-        selectedItemColor: Color(0XFFFFC700),
+        // selectedItemColor: Color(0XFFFFC700),
         onTap: (value) {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
