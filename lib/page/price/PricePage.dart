@@ -74,8 +74,10 @@ class PricePage extends StatelessWidget {
           if (data['Data'] != null && data['Data']['websocketkey'] != null) {
             _websocketKey = data['Data']['websocketkey'];
             print('WebSocket Key: $_websocketKey');
+            //호가
             requestRealHoga(_websocketKey, selectedJm[0]);
 
+            //체결
              _requestReal(_websocketKey, selectedJm[0]);
           } else {
             if (data['TrCode'] == "H0STCNT0") {
@@ -223,7 +225,7 @@ class PricePage extends StatelessWidget {
         "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
         "rqName": "",
         "header": {"sessionKey": websocketKey, "tr_type": "1"},
-        "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
+        "objCommInput": {"count": "1", "tr_id": "H0STCNT0"}
       });
     }
 
