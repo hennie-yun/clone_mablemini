@@ -18,7 +18,6 @@ import 'FavPageController.dart';
 class FavPage extends StatelessWidget {
   final FavPageController _controller = Get.put(FavPageController());
 
-  // late WebSocketChannel _webSocketChannel;
   late String _websocketKey;
 
   FavPage() {
@@ -191,7 +190,7 @@ class FavPage extends StatelessWidget {
       "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
       "rqName": "",
       "header": {"sessionKey": websocketKey, "tr_type": "1"},
-      "objCommInput": {"count": "2", "tr_id": "HOSTCNTO"}
+      "objCommInput": {"count": "1", "tr_id": "HOSTCNTO"}
     });
 
     futures.add(
