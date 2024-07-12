@@ -103,6 +103,7 @@ class FavPage extends StatelessWidget {
                   for (int i = 0; i < _controller.siseList.length; i++) {
                     // 현재 종목코드와 러쉬테스트 데이터의 종목코드가 같을 경우만 업데이트.
                     if(data['trKey'] == _controller.jmCodes[i]['jmCode']) {
+                      print ('%%%%%%%%%%%%% ${data['trKey']}  ${_controller.jmCodes[i]['jmCode']} -> ${_controller.jmCodes[i]['jmName']} ' );
                       _controller.siseList[i] = SiseData(
                         STCK_PRPR: STCK_PRPR,
                         PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
@@ -130,45 +131,48 @@ class FavPage extends StatelessWidget {
     }
   }
 
-  Future<void> requestData() async {
-    try {
-      List<SiseData> newDataList = [];
+  void requestData() {
+    List<SiseData?> newDataList = List.filled(_controller.jmCodes.length, null);
+    List<Future> futures = [];
 
-      for (int i = 0; i < _controller.jmCodes.length; i++) {
-        final headers = {'Content-Type': 'application/json;charset=utf-8'};
-        final body = jsonEncode({
-          "trCode": "/uapi/domestic-stock/v1/quotations/S0004",
-          "rqName": "",
-          "header": {"tr_id": "1"},
-          "objCommInput": {"SHCODE": _controller.jmCodes[i]["jmCode"]}
-        });
+    for (int i = 0; i < _controller.jmCodes.length; i++) {
+      final headers = {'Content-Type': 'application/json;charset=utf-8'};
+      final body = jsonEncode({
+        "trCode": "/uapi/domestic-stock/v1/quotations/S0004",
+        "rqName": "",
+        "header": {"tr_id": "1"},
+        "objCommInput": {"SHCODE": _controller.jmCodes[i]["jmCode"]}
+      });
 
-        final response = await http.post(
-          Uri.parse('http://203.109.30.207:10001/request'),
-          headers: headers,
-          body: body,
-        );
-
+      Future future = http.post(
+        Uri.parse('http://203.109.30.207:10001/request'),
+        headers: headers,
+        body: body,
+      ).then((response) {
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
-          if (responseData['TrCode'] ==
-              "/uapi/domestic-stock/v1/quotations/S0004") {
+          if (responseData['TrCode'] == "/uapi/domestic-stock/v1/quotations/S0004") {
             SiseData siseData = SiseData.fromJson(
-                responseData["Data"]["output"],
-                _controller.jmCodes[i]["jmName"]!);
-
-            newDataList.add(siseData);
+              responseData["Data"]["output"],
+              _controller.jmCodes[i]["jmName"]!,
+            );
+            newDataList[i] = siseData;
           }
         } else {
           print('Request failed with status: ${response.statusCode}');
         }
-      }
-      _controller.siseList.assignAll(newDataList);
-      setupWebSocket();
-    } catch (e) {
-      print('Data request error: $e');
+      });
+
+      futures.add(future);
     }
+
+    Future.wait(futures).then((_) {
+      _controller.siseList.assignAll(newDataList.where((element) => element != null).cast<SiseData>());
+      setupWebSocket();
+    });
   }
+
+
 
   Future<void> _requestRush(String websocketKey) async {
     final headers = {'Content-Type': 'application/json;charset=utf-8'};
@@ -191,6 +195,7 @@ class FavPage extends StatelessWidget {
     }
   }
 
+  // 실시간 요청
   Future<void> _requestReal(String websocketKey) async {
     final headers = {'Content-Type': 'application/json;charset=utf-8'};
     http.Response response;
@@ -219,81 +224,78 @@ class FavPage extends StatelessWidget {
     var isRushTest = Get.find<GlobalController>().isRushTest.value;
 
     return Scaffold(body: Obx(() {
-      if (_controller.siseList.isEmpty) {
-        return Center(child: CircularProgressIndicator());
-      } else {
-        return ListView.builder(
-          itemCount: _controller.siseList.length,
-          itemBuilder: (context, index) {
-            final siseData = _controller.siseList[index];
-            return GestureDetector(
-              onTap: () {
-                Get.find<GlobalController>().setCurrWidget(
-                  PricePage(
-                    _controller.jmCodes[index]['jmCode']!,
-                    _controller.jmCodes[index]['jmName']!,
-                  ),
-                );
-                Get.find<GlobalController>().setSelectecJm(
-                    _controller.jmCodes[index]['jmCode']!,
-                    _controller.jmCodes[index]['jmName']!,
-                    siseData
-                    // _controller.siseList[index]
-                    );
+      return ListView.builder(
+        itemCount: _controller.siseList.length,
+        itemBuilder: (context, index) {
+          final siseData = _controller.siseList[index];
+          return GestureDetector(
+            onTap: () {
+              Get.find<GlobalController>().setCurrWidget(
+                PricePage(
+                  _controller.jmCodes[index]['jmCode']!,
+                  _controller.jmCodes[index]['jmName']!,
+                ),
+              );
+              Get.find<GlobalController>().setSelectecJm(
+                  _controller.jmCodes[index]['jmCode']!,
+                  _controller.jmCodes[index]['jmName']!,
+                  siseData
+                // _controller.siseList[index]
+              );
 
-                Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                height: 72,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      margin: const EdgeInsets.only(right: 12),
-                      decoration: const BoxDecoration(shape: BoxShape.circle),
-                      child: ClipOval(
-                        child: Image.asset('assets/images/mmini.png'),
+              Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              height: 72,
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    margin: const EdgeInsets.only(right: 12),
+                    decoration: const BoxDecoration(shape: BoxShape.circle),
+                    child: ClipOval(
+                      child: Image.asset('assets/images/mmini.png'),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      isRushTest || siseData.JmName == null
+                          ? _controller.jmCodes[index]["jmName"]!
+                          : siseData.JmName!,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
                       ),
                     ),
-                    Expanded(
-                      child: Text(
-                        isRushTest || siseData.JmName == null
-                            ? _controller.jmCodes[index]["jmName"]!
-                            : siseData.JmName!,
-                        overflow: TextOverflow.ellipsis,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
                         ),
                       ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          ),
-                        ),
-                        makePrice(
-                          siseData.PRDY_VRSS,
-                          siseData.PRDY_CTRT,
-                          siseData.PRDY_VRSS_SIGN,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      makePrice(
+                        siseData.PRDY_VRSS,
+                        siseData.PRDY_CTRT,
+                        siseData.PRDY_VRSS_SIGN,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            );
-          },
-        );
-      }
+            ),
+          );
+        },
+      );
+
     }));
   }
 }
