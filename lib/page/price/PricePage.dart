@@ -43,10 +43,13 @@ class PricePage extends StatelessWidget {
 
   PricePage(String selectedJmCode, String selectedJmName) {
     selectedJm = [selectedJmCode, selectedJmName];
-    _requestData(selectedJm[0]);
+    //_requestData(selectedJm[0]);
+
     _hogaController.requestPRPR(selectedJm[0]);
     _hogaController.requestChe(selectedJm[0]);
     _hogaController.requestHoga(selectedJm[0]);
+    setupWebSocket();
+    //setupWebSocket();
   }
 
   void setupWebSocket() async {
@@ -73,7 +76,7 @@ class PricePage extends StatelessWidget {
             print('WebSocket Key: $_websocketKey');
             requestRealHoga(_websocketKey, selectedJm[0]);
 
-            await _requestReal(_websocketKey, selectedJm[0]);
+             _requestReal(_websocketKey, selectedJm[0]);
           } else {
             if (data['TrCode'] == "H0STCNT0") {
               _controller.siseList.clear();
@@ -165,38 +168,38 @@ class PricePage extends StatelessWidget {
 
   }
 
-  Future<void> _requestData(String value) async {
-    print(value);
-    final headers = {'Content-Type': 'application/json;charset=utf-8'};
-    final body = jsonEncode({
-      "trCode": "/uapi/domestic-stock/v1/quotations/S0004",
-      "rqName": "",
-      "header": {"tr_id": "1"},
-      "objCommInput": {"SHCODE": value}
-    });
+  // Future<void> _requestData(String value) async {
+  //   print(value);
+  //   final headers = {'Content-Type': 'application/json;charset=utf-8'};
+  //   final body = jsonEncode({
+  //     "trCode": "/uapi/domestic-stock/v1/quotations/S0004",
+  //     "rqName": "",
+  //     "header": {"tr_id": "1"},
+  //     "objCommInput": {"SHCODE": value}
+  //   });
+  //
+  //   final response = await http.post(
+  //     Uri.parse('http://203.109.30.207:10001/request'),
+  //     headers: headers,
+  //     body: body,
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     final responseData = jsonDecode(response.body);
+  //     if (responseData['TrCode'] ==
+  //         "/uapi/domestic-stock/v1/quotations/S0004") {
+  //       SiseData siseData =
+  //       SiseData.fromJson(responseData["Data"]["output"], value);
+  //       _controller.siseList.add(siseData);
+  //     }
+  //   } else {
+  //     print('_requestData failed with status: ${response.statusCode}');
+  //   }
+  //
+  //   setupWebSocket();
+  // }
 
-    final response = await http.post(
-      Uri.parse('http://203.109.30.207:10001/request'),
-      headers: headers,
-      body: body,
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      if (responseData['TrCode'] ==
-          "/uapi/domestic-stock/v1/quotations/S0004") {
-        SiseData siseData =
-        SiseData.fromJson(responseData["Data"]["output"], value);
-        _controller.siseList.add(siseData);
-      }
-    } else {
-      print('_requestData failed with status: ${response.statusCode}');
-    }
-
-    setupWebSocket();
-  }
-
-  Future<void> _requestReal(String websocketKey, String jmCode) async {
+  void _requestReal(String websocketKey, String jmCode) async {
     final headers = {'Content-Type': 'application/json;charset=utf-8'};
 
     var url;
@@ -239,11 +242,8 @@ class PricePage extends StatelessWidget {
     final double hogaListHeight = MediaQuery.of(context).size.height -80-58;
     //final double hogaListHeight = 650;
     return Scaffold(
-      body: SingleChildScrollView(child: Obx(() {
-        if (_controller.siseList.isEmpty) {
-          return Center(child: CircularProgressIndicator());
-        } else {
-          return Column(
+      body: SafeArea(child:
+           Column(
             children: [
               Container(
                   width: double.infinity,
@@ -875,9 +875,9 @@ class PricePage extends StatelessWidget {
                     ],
                   )),
             ],
-          );
-        }
-      })),
+           )
+
+      ),
     );
   }
 
@@ -1009,7 +1009,7 @@ class PricePage extends StatelessWidget {
   }
 
   // 호가 실시간
-  Future<void> requestRealHoga(String websocketKey, String jmCode) async {
+  void requestRealHoga(String websocketKey, String jmCode) async {
     final headers = {
       'Content-Type': 'application/json',
     };
