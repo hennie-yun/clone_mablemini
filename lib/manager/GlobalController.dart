@@ -33,6 +33,6 @@ class GlobalController extends GetxController {
   var isRushTest = false.obs;
 
   void init () {
-
+  isRushTest.value = false;
   }
 }
