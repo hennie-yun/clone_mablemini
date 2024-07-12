@@ -28,7 +28,6 @@ class FavPage extends StatelessWidget {
 
   void setupWebSocket() async {
     final GlobalController _globalController = Get.find<GlobalController>();
-
     var isRushTest = _globalController.isRushTest.value;
 
     try {
@@ -43,8 +42,8 @@ class FavPage extends StatelessWidget {
             _websocketKey = data['Data']['websocketkey'];
             print('WebSocket Key: $_websocketKey');
             isRushTest
-                ? await _requestRush(_websocketKey)
-                : await _requestReal(_websocketKey);
+                ? _requestRush(_websocketKey)
+                : _requestReal(_websocketKey);
           } else {
             if (data['TrCode'] != null && data['TrCode'] == "H0STCNT0") {
               _controller.isRequest.value = true;
@@ -77,40 +76,47 @@ class FavPage extends StatelessWidget {
                 }
               }
             } else {
-              // 러쉬테스트 용 -> 안에 데이터값 이름 뭔지 몰라서 데이터 정확하지 않음
+              // 러쉬테스트 데이터 처리
               var outputString = data['output'];
               Map<String, dynamic> outputData = json.decode(outputString);
 
               // trKey 가 null 이 아니면 rush 테스트임
               if (data["trKey"] != null) {
-                String? trCode;
-
-                if (outputData.containsKey('TrCode')) {
-                  trCode = outputData['TrCode'].toString();
-                }
+                String? trCode = outputData['TrCode']?.toString();
 
                 if (trCode == "H0STCNT0") {
-                  String STCK_PRPR =
-                      outputData['Data']['STCK_PRPR'].toString(); // 현재가
-                  String PRDY_VRSS_SIGN = outputData['Data']['PRDY_VRSS_SIGN']
-                      .toString(); // 등락기호 표시용
-                  String PRDY_VRSS = outputData['Data']['OPRC_VRSS_PRPR']
-                      .toString(); // 전일대비 가격
-                  String PRDY_CTRT = outputData['Data']
+                  String? trKey = data['trKey'];
+                  String? STCK_PRPR =
+                      outputData['Data']['STCK_PRPR']?.toString(); // 현재가
+                  String? PRDY_VRSS_SIGN = outputData['Data']['PRDY_VRSS_SIGN']
+                      ?.toString(); // 등락기호 표시용
+                  String? PRDY_VRSS = outputData['Data']['OPRC_VRSS_PRPR']
+                      ?.toString(); // 전일대비 가격
+                  String? PRDY_CTRT = outputData['Data']
                           ['PRDY_VOL_VRSS_ACML_VOL_RATE']
-                      .toString(); // 몇프로
+                      ?.toString(); // 몇프로
 
-                  for (int i = 0; i < _controller.siseList.length; i++) {
-                    // 현재 종목코드와 러쉬테스트 데이터의 종목코드가 같을 경우만 업데이트.
-                    if(data['trKey'] == _controller.jmCodes[i]['jmCode']) {
-                      print ('%%%%%%%%%%%%% ${data['trKey']}  ${_controller.jmCodes[i]['jmCode']} -> ${_controller.jmCodes[i]['jmName']} ' );
-                      _controller.siseList[i] = SiseData(
-                        STCK_PRPR: STCK_PRPR,
-                        PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
-                        PRDY_VRSS: PRDY_VRSS,
-                        PRDY_CTRT: PRDY_CTRT,
-                      );
+                  if (STCK_PRPR != null &&
+                      PRDY_VRSS_SIGN != null &&
+                      PRDY_VRSS != null &&
+                      PRDY_CTRT != null) {
+                    // 해당 trKey를 가진 종목의 데이터 업데이트
+                    for (int i = 0; i < _controller.siseList.length; i++) {
+                      if (trKey == _controller.jmCodes[i]['jmCode']) {
+                        print(
+                            '%%%%%%%%%%%%% $trKey  ${_controller.jmCodes[i]['jmCode']} -> ${_controller.jmCodes[i]['jmName']}');
+
+                        _controller.siseList[i] = SiseData(
+                          STCK_PRPR: STCK_PRPR,
+                          PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                          PRDY_VRSS: PRDY_VRSS,
+                          PRDY_CTRT: PRDY_CTRT,
+                        );
+                        break; // 업데이트 완료 후 종료
+                      }
                     }
+                  } else {
+                    print('Incomplete data received for rush test');
                   }
                 }
               }
@@ -144,14 +150,17 @@ class FavPage extends StatelessWidget {
         "objCommInput": {"SHCODE": _controller.jmCodes[i]["jmCode"]}
       });
 
-      Future future = http.post(
+      Future future = http
+          .post(
         Uri.parse('http://203.109.30.207:10001/request'),
         headers: headers,
         body: body,
-      ).then((response) {
+      )
+          .then((response) {
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
-          if (responseData['TrCode'] == "/uapi/domestic-stock/v1/quotations/S0004") {
+          if (responseData['TrCode'] ==
+              "/uapi/domestic-stock/v1/quotations/S0004") {
             SiseData siseData = SiseData.fromJson(
               responseData["Data"]["output"],
               _controller.jmCodes[i]["jmName"]!,
@@ -167,14 +176,15 @@ class FavPage extends StatelessWidget {
     }
 
     Future.wait(futures).then((_) {
-      _controller.siseList.assignAll(newDataList.where((element) => element != null).cast<SiseData>());
+      _controller.siseList.assignAll(
+          newDataList.where((element) => element != null).cast<SiseData>());
       setupWebSocket();
     });
   }
 
+  void _requestRush(String websocketKey) {
+    List<Future<void>> futures = [];
 
-
-  Future<void> _requestRush(String websocketKey) async {
     final headers = {'Content-Type': 'application/json;charset=utf-8'};
     final rushUrl = 'http://203.109.30.207:10001/rushtest';
     final rushBody = jsonEncode({
@@ -184,21 +194,26 @@ class FavPage extends StatelessWidget {
       "objCommInput": {"count": "2", "tr_id": "HOSTCNTO"}
     });
 
-    http.Response response;
+    futures.add(
+      http
+          .post(Uri.parse(rushUrl), headers: headers, body: rushBody)
+          .then((response) {
+        if (response.statusCode == 200) {
+        } else {
+          print('RequestRush request failed : ${response.statusCode}');
+        }
+      }).catchError((error) {
+        print('Error RequestRush request: $error');
+      }),
+    );
 
-    response =
-        await http.post(Uri.parse(rushUrl), headers: headers, body: rushBody);
-    if (response.statusCode == 200) {
-    } else {
-      print('Rush test request failed with status: ${response.statusCode}');
-      Get.find<GlobalController>().isRushTest.value = false;
-    }
+    Future.wait(futures);
   }
 
-  // 실시간 요청
-  Future<void> _requestReal(String websocketKey) async {
+  void _requestReal(String websocketKey) {
     final headers = {'Content-Type': 'application/json;charset=utf-8'};
-    http.Response response;
+    List<Future<void>> futures = [];
+
     for (int i = 0; i < _controller.jmCodes.length; i++) {
       final url = 'http://203.109.30.207:10001/requestReal';
       final body = jsonEncode({
@@ -211,13 +226,23 @@ class FavPage extends StatelessWidget {
         }
       });
 
-      response = await http.post(Uri.parse(url), headers: headers, body: body);
-      if (response.statusCode == 200) {
-      } else {
-        print('RequestReal request failed with status: ${response.statusCode}');
-      }
+      futures.add(
+        http
+            .post(Uri.parse(url), headers: headers, body: body)
+            .then((response) {
+          if (response.statusCode == 200) {
+          } else {
+            print('RequestReal request failed : ${response.statusCode}');
+          }
+        }).catchError((error) {
+          print('Error RequestReal request: $error');
+        }),
+      );
     }
+
+    Future.wait(futures);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -240,8 +265,8 @@ class FavPage extends StatelessWidget {
                   _controller.jmCodes[index]['jmCode']!,
                   _controller.jmCodes[index]['jmName']!,
                   siseData
-                // _controller.siseList[index]
-              );
+                  // _controller.siseList[index]
+                  );
 
               Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
             },
@@ -295,7 +320,6 @@ class FavPage extends StatelessWidget {
           );
         },
       );
-
     }));
   }
 }
