@@ -184,10 +184,7 @@ class MainPage extends StatelessWidget {
                 FavPage();
               }, child: _globalCtrl.isRushTest.value == true ?  Text("러쉬테스트 ON ") : Text("러쉬테스트 OFF"),
             ),
-            IconButton(
-              icon: Icon(Icons.create_outlined),
-              onPressed: () {},
-            ),
+
           ];
           break;
         case 1:
@@ -213,10 +210,7 @@ class MainPage extends StatelessWidget {
                   ),
 
 
-                IconButton(
-                  icon: Icon(Icons.share),
-                  onPressed: () {},
-                ),
+
 
           ];
 
