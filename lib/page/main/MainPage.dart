@@ -311,23 +311,20 @@ class MainPage extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double statusBarHeight = MediaQuery.of(context).padding.top;
+  // body영역 높이 구하기
+  getPricePageHeight(BuildContext context){
+    double statusBarHeight = MediaQuery.of(context).padding.top + MediaQuery.of(context).padding.bottom;
     double appBarHeight = AppBar().preferredSize.height;
     double bottomNavBarHeight = kBottomNavigationBarHeight;
     double screenHeight = MediaQuery.of(context).size.height;
     double availableHeight = screenHeight - appBarHeight - statusBarHeight - bottomNavBarHeight;
     _globalCtrl.pricePageHeight = availableHeight;
+  }
 
-    print('statusBarHeight 높이');
-    print(statusBarHeight);
-    print('appBarHeight 높이');
-    print(bottomNavBarHeight);
-    print('bottomNavBarHeight 높이');
-    print(bottomNavBarHeight);
-    print('body 높이');
-    print(availableHeight);
+  @override
+  Widget build(BuildContext context) {
+
+    getPricePageHeight(context);
 
     return Scaffold(
       key: _scaffoldKey,
