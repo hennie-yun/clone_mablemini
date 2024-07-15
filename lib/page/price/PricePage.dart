@@ -15,8 +15,8 @@ import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 
-import '../hoga/CheData.dart';
-import '../hoga/HogaData.dart';
+import '../../comm/CheData.dart';
+import '../../comm/HogaData.dart';
 import '../hoga/HogaPageController.dart';
 import 'PricePageController.dart';
 
@@ -119,13 +119,12 @@ class PricePage extends StatelessWidget {
                 // 호가 러쉬테스트
                 if (rushData['TrCode'] == "H0STASP0") {
                   if (rushData != null && rushData['Data'] != null) {
-                    print(data['num']);
-                    print(' 호가 ${rushData['Data']['BIDP1']}');
-                    print(' 호가 ${rushData['Data']['BIDP2']}');
+                   // print(data['num']);
+
                     _hogaController.hoga.value =
                         HogaData.fromJSON(rushData['Data']);
 
-                    print('호가 rushtest');
+                    //print('호가 rushtest');
                   }
 
                 }
@@ -133,7 +132,7 @@ class PricePage extends StatelessWidget {
                 // 체결 러쉬테스트
                 if (rushData['TrCode'] == "H0STCNT0") {
                   if (rushData != null && rushData['Data'] != null) {
-                    print(data['num']);
+                   // print(data['num']);
 
                     String STCK_PRPR =
                         (rushData?['Data']?['STCK_PRPR'] ?? '') as String;
@@ -147,7 +146,7 @@ class PricePage extends StatelessWidget {
                     // if (_hogaController.contract.value.array.length >= 30) {
                     //   _hogaController.contract.value.array.removeLast();
                     // }
-                    print('체결 rushtest');
+                   // print('체결 rushtest');
                   }
                 }
               }
@@ -247,11 +246,11 @@ class PricePage extends StatelessWidget {
                     height: hogaListHeight,
                     child: Obx(() {
                       if (_hogaController.hoga.value == null) {
-                        print('_hogaController.hoga.value가 null');
+
                         return Container();
                       }
                       if (_hogaController.currentPrice.value == "") {
-                        print('_hogaController.currentPrice.value 가 ""');
+
                         return Container();
                       }
 

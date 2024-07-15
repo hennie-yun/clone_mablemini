@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../comm/SiseData.dart';
 import '../fav/FavPageController.dart';
-import 'HogaData.dart';
-import 'HogaData2.dart';
-import 'CheData.dart';
+import '../../comm/HogaData.dart';
+import '../../comm/HogaData2.dart';
+import '../../comm/CheData.dart';
 import 'package:http/http.dart' as http;
 
 class HogaPageController extends GetxController {
