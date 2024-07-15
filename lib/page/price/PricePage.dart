@@ -417,7 +417,9 @@ class PricePage extends StatelessWidget {
                                       : currentPrice) ==
                                   sellHoga) {
                                 sellBorder =
-                                    Border.all(color: sellColor, width: 2);
+                                    Border.all(color:
+                                    //sellColor
+                                      Color(0xfffffcb2d) , width: 2);
                               }
 
                               return Column(
@@ -709,7 +711,9 @@ class PricePage extends StatelessWidget {
                                       : currentPrice) ==
                                   buyHoga) {
                                 buyBorder =
-                                    Border.all(color: buyColor, width: 2);
+                                    Border.all(color:
+                                    //buyColor
+                                    Color(0xfffffcb2d) , width: 2);
                               }
 
                               return Column(
