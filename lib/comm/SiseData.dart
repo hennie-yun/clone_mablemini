@@ -15,22 +15,13 @@ class SiseData {
 
   factory SiseData.fromJson(Map<String, dynamic> json, String? jmName) {
 
-    //전일 대비 등락율 구하기
-    var price = int.parse(json["PRICE"].toString());
-    var open = int.parse(json["OPEN"].toString());
-
-
-    var differ = open - price;
-    var change = (differ / open) * 100;
-
-    var percentChange = double.parse(change.toStringAsFixed(2));
 
 
     return SiseData(
       STCK_PRPR: json["PRICE"].toString(),
       PRDY_VRSS_SIGN: json["SIGN"].toString(),
       PRDY_VRSS: json["CHANGE"].toString(),
-      PRDY_CTRT: json["OPEN"].toString() == "0" ? json["DIFF"].toString() : percentChange.toString() , // open이 0 인것들도 있어서 처리
+      PRDY_CTRT: json["DIFF"].toString(), // open이 0 인것들도 있어서 처리
       JmName: jmName,
     );
   }

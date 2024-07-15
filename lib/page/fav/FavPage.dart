@@ -30,91 +30,94 @@ class FavPage extends StatelessWidget {
     var isRushTest = _globalController.isRushTest.value;
 
     try {
-    _globalController.favWebSocketChannel.value =
-        WebSocketChannel.connect(Uri.parse('ws://203.109.30.207:10001/connect'));
+      _globalController.favWebSocketChannel.value = WebSocketChannel.connect(
+          Uri.parse('ws://203.109.30.207:10001/connect'));
 
-    _globalController.favWebSocketChannel.value?.stream.listen(
-          (message) {
+      _globalController.favWebSocketChannel.value?.stream.listen(
+        (message) {
+          try {
+            final data = jsonDecode(message);
 
-        try {
-          final data = jsonDecode(message);
+            if (data['Data'] != null && data['Data']['websocketkey'] != null) {
+              _websocketKey = data['Data']['websocketkey'];
+              print('WebSocket Key: $_websocketKey');
+              isRushTest
+                  ? _requestRush(_websocketKey)
+                  : _requestReal(_websocketKey);
+            } else if (data['TrCode'] != null && data['TrCode'] == "H0STCNT0") {
+              _controller.isRequest.value = true;
 
-          if (data['Data'] != null && data['Data']['websocketkey'] != null) {
-            _websocketKey = data['Data']['websocketkey'];
-            print('WebSocket Key: $_websocketKey');
-            isRushTest ? _requestRush(_websocketKey) : _requestReal(_websocketKey);
-          }
-          else if (data['TrCode'] != null && data['TrCode'] == "H0STCNT0") {
-            _controller.isRequest.value = true;
+              String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
+              String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
+              String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
+              String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
 
-            String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
-            String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
-            String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
-            String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
+              String jmCodeToUpdate = data['Data']['MKSC_SHRN_ISCD'];
+              String? jmNameToUpdate;
 
-            String jmCodeToUpdate = data['Data']['MKSC_SHRN_ISCD'];
-            String? jmNameToUpdate;
-
-            for (int i = 0; i < _controller.jmCodes.length; i++) {
-              if (_controller.jmCodes[i]['jmCode'] == jmCodeToUpdate) {
-                jmNameToUpdate = _controller.jmCodes[i]['jmName'];
-                break;
+              for (int i = 0; i < _controller.jmCodes.length; i++) {
+                if (_controller.jmCodes[i]['jmCode'] == jmCodeToUpdate) {
+                  jmNameToUpdate = _controller.jmCodes[i]['jmName'];
+                  break;
+                }
               }
-            }
 
-            for (int i = 0; i < _controller.siseList.length; i++) {
-              if (_controller.siseList[i].JmName == jmNameToUpdate) {
-                _controller.siseList[i] = SiseData(
-                  STCK_PRPR: STCK_PRPR,
-                  PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
-                  PRDY_VRSS: PRDY_VRSS,
-                  PRDY_CTRT: PRDY_CTRT,
-                  JmName: _controller.siseList[i].JmName,
-                );
-                break;
+              for (int i = 0; i < _controller.siseList.length; i++) {
+                if (_controller.siseList[i].JmName == jmNameToUpdate) {
+                  _controller.siseList[i] = SiseData(
+                    STCK_PRPR: STCK_PRPR,
+                    PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                    PRDY_VRSS: PRDY_VRSS,
+                    PRDY_CTRT: PRDY_CTRT,
+                    JmName: _controller.siseList[i].JmName,
+                  );
+                  break;
+                }
               }
-            }
-          }
-          else {
-            var outputString = data['output'];
-            Map<String, dynamic> outputData = json.decode(outputString);
+            } else {
+              print(data);
+              var outputString = data['output'];
+              Map<String, dynamic> outputData = json.decode(outputString);
 
-            if (data["trKey"] != null) {
-              String? trCode = outputData['TrCode']?.toString();
+              if (data["trKey"] != null) {
+                String? trCode = outputData['TrCode']?.toString();
 
-              if (trCode == "H0STCNT0") {
-                String trKey = data['trKey'];
+                if (trCode == "H0STCNT0") {
+                  String trKey = data['trKey'];
 
-                for (int i = 0; i < _controller.jmCodes.length; i++) {
-                  if (trKey == _controller.jmCodes[i]['jmCode']) {
-                    _controller.siseList[i] = SiseData(
-                      STCK_PRPR: outputData['Data']['STCK_PRPR'].toString(),
-                      PRDY_VRSS_SIGN: outputData['Data']['PRDY_VRSS_SIGN'].toString(),
-                      PRDY_VRSS: outputData['Data']['OPRC_VRSS_PRPR'].toString(),
-                      PRDY_CTRT: outputData['Data']['PRDY_VOL_VRSS_ACML_VOL_RATE'].toString(),
-                    );
-                    break;
+                  for (int i = 0; i < _controller.jmCodes.length; i++) {
+                    if (trKey == _controller.jmCodes[i]['jmCode']) {
+                      _controller.siseList[i] = SiseData(
+                        STCK_PRPR: outputData['Data']['STCK_PRPR'].toString(),
+                        PRDY_VRSS_SIGN:
+                            outputData['Data']['PRDY_VRSS_SIGN'].toString(),
+                        PRDY_VRSS:
+                            outputData['Data']['OPRC_VRSS_PRPR'].toString(),
+                        PRDY_CTRT: outputData['Data']
+                                ['PRDY_VOL_VRSS_ACML_VOL_RATE']
+                            .toString(),
+                      );
+                      break;
+                    }
                   }
                 }
               }
             }
+          } catch (e) {
+            print('Error processing WebSocket message: $e');
           }
-        } catch (e) {
-          print('Error processing WebSocket message: $e');
-        }
-      },
-      onError: (error) {
-        print('WebSocket error: $error');
-      },
-      onDone: () {
-        print('WebSocket connection closed');
-      },
-    );
+        },
+        onError: (error) {
+          print('WebSocket error: $error');
+        },
+        onDone: () {
+          print('WebSocket connection closed');
+        },
+      );
     } catch (e) {
       print('WebSocket connection error: $e');
     }
   }
-
 
   void requestData() {
     List<SiseData?> newDataList = List.filled(_controller.jmCodes.length, null);
@@ -138,6 +141,7 @@ class FavPage extends StatelessWidget {
           .then((response) {
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
+
           if (responseData['TrCode'] ==
               "/uapi/domestic-stock/v1/quotations/S0004") {
             SiseData siseData = SiseData.fromJson(
@@ -178,8 +182,9 @@ class FavPage extends StatelessWidget {
           .post(Uri.parse(rushUrl), headers: headers, body: rushBody)
           .then((response) {
         if (response.statusCode == 200) {
+          print("러시테스트 성공");
         } else {
-          print('RequestRush request failed : ${response.statusCode}');
+          print('RequestRush request failed : ${response.statusCode} ');
         }
       }).catchError((error) {
         print('Error RequestRush request: $error');
@@ -211,7 +216,8 @@ class FavPage extends StatelessWidget {
             .then((response) {
           if (response.statusCode == 200) {
           } else {
-            print('RequestReal request failed : ${response.statusCode}');
+            print(
+                'RequestReal request failed : ${response.statusCode}, ${_controller.jmCodes[i]["jmName"]}');
           }
         }).catchError((error) {
           print('Error RequestReal request: $error');
@@ -226,13 +232,15 @@ class FavPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        return ListView.builder(
-          physics: ClampingScrollPhysics(),
-
+        return GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 1,
+            childAspectRatio: MediaQuery.of(context).size.width / 72,
+          ),
           itemCount: _controller.siseList.length,
           itemBuilder: (context, index) {
             final siseData = _controller.siseList[index];
-            return GestureDetector(
+            return InkWell(
               onTap: () {
                 Get.find<GlobalController>().setCurrWidget(
                   PricePage(
@@ -245,8 +253,7 @@ class FavPage extends StatelessWidget {
                   _controller.jmCodes[index]['jmName']!,
                   siseData,
                 );
-
-                Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
+                Get.find<GlobalController>().selectedIndex.value = 1;
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
