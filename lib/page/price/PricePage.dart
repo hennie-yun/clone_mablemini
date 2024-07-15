@@ -556,7 +556,7 @@ class PricePage extends StatelessWidget {
                                   const Divider(
                                       height: 1,
                                       thickness: 1,
-                                      color: Colors.grey),
+                                      color: Color(0xffdee0e3)),
                                   Container(
                                       height: hogaListHeight / 8 - 1,
                                       padding: const EdgeInsets.fromLTRB(
@@ -576,7 +576,7 @@ class PricePage extends StatelessWidget {
                                   const Divider(
                                       height: 1,
                                       thickness: 1,
-                                      color: Colors.grey),
+                                      color: Color(0xffdee0e3)),
                                   Expanded(
                                       child: Container(
                                           padding: const EdgeInsets.fromLTRB(
@@ -595,7 +595,7 @@ class PricePage extends StatelessWidget {
                                   const Divider(
                                       height: 1,
                                       thickness: 1,
-                                      color: Colors.grey),
+                                      color: Color(0xffdee0e3)),
                                   Container(
                                       height: hogaListHeight / 20 - 1,
                                       padding:
@@ -619,6 +619,14 @@ class PricePage extends StatelessWidget {
                                     : double.parse(_hogaController
                                         .contract.value.array.first.chdegree);
 
+                            Color degreeColor;
+                            if( degree > 100 ){
+                              degreeColor = Colors.red;
+
+                            }else if(degree < 100) {
+                              degreeColor = Colors.blue;
+                            }else{
+                              degreeColor = Colors.black;}
                             return Container(
                               height: listItemHeight,
                               child: Column(
@@ -642,10 +650,11 @@ class PricePage extends StatelessWidget {
                                               AutoSizeText(
                                                 '$degree%',
                                                 maxLines: 1,
-                                                style: const TextStyle(
+                                                style:  TextStyle(
                                                     color:
-                                                        //valueColor(_hogaController.contract.value.array.first.sign),
-                                                        Colors.black,
+                                                        //valueColor(_hogaController.contract.value.array.first.chdegree),
+                                                    degreeColor,
+                                                       // Colors.black,
                                                     fontSize: 12),
                                               ),
                                             ],
@@ -876,13 +885,18 @@ class PricePage extends StatelessWidget {
   }
 
   Widget sise3(String text, double price, String text3, double basePrice) {
-    double doublePercent = (basePrice - price) / basePrice * 100;
+    double doublePercent = (price-basePrice) / basePrice * 100;
     String percent = doublePercent.abs().toStringAsFixed(2);
     var formatPrice = priceFormat.format(price);
 
+    var sign = '';
     var color;
+    if(doublePercent < 0){
+      sign = '-';
+    }
+
     if (text == '시') {
-      color = Colors.green;
+      color = Colors.grey;
     } else if (text == '고') {
       color = Colors.red;
     } else {
@@ -906,16 +920,17 @@ class PricePage extends StatelessWidget {
             ]))),
         //Text(text),
         Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(formatPrice, style: TextStyle(fontSize: 10)),
-            Text('$percent%',
+            Text('$sign$percent%',
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: doublePercent < 0
-                        ? Colors.red
+                        ? Colors.blue
                         : doublePercent > 0
-                            ? Colors.blue
+                            ? Colors.red
                             : Colors.black))
           ],
         )
