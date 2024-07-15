@@ -347,7 +347,7 @@ class PricePage extends StatelessWidget {
                                           height: listItemHeight,
                                           padding: const EdgeInsets.all(2),
                                           alignment: Alignment.centerRight,
-                                          child: AutoSizeText(
+                                          child: Text(
                                             sellRem == 0
                                                 ? ''
                                                 : priceFormat.format(sellRem),
@@ -432,7 +432,7 @@ class PricePage extends StatelessWidget {
                                         child: Row(
                                           children: [
                                             Expanded(
-                                              child: AutoSizeText(
+                                              child: Text(
                                                 sellHoga == 0
                                                     ? ''
                                                     : priceFormat
@@ -446,7 +446,7 @@ class PricePage extends StatelessWidget {
                                               ),
                                             ),
                                             Container(
-                                              child: AutoSizeText(
+                                              child: Text(
                                                 percentFormat
                                                             .format(sellRate) ==
                                                         '100.00%'
@@ -649,7 +649,7 @@ class PricePage extends StatelessWidget {
                                                     color: Colors.black,
                                                     fontSize: 12),
                                               ),
-                                              AutoSizeText(
+                                              Text(
                                                 '$degree%',
                                                 maxLines: 1,
                                                 style:  TextStyle(
@@ -726,7 +726,7 @@ class PricePage extends StatelessWidget {
                                         child: Row(
                                           children: [
                                             Expanded(
-                                              child: AutoSizeText(
+                                              child: Text(
                                                 buyHoga == 0
                                                     ? ''
                                                     : priceFormat
@@ -740,7 +740,7 @@ class PricePage extends StatelessWidget {
                                               ),
                                             ),
                                             Container(
-                                              child: AutoSizeText(
+                                              child: Text(
                                                 percentFormat.format(buyRate) ==
                                                         '100.00%'
                                                     ? ''
@@ -806,7 +806,7 @@ class PricePage extends StatelessWidget {
                                         height: listItemHeight,
                                         padding: const EdgeInsets.all(1),
                                         alignment: Alignment.centerLeft,
-                                        child: AutoSizeText(
+                                        child: Text(
                                           buyRem == 0
                                               ? ''
                                               : priceFormat.format(buyRem),
@@ -960,7 +960,7 @@ class PricePage extends StatelessWidget {
             priceFormat.format(double.parse(cheData.price)),
             style: TextStyle(color: Colors.black, fontSize: 12),
           ),
-          AutoSizeText(
+          Text(
             formatNumber(int.parse(cheData.volume)),
             maxLines: 1,
             style: TextStyle(
