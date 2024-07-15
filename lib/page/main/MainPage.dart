@@ -20,20 +20,20 @@ class MainPage extends StatelessWidget {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-   WebSocketChannel? _webSocketChannel;
+  WebSocketChannel? _webSocketChannel;
+
   // WebSocketChannel _webSocketChannel =
   //     WebSocketChannel.connect(Uri.parse('ws://203.109.30.207:10001/connect'));
   late String _websocketKey;
 
   void _setupWebSocket(String jmCode) async {
-
-    if(_webSocketChannel != null){
+    if (_webSocketChannel != null) {
       _webSocketChannel!.sink.close();
     }
 
     try {
-      _webSocketChannel =
-           WebSocketChannel.connect(Uri.parse('ws://203.109.30.207:10001/connect'));
+      _webSocketChannel = WebSocketChannel.connect(
+          Uri.parse('ws://203.109.30.207:10001/connect'));
 
       _webSocketChannel?.stream.listen((message) async {
         try {
@@ -95,20 +95,21 @@ class MainPage extends StatelessWidget {
       return BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon : Image.asset('assets/images/savedStock.png',  width: 15,
-              height: 15),
+            icon: Image.asset('assets/images/savedStock.png',
+                width: 15, height: 15),
             label: '찜한주식',
           ),
           BottomNavigationBarItem(
-            icon : Image.asset('assets/images/wallet.png',  width: 15,
-              height: 15,),
-
+            icon: Image.asset(
+              'assets/images/wallet.png',
+              width: 15,
+              height: 15,
+            ),
             label: '현재가',
           ),
           BottomNavigationBarItem(
-            icon : Image.asset('assets/images/more.png',  width: 15,
-              height: 15),
-
+            icon: Image.asset('assets/images/logo.png',
+                width: 15, height: 15),
             label: '더보기',
           ),
         ],
@@ -119,13 +120,14 @@ class MainPage extends StatelessWidget {
           switch (value) {
             case 0:
               _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
-              if(_globalCtrl.hogaWebSocketChannel.value != null){ //-> 현재가에서 찜 클릭할 경우 호가 채널 닫아주기
+              if (_globalCtrl.hogaWebSocketChannel.value != null) {
+                //-> 현재가에서 찜 클릭할 경우 호가 채널 닫아주기
                 _globalCtrl.hogaWebSocketChannel.value?.sink.close();
               }
               break;
 
             case 1:
-              if(_globalCtrl.hogaWebSocketChannel.value != null){
+              if (_globalCtrl.hogaWebSocketChannel.value != null) {
                 _globalCtrl.hogaWebSocketChannel.value?.sink.close();
               }
               var siseData = _controller.siseList[0];
@@ -137,15 +139,18 @@ class MainPage extends StatelessWidget {
                   .setSelectecJm('000660', 'SK 하이닉스', siseData);
               Get.find<GlobalController>().selectedIndex.value = 1;
 
-              if(_globalCtrl.favWebSocketChannel.value != null){ //-> 찜에서 호가로 이동할 경우 찜에서 필요한 채널 닫아주기
+              if (_globalCtrl.favWebSocketChannel.value != null) {
+                //-> 찜에서 호가로 이동할 경우 찜에서 필요한 채널 닫아주기
                 _globalCtrl.favWebSocketChannel.value?.sink.close();
               }
               break;
 
             case 2:
               _globalCtrl.setCurrWidget(MorePage());
-              _globalCtrl.favWebSocketChannel.value ?? _globalCtrl.favWebSocketChannel.value?.sink.close();
-              _globalCtrl.hogaWebSocketChannel.value ?? _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+              _globalCtrl.favWebSocketChannel.value ??
+                  _globalCtrl.favWebSocketChannel.value?.sink.close();
+              _globalCtrl.hogaWebSocketChannel.value ??
+                  _globalCtrl.hogaWebSocketChannel.value?.sink.close();
 
               break;
           }
@@ -164,7 +169,6 @@ class MainPage extends StatelessWidget {
 
       switch (_globalCtrl.selectedIndex.value) {
         case 0:
-
           titleWidget = '찜한주식';
           actions = [
             TextButton(
@@ -172,17 +176,20 @@ class MainPage extends StatelessWidget {
                 padding: MaterialStateProperty.all(EdgeInsets.zero),
               ),
               onPressed: () {
-                print ('${_globalCtrl.isRushTest.value} -> ${!_globalCtrl.isRushTest.value}');
+                print(
+                    '${_globalCtrl.isRushTest.value} -> ${!_globalCtrl.isRushTest.value}');
 
-                if(_globalCtrl.favWebSocketChannel.value != null){
+                if (_globalCtrl.favWebSocketChannel.value != null) {
                   _globalCtrl.favWebSocketChannel.value?.sink.close();
                 }
 
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
                 FavPage();
-              }, child: _globalCtrl.isRushTest.value == true ?  Text("러쉬테스트 ON ") : Text("러쉬테스트 OFF"),
+              },
+              child: _globalCtrl.isRushTest.value == true
+                  ? Text("러쉬테스트 ON ")
+                  : Text("러쉬테스트 OFF"),
             ),
-
           ];
           break;
         case 1:
@@ -190,26 +197,23 @@ class MainPage extends StatelessWidget {
           jmCode = _globalCtrl.selectedJmCode.value;
           _setupWebSocket(jmCode);
           actions = [
-
-               TextButton(
-                 style: ButtonStyle(
-                   padding: MaterialStateProperty.all(EdgeInsets.zero),
-                 ),
-                    child: _globalCtrl.isRushTest.value == true ?  Text("러쉬테스트 ON ") : Text("러쉬테스트 OFF"),
-                    onPressed: () {
-                      _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
-                      if(_globalCtrl.hogaWebSocketChannel.value != null){
-                        _globalCtrl.hogaWebSocketChannel.value?.sink.close();
-                      }
-                      Get.find<GlobalController>().setCurrWidget(PricePage(
-                          _globalCtrl.selectedJmCode.value,
-                          _globalCtrl.selectedJmName.value));
-                    },
-                  ),
-
-
-
-
+            TextButton(
+              style: ButtonStyle(
+                padding: MaterialStateProperty.all(EdgeInsets.zero),
+              ),
+              child: _globalCtrl.isRushTest.value == true
+                  ? Text("러쉬테스트 ON ")
+                  : Text("러쉬테스트 OFF"),
+              onPressed: () {
+                _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
+                if (_globalCtrl.hogaWebSocketChannel.value != null) {
+                  _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+                }
+                Get.find<GlobalController>().setCurrWidget(PricePage(
+                    _globalCtrl.selectedJmCode.value,
+                    _globalCtrl.selectedJmName.value));
+              },
+            ),
           ];
 
           break;
