@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:clone_mablemini/page/fav/FavPageController.dart';
+import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -310,6 +312,22 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double statusBarHeight = MediaQuery.of(context).padding.top;
+    double appBarHeight = AppBar().preferredSize.height;
+    double bottomNavBarHeight = kBottomNavigationBarHeight;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double availableHeight = screenHeight - appBarHeight - statusBarHeight - bottomNavBarHeight;
+    _globalCtrl.pricePageHeight = availableHeight;
+
+    print('statusBarHeight 높이');
+    print(statusBarHeight);
+    print('appBarHeight 높이');
+    print(bottomNavBarHeight);
+    print('bottomNavBarHeight 높이');
+    print(bottomNavBarHeight);
+    print('body 높이');
+    print(availableHeight);
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: PreferredSize(

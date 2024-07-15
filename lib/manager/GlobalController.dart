@@ -8,6 +8,8 @@ import '../page/fav/FavPage.dart';
 class GlobalController extends GetxController {
   static GlobalController get instance => Get.find();
 
+  double pricePageHeight = 0;
+
   var selectedIndex = 0.obs;
   var currentWidget = Rx<Widget>(FavPage()); // 초기화
 
