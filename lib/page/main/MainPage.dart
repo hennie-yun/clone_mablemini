@@ -231,6 +231,7 @@ class MainPage extends StatelessWidget {
       }
 
       return AppBar(
+        centerTitle : false,
         backgroundColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0.0,
