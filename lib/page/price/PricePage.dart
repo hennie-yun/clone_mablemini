@@ -64,7 +64,7 @@ class PricePage extends StatelessWidget {
         print('WebSocket connection opened');
       }
 
-      cheFlag = true;
+
 
       _globalController.hogaWebSocketChannel.value?.stream.listen(
           (message)  {
@@ -93,7 +93,7 @@ class PricePage extends StatelessWidget {
                 PRDY_CTRT: PRDY_CTRT,
                 JmName: selectedJm[1],
               );
-
+              cheFlag = true;
               _controller.siseList.add(newData);
 
               _hogaController.currentPrice.value =
@@ -355,7 +355,8 @@ class PricePage extends StatelessWidget {
                                             textAlign: TextAlign.right,
                                             style: TextStyle(
                                                 fontSize: 12,
-                                                fontWeight: sellWeight),
+                                                //fontWeight: sellWeight
+                                            ),
                                           ),
                                         ),
                                         Container(
@@ -654,7 +655,8 @@ class PricePage extends StatelessWidget {
                                                         //valueColor(_hogaController.contract.value.array.first.chdegree),
                                                     degreeColor,
                                                        // Colors.black,
-                                                    fontSize: 12),
+                                                    fontSize: 12,
+                                                fontWeight: FontWeight.bold),
                                               ),
                                             ],
                                           ),
@@ -811,7 +813,8 @@ class PricePage extends StatelessWidget {
                                               //     ? LightColors.basic
                                               //     : Colors.black,
                                               fontSize: 12,
-                                              fontWeight: buyWeight),
+                                              //fontWeight: buyWeight
+                                          ),
                                         ),
                                       ),
                                       Container(
@@ -943,6 +946,7 @@ class PricePage extends StatelessWidget {
     }
     cheFlag == true ? realPriceColor(cheData.price) : null;
 
+
     return Container(
       padding: EdgeInsets.all(5),
       child: Row(
@@ -956,7 +960,8 @@ class PricePage extends StatelessWidget {
             formatNumber(int.parse(cheData.volume)),
             maxLines: 1,
             style: TextStyle(
-                color: cheFlag == false ? valueColor(cheData.sign) : priceColor,
+                //color: cheFlag == true ? priceColor : valueColor(sign),
+              color:prePrice == '0' ? valueColor(cheData.sign) : priceColor,
                 fontSize: 12),
           ),
         ],
@@ -979,8 +984,10 @@ class PricePage extends StatelessWidget {
 
   Color valueColor(String sign) {
     if (sign == '1' || sign == '2') {
+
       return Colors.red;
     } else if (sign == '4' || sign == '5') {
+
       return Colors.blue;
     } else {
       return Colors.black;
