@@ -231,10 +231,12 @@ class PricePage extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
-    final double hogaListHeight = MediaQuery.of(context).size.height - 88 - 58;
+    //final double hogaListHeight = MediaQuery.of(context).size.height - 88 - 58;
     //final double hogaListHeight = 650;
+    final double hogaListHeight = 700;
+
     return Scaffold(
-      body: SafeArea(
+      body: SafeArea(child:SingleChildScrollView(
           child: Column(
         children: [
           Container(
@@ -856,7 +858,7 @@ class PricePage extends StatelessWidget {
                 ],
               )),
         ],
-      )),
+      ))),
     );
   }
 
