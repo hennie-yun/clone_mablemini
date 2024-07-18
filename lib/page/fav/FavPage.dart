@@ -74,7 +74,8 @@ class FavPage extends StatelessWidget {
                   break;
                 }
               }
-            } else {
+            }
+            else {
               print(data);
               var outputString = data['output'];
               Map<String, dynamic> outputData = json.decode(outputString);
@@ -85,17 +86,14 @@ class FavPage extends StatelessWidget {
                 if (trCode == "H0STCNT0") {
                   String trKey = data['trKey'];
 
+                  print (data);
                   for (int i = 0; i < _controller.jmCodes.length; i++) {
                     if (trKey == _controller.jmCodes[i]['jmCode']) {
                       _controller.siseList[i] = SiseData(
                         STCK_PRPR: outputData['Data']['STCK_PRPR'].toString(),
-                        PRDY_VRSS_SIGN:
-                            outputData['Data']['PRDY_VRSS_SIGN'].toString(),
-                        PRDY_VRSS:
-                            outputData['Data']['OPRC_VRSS_PRPR'].toString(),
-                        PRDY_CTRT: outputData['Data']
-                                ['PRDY_VOL_VRSS_ACML_VOL_RATE']
-                            .toString(),
+                        PRDY_VRSS_SIGN: outputData['Data']['PRDY_VRSS_SIGN'].toString(),
+                        PRDY_VRSS:outputData['Data']['PRDY_VRSS'].toString(),
+                        PRDY_CTRT: outputData['Data']['PRDY_CTRT'].toString(),
                       );
                       break;
                     }
@@ -118,7 +116,6 @@ class FavPage extends StatelessWidget {
       print('WebSocket connection error: $e');
     }
   }
-
   void requestData() {
     List<SiseData?> newDataList = List.filled(_controller.jmCodes.length, null);
     List<Future> futures = [];
@@ -161,7 +158,7 @@ class FavPage extends StatelessWidget {
     Future.wait(futures).then((_) {
       _controller.siseList.assignAll(
           newDataList.where((element) => element != null).cast<SiseData>());
-      setupWebSocket();
+      // setupWebSocket();
     });
   }
 
@@ -231,16 +228,17 @@ class FavPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(() {
-        return GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
-            childAspectRatio: MediaQuery.of(context).size.width / 72,
-          ),
+      body:
+
+
+      Obx(() {
+        return ListView.builder(
+
           itemCount: _controller.siseList.length,
           itemBuilder: (context, index) {
             final siseData = _controller.siseList[index];
-            return InkWell(
+
+            return  GestureDetector(
               onTap: () {
                 Get.find<GlobalController>().setCurrWidget(
                   PricePage(
@@ -253,7 +251,8 @@ class FavPage extends StatelessWidget {
                   _controller.jmCodes[index]['jmName']!,
                   siseData,
                 );
-                Get.find<GlobalController>().selectedIndex.value = 1;
+
+                Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -300,13 +299,94 @@ class FavPage extends StatelessWidget {
                   ],
                 ),
               ),
+
             );
           },
         );
       }),
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     body: Obx(() {
+  //       return GridView.builder(
+  //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+  //           crossAxisCount: 1,
+  //           childAspectRatio: MediaQuery.of(context).size.width / 72,
+  //         ),
+  //         itemCount: _controller.siseList.length,
+  //         itemBuilder: (context, index) {
+  //           final siseData = _controller.siseList[index];
+  //           return InkWell(
+  //             onTap: () {
+  //               Get.find<GlobalController>().setCurrWidget(
+  //                 PricePage(
+  //                   _controller.jmCodes[index]['jmCode']!,
+  //                   _controller.jmCodes[index]['jmName']!,
+  //                 ),
+  //               );
+  //               Get.find<GlobalController>().setSelectecJm(
+  //                 _controller.jmCodes[index]['jmCode']!,
+  //                 _controller.jmCodes[index]['jmName']!,
+  //                 siseData,
+  //               );
+  //               Get.find<GlobalController>().selectedIndex.value = 1;
+  //             },
+  //             child: Container(
+  //               padding: const EdgeInsets.symmetric(horizontal: 24),
+  //               height: 72,
+  //               child: Row(
+  //                 children: [
+  //                   Container(
+  //                     width: 36,
+  //                     height: 36,
+  //                     margin: const EdgeInsets.only(right: 12),
+  //                     decoration: const BoxDecoration(shape: BoxShape.circle),
+  //                     child: ClipOval(
+  //                       child: Image.asset('assets/images/mmini.png'),
+  //                     ),
+  //                   ),
+  //                   Expanded(
+  //                     child: Text(
+  //                       _controller.jmCodes[index]["jmName"]!,
+  //                       overflow: TextOverflow.ellipsis,
+  //                       style: const TextStyle(
+  //                         fontWeight: FontWeight.w700,
+  //                         fontSize: 16,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                   Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     crossAxisAlignment: CrossAxisAlignment.end,
+  //                     children: [
+  //                       Text(
+  //                         '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
+  //                         style: const TextStyle(
+  //                           fontWeight: FontWeight.w700,
+  //                           fontSize: 16,
+  //                         ),
+  //                       ),
+  //                       makePrice(
+  //                         siseData.PRDY_VRSS,
+  //                         siseData.PRDY_CTRT,
+  //                         siseData.PRDY_VRSS_SIGN,
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     }),
+  //   );
+  // }
 }
+
 
 String formatNumber(int number) {
   final formatter = NumberFormat('#,###');
