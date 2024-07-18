@@ -76,7 +76,7 @@ class FavPage extends StatelessWidget {
               }
             }
             else {
-              print(data);
+
               var outputString = data['output'];
               Map<String, dynamic> outputData = json.decode(outputString);
 
