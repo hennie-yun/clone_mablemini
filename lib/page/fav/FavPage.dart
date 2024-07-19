@@ -80,13 +80,12 @@ class FavPage extends StatelessWidget {
               var outputString = data['output'];
               Map<String, dynamic> outputData = json.decode(outputString);
 
-              if (data["trKey"] != null) {
+              // if (data["trKey"] != null) {
                 String? trCode = outputData['TrCode']?.toString();
 
                 if (trCode == "H0STCNT0") {
                   String trKey = data['trKey'];
 
-                  print (data);
                   for (int i = 0; i < _controller.jmCodes.length; i++) {
                     if (trKey == _controller.jmCodes[i]['jmCode']) {
                       _controller.siseList[i] = SiseData(
@@ -98,7 +97,7 @@ class FavPage extends StatelessWidget {
                       break;
                     }
                   }
-                }
+                // }
               }
             }
           } catch (e) {
@@ -158,7 +157,7 @@ class FavPage extends StatelessWidget {
     Future.wait(futures).then((_) {
       _controller.siseList.assignAll(
           newDataList.where((element) => element != null).cast<SiseData>());
-      // setupWebSocket();
+      setupWebSocket();
     });
   }
 
@@ -228,30 +227,24 @@ class FavPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-
-
-      Obx(() {
+      body: Obx(() {
         return ListView.builder(
-
           itemCount: _controller.siseList.length,
           itemBuilder: (context, index) {
             final siseData = _controller.siseList[index];
+            final jmCode = _controller.jmCodes[index]['jmCode']!;
+            final jmName = _controller.jmCodes[index]['jmName']!;
 
-            return  GestureDetector(
+            return GestureDetector(
               onTap: () {
                 Get.find<GlobalController>().setCurrWidget(
-                  PricePage(
-                    _controller.jmCodes[index]['jmCode']!,
-                    _controller.jmCodes[index]['jmName']!,
-                  ),
+                  PricePage(jmCode, jmName),
                 );
                 Get.find<GlobalController>().setSelectecJm(
-                  _controller.jmCodes[index]['jmCode']!,
-                  _controller.jmCodes[index]['jmName']!,
+                  jmCode,
+                  jmName,
                   siseData,
                 );
-
                 Get.find<GlobalController>().selectedIndex.value = 1; // 인덱스 설정
               },
               child: Container(
@@ -270,7 +263,7 @@ class FavPage extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        _controller.jmCodes[index]["jmName"]!,
+                        jmName,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
@@ -299,13 +292,13 @@ class FavPage extends StatelessWidget {
                   ],
                 ),
               ),
-
             );
           },
         );
       }),
     );
   }
+
 
   // @override
   // Widget build(BuildContext context) {
