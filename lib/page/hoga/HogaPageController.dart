@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../comm/SiseData.dart';
+import '../../manager/GlobalController.dart';
 import '../fav/FavPageController.dart';
 import '../../comm/HogaData.dart';
 import '../../comm/HogaData2.dart';
@@ -21,6 +22,7 @@ class HogaPageController extends GetxController {
   // /// 통신
   // Rx<Sise> sise = Sise().obs;
   final FavPageController _fevController = Get.find<FavPageController>();
+  final GlobalController _globalController = Get.find<GlobalController>();
 
   // 종목 코드
   RxList selectedJm = [].obs;
@@ -97,6 +99,7 @@ class HogaPageController extends GetxController {
       HogaData hogaData = HogaData();
       if(decodedJson['Data']['output'] != null) {
         hoga.value = HogaData.fromJSON(decodedJson['Data']['output']);
+        _globalController.hogaPreData =   hoga.value;
         // hogaData = HogaData.fromJSON(decodedJson['Data']['output']);
       }
       // return hogaData;

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../comm/HogaData.dart';
 import '../page/fav/FavPage.dart';
 
 class GlobalController extends GetxController {
@@ -19,6 +20,8 @@ class GlobalController extends GetxController {
 
   var hogaWebSocketChannel = Rxn<WebSocketChannel>();
   var favWebSocketChannel = Rxn<WebSocketChannel>();
+
+  HogaData hogaPreData = HogaData();
 
   var selectedJmCode = ''.obs;
 

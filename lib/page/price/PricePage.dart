@@ -51,192 +51,19 @@ class PricePage extends StatelessWidget {
     //setupWebSocket();
   }
 
-  void setupWebSocket()  {
-    if (_globalController.hogaWebSocketChannel.value != null) {
-      _globalController.hogaWebSocketChannel.value?.sink.close();
-    }
 
-    try {
-      _globalController.hogaWebSocketChannel.value = WebSocketChannel.connect(
-          Uri.parse('ws://203.109.30.207:10001/connect'));
-
-      if (_globalController.hogaWebSocketChannel.value != null) {
-        print('WebSocket connection opened');
-      }
-
-
-
-      _globalController.hogaWebSocketChannel.value?.stream.listen(
-          (message)  {
-        try {
-          final data = jsonDecode(message);
-          if (data['Data'] != null && data['Data']['websocketkey'] != null) {
-            _websocketKey = data['Data']['websocketkey'];
-            print('WebSocket Key: $_websocketKey');
-            //호가
-            requestRealHoga(_websocketKey, selectedJm[0]);
-
-            //체결
-            _requestReal(_websocketKey, selectedJm[0]);
-          } else {
-            if (data['TrCode'] == "H0STCNT0") {
-              _controller.siseList.clear();
-              String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
-              String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
-              String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
-              String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
-
-              SiseData newData = SiseData(
-                STCK_PRPR: STCK_PRPR,
-                PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
-                PRDY_VRSS: PRDY_VRSS,
-                PRDY_CTRT: PRDY_CTRT,
-                JmName: selectedJm[1],
-              );
-              cheFlag = true;
-              _controller.siseList.add(newData);
-
-              _hogaController.currentPrice.value =
-                  _controller.siseList[0].STCK_PRPR;
-              _hogaController.contract.value.array
-                  .insert(0, CheDataArray.fromJson(data['Data']));
-
-              //realCtngVolColor(_hogaController.contract.value.array.first.volume);
-              // if (_hogaController.contract.value.array.length >= 30) {
-              //   _hogaController.contract.value.array.removeLast();
-              // }
-            }
-            if (data['TrCode'] == "H0STASP0") {
-              _hogaController.hoga.value = HogaData.fromJSON(data['Data']);
-            }
-
-            // 러쉬테스트 데이터
-            if (data['num'] != null) {
-              // 현재 종목코드와 러쉬테스트 데이터의 종목코드가 같을 경우만 업데이트.
-              if (data['trKey'] == selectedJm[0]) {
-                var rushData = jsonDecode(data['output']);
-
-                // 호가 러쉬테스트
-                if (rushData['TrCode'] == "H0STASP0") {
-                  if (rushData != null && rushData['Data'] != null) {
-                   // print(data['num']);
-
-                    _hogaController.hoga.value =
-                        HogaData.fromJSON(rushData['Data']);
-
-                    //print('호가 rushtest');
-                  }
-
-                }
-
-                // 체결 러쉬테스트
-                if (rushData['TrCode'] == "H0STCNT0") {
-                  if (rushData != null && rushData['Data'] != null) {
-                   // print(data['num']);
-
-                    String STCK_PRPR =
-                        (rushData?['Data']?['STCK_PRPR'] ?? '') as String;
-
-                    _hogaController.currentPrice.value = STCK_PRPR;
-
-                    _hogaController.contract.value.array
-                        .insert(0, CheDataArray.fromJson(rushData['Data']));
-
-                    //realCtngVolColor(_hogaController.contract.value.array.first.volume);
-                    // if (_hogaController.contract.value.array.length >= 30) {
-                    //   _hogaController.contract.value.array.removeLast();
-                    // }
-                   // print('체결 rushtest');
-                  }
-                }
-              }
-            }
-          }
-        } catch (e) {
-          print('Error processing WebSocket message: $e');
-        }
-      }, onError: (error) {
-        print('WebSocket error: $error');
-      }, onDone: () {
-        print('WebSocket connection closed');
-      });
-    } catch (e) {
-      print('WebSocket connection error: $e');
-    }
-  }
-
-  // Future<void> _requestData(String value) async {
-  //   print(value);
-  //   final headers = {'Content-Type': 'application/json;charset=utf-8'};
-  //   final body = jsonEncode({
-  //     "trCode": "/uapi/domestic-stock/v1/quotations/S0004",
-  //     "rqName": "",
-  //     "header": {"tr_id": "1"},
-  //     "objCommInput": {"SHCODE": value}
-  //   });
-  //
-  //   final response = await http.post(
-  //     Uri.parse('http://203.109.30.207:10001/request'),
-  //     headers: headers,
-  //     body: body,
-  //   );
-  //
-  //   if (response.statusCode == 200) {
-  //     final responseData = jsonDecode(response.body);
-  //     if (responseData['TrCode'] ==
-  //         "/uapi/domestic-stock/v1/quotations/S0004") {
-  //       SiseData siseData =
-  //       SiseData.fromJson(responseData["Data"]["output"], value);
-  //       _controller.siseList.add(siseData);
-  //     }
-  //   } else {
-  //     print('_requestData failed with status: ${response.statusCode}');
-  //   }
-  //
-  //   setupWebSocket();
-  // }
-
-  void _requestReal(String websocketKey, String jmCode) async {
-    final headers = {'Content-Type': 'application/json;charset=utf-8'};
-
-    var url;
-    var body;
-
-    if (_globalController.isRushTest.value == false) {
-      url = 'http://203.109.30.207:10001/requestReal';
-      body = jsonEncode({
-        "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
-        "rqName": "",
-        "header": {"sessionKey": websocketKey, "tr_type": "1"},
-        "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
-      });
-    } else {
-      // 러쉬테스트
-      url = 'http://203.109.30.207:10001/rushtest';
-      body = jsonEncode({
-        "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
-        "rqName": "",
-        "header": {"sessionKey": websocketKey, "tr_type": "1"},
-        "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
-      });
-    }
-
-    final response =
-        await http.post(Uri.parse(url), headers: headers, body: body);
-
-    if (response.statusCode == 200) {
-    } else {
-      print('_requestReal failed with status: ${response.statusCode}');
-    }
-  }
 
   Widget build(BuildContext context) {
     //final double hogaListHeight = MediaQuery.of(context).size.height - 88 - 58;
-    final double hogaListHeight = _globalController.pricePageHeight;
+     double hogaListHeight = _globalController.pricePageHeight;
+    if(_globalController.pricePageHeight<480){
+      hogaListHeight = 480;
+    }
    // final double hogaListHeight = 700;
 
     return Scaffold(
       body: SafeArea(
+        child:SingleChildScrollView(
 
           child: Column(
         children: [
@@ -859,7 +686,7 @@ class PricePage extends StatelessWidget {
                 ],
               )),
         ],
-      )),
+      ))),
     );
   }
 
@@ -896,6 +723,13 @@ class PricePage extends StatelessWidget {
   Widget sise3(String text, double price, String text3, double basePrice) {
     double doublePercent = (price-basePrice) / basePrice * 100;
     String percent = doublePercent.abs().toStringAsFixed(2);
+    // double doublePercent = 0;
+    // String percent = '0';
+    //
+    // if(price != 0){
+    //   doublePercent = (price-basePrice) / basePrice * 100;
+    //   percent = doublePercent.abs().toStringAsFixed(2);
+    // }
     var formatPrice = priceFormat.format(price);
 
     var sign = '';
@@ -1096,6 +930,193 @@ class PricePage extends StatelessWidget {
       print('Request failed with status: ${response.statusCode}');
     }
   }
+
+  void setupWebSocket()  {
+    // if(_globalController.isRushTest.value == true){
+    //   print('isAllFieldsZero');
+    //   _globalController.hogaWebSocketChannel.value?.sink.close();
+    //   print('isAllFieldsZero');
+    //   print(HogaData.isAllFieldsZero(_hogaController.hoga.value));
+    // }
+    if (_globalController.hogaWebSocketChannel.value != null) {
+      _globalController.hogaWebSocketChannel.value?.sink.close();
+    }
+
+    try {
+      _globalController.hogaWebSocketChannel.value = WebSocketChannel.connect(
+          Uri.parse('ws://203.109.30.207:10001/connect'));
+
+      if (_globalController.hogaWebSocketChannel.value != null) {
+        print('WebSocket connection opened');
+      }
+
+
+
+      _globalController.hogaWebSocketChannel.value?.stream.listen(
+              (message)  {
+            try {
+              final data = jsonDecode(message);
+              if (data['Data'] != null && data['Data']['websocketkey'] != null) {
+                _websocketKey = data['Data']['websocketkey'];
+                print('WebSocket Key: $_websocketKey');
+                //호가
+                requestRealHoga(_websocketKey, selectedJm[0]);
+
+                //체결
+                _requestReal(_websocketKey, selectedJm[0]);
+              } else {
+                if (data['TrCode'] == "H0STCNT0") {
+                  _controller.siseList.clear();
+                  String STCK_PRPR = data['Data']['STCK_PRPR'] ?? '';
+                  String PRDY_VRSS_SIGN = data['Data']['PRDY_VRSS_SIGN'] ?? '';
+                  String PRDY_VRSS = data['Data']['PRDY_VRSS'] ?? '';
+                  String PRDY_CTRT = data['Data']['PRDY_CTRT'] ?? '';
+
+                  SiseData newData = SiseData(
+                    STCK_PRPR: STCK_PRPR,
+                    PRDY_VRSS_SIGN: PRDY_VRSS_SIGN,
+                    PRDY_VRSS: PRDY_VRSS,
+                    PRDY_CTRT: PRDY_CTRT,
+                    JmName: selectedJm[1],
+                  );
+                  cheFlag = true;
+                  _controller.siseList.add(newData);
+
+                  _hogaController.currentPrice.value =
+                      _controller.siseList[0].STCK_PRPR;
+                  _hogaController.contract.value.array
+                      .insert(0, CheDataArray.fromJson(data['Data']));
+
+                  //realCtngVolColor(_hogaController.contract.value.array.first.volume);
+                  // if (_hogaController.contract.value.array.length >= 30) {
+                  //   _hogaController.contract.value.array.removeLast();
+                  // }
+                }
+                if (data['TrCode'] == "H0STASP0") {
+                  _hogaController.hoga.value = HogaData.fromJSON(data['Data']);
+                  _globalController.hogaPreData = _hogaController.hoga.value;
+                }
+
+                // 러쉬테스트 데이터
+                if (data['num'] != null) {
+                  // 현재 종목코드와 러쉬테스트 데이터의 종목코드가 같을 경우만 업데이트.
+                  if (data['trKey'] == selectedJm[0]) {
+                    var rushData = jsonDecode(data['output']);
+
+
+                    var set = HogaData.isAllFieldsZero(_hogaController.hoga.value);
+                    print('set');
+                    print(set);
+                    if(set){
+
+                      _hogaController.hoga.value = _globalController.hogaPreData;
+                      print('러쉬테스트 하는데 데이터가 없으면');
+                    }
+                    // 호가 러쉬테스트
+                    if (rushData['TrCode'] == "H0STASP0") {
+                      if (rushData != null && rushData['Data'] != null) {
+                        // print(data['num']);
+
+                        var tempdata = HogaData.fromJSON(rushData['Data']);
+
+                        // 데이터가 모두 '0'이면 화면 업데이트 안함
+                        if(!HogaData.isAllFieldsZero(tempdata)){
+                          _hogaController.hoga.value = tempdata;
+                          _globalController.hogaPreData = _hogaController.hoga.value;
+
+                          print('_hogaController.hoga.value.sellRems?[0]');
+                          print(_hogaController.hoga.value.sellRems?[0]);
+                          print('모든 데이터 있음');
+                        }else{
+
+                          _hogaController.hoga.value = _globalController.hogaPreData;
+
+                          //_hogaController.hoga.value = _hogaController.requestHogaData;
+                          print('모든 데이터 없음');
+                        }
+                        // _hogaController.hoga.value =
+                        //     HogaData.fromJSON(rushData['Data']);
+
+                        //print('호가 rushtest');
+                      }
+
+
+                    }
+
+                    // 체결 러쉬테스트
+                     if (rushData['TrCode'] == "H0STCNT0") {
+                      if (rushData != null && rushData['Data'] != null) {
+                        // print(data['num']);
+
+                        String STCK_PRPR =
+                        (rushData?['Data']?['STCK_PRPR'] ?? '') as String;
+
+                        _hogaController.currentPrice.value = STCK_PRPR;
+
+                        _hogaController.contract.value.array
+                            .insert(0, CheDataArray.fromJson(rushData['Data']));
+
+                        //realCtngVolColor(_hogaController.contract.value.array.first.volume);
+                        // if (_hogaController.contract.value.array.length >= 30) {
+                        //   _hogaController.contract.value.array.removeLast();
+                        // }
+                        // print('체결 rushtest');
+                      }
+                    }
+                  }
+                }
+              }
+            } catch (e) {
+              print('Error processing WebSocket message: $e');
+            }
+          }, onError: (error) {
+        print('WebSocket error: $error');
+      }, onDone: () {
+        print('WebSocket connection closed');
+      });
+    } catch (e) {
+      print('WebSocket connection error: $e');
+    }
+  }
+
+  void _requestReal(String websocketKey, String jmCode) async {
+    final headers = {'Content-Type': 'application/json;charset=utf-8'};
+
+    var url;
+    var body;
+
+    if (_globalController.isRushTest.value == false) {
+      print('실시간');
+      url = 'http://203.109.30.207:10001/requestReal';
+      body = jsonEncode({
+        "trCode": "/uapi/domestic-stock/v1/quotations/requestReal",
+        "rqName": "",
+        "header": {"sessionKey": websocketKey, "tr_type": "1"},
+        "objCommInput": {"tr_key": jmCode, "tr_id": "H0STCNT0"}
+      });
+    } else {
+      // 러쉬테스트
+      print('러쉬테스트');
+      url = 'http://203.109.30.207:10001/rushtest';
+      body = jsonEncode({
+        "trCode": "/uapi/domestic-stock/v1/quotations/rushtest",
+        "rqName": "",
+        "header": {"sessionKey": websocketKey, "tr_type": "1"},
+        "objCommInput": {"count": "2", "tr_id": "H0STCNT0"}
+      });
+    }
+
+    final response = await http.post(Uri.parse(url), headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+    } else {
+
+      if(_globalController.isRushTest.value == true){
+        _hogaController.hoga.value = _globalController.hogaPreData;
+      }
+      print('_requestReal failed with status: ${response.statusCode}');
+    }
+  }
 }
 
 String formatNumber(int number) {
@@ -1229,3 +1250,5 @@ Color updownColor(String updwn) {
     return const Color(0xFF4881FF);
   }
 }
+
+
