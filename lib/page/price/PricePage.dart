@@ -1005,17 +1005,14 @@ class PricePage extends StatelessWidget {
 
 
                     var set = HogaData.isAllFieldsZero(_hogaController.hoga.value);
-                    print('set');
-                    print(set);
-                    if(set){
 
+                    if(set){
                       _hogaController.hoga.value = _globalController.hogaPreData;
-                      print('러쉬테스트 하는데 데이터가 없으면');
+
                     }
                     // 호가 러쉬테스트
                     if (rushData['TrCode'] == "H0STASP0") {
                       if (rushData != null && rushData['Data'] != null) {
-                        // print(data['num']);
 
                         var tempdata = HogaData.fromJSON(rushData['Data']);
 
@@ -1023,16 +1020,9 @@ class PricePage extends StatelessWidget {
                         if(!HogaData.isAllFieldsZero(tempdata)){
                           _hogaController.hoga.value = tempdata;
                           _globalController.hogaPreData = _hogaController.hoga.value;
-
-                          print('_hogaController.hoga.value.sellRems?[0]');
-                          print(_hogaController.hoga.value.sellRems?[0]);
-                          print('모든 데이터 있음');
                         }else{
-
                           _hogaController.hoga.value = _globalController.hogaPreData;
 
-                          //_hogaController.hoga.value = _hogaController.requestHogaData;
-                          print('모든 데이터 없음');
                         }
                         // _hogaController.hoga.value =
                         //     HogaData.fromJSON(rushData['Data']);
