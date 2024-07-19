@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clone_mablemini/comm/HogaData.dart';
 import 'package:clone_mablemini/page/fav/FavPageController.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -125,12 +126,14 @@ class MainPage extends StatelessWidget {
               if (_globalCtrl.hogaWebSocketChannel.value != null) {
                 //-> 현재가에서 찜 클릭할 경우 호가 채널 닫아주기
                 _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+                _globalCtrl.hogaPreData = HogaData();
               }
               break;
 
             case 1:
               if (_globalCtrl.hogaWebSocketChannel.value != null) {
                 _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+                _globalCtrl.hogaPreData = HogaData();
               }
               var siseData = _controller.siseList[0];
               _globalCtrl
@@ -153,6 +156,10 @@ class MainPage extends StatelessWidget {
                   _globalCtrl.favWebSocketChannel.value?.sink.close();
               _globalCtrl.hogaWebSocketChannel.value ??
                   _globalCtrl.hogaWebSocketChannel.value?.sink.close();
+
+              if (_globalCtrl.hogaWebSocketChannel.value != null) {
+                _globalCtrl.hogaPreData = HogaData();
+              }
 
               break;
           }
