@@ -218,9 +218,14 @@ class MainPage extends StatelessWidget {
                 if (_globalCtrl.hogaWebSocketChannel.value != null) {
                   _globalCtrl.hogaWebSocketChannel.value?.sink.close();
                 }
-                Get.find<GlobalController>().setCurrWidget(PricePage(
-                    _globalCtrl.selectedJmCode.value,
-                    _globalCtrl.selectedJmName.value));
+                // _globalCtrl.pricePage = PricePage(
+                //     _globalCtrl.selectedJmCode.value,
+                //     _globalCtrl.selectedJmName.value);
+                _globalCtrl.pricePage?.setupWebSocket();
+                // Get.find<GlobalController>().setCurrWidget(PricePage(
+                //     _globalCtrl.selectedJmCode.value,
+                //     _globalCtrl.selectedJmName.value));
+
               },
             ),
           ];

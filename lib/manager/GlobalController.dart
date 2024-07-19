@@ -5,6 +5,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../comm/HogaData.dart';
 import '../page/fav/FavPage.dart';
+import '../page/price/PricePage.dart';
 
 class GlobalController extends GetxController {
   static GlobalController get instance => Get.find();
@@ -20,6 +21,9 @@ class GlobalController extends GetxController {
 
   var hogaWebSocketChannel = Rxn<WebSocketChannel>();
   var favWebSocketChannel = Rxn<WebSocketChannel>();
+
+  //호가 페이지 인스턴스
+  PricePage? pricePage;
 
   HogaData hogaPreData = HogaData();
 

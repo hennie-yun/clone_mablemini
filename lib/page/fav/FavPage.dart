@@ -237,8 +237,16 @@ class FavPage extends StatelessWidget {
 
             return GestureDetector(
               onTap: () {
+                final GlobalController _globalController = Get.find<GlobalController>();
+
+                _globalController.pricePage = PricePage(
+                    jmCode,
+                    jmName);
+                // Get.find<GlobalController>().setCurrWidget(
+                //   PricePage(jmCode, jmName),
+                // );
                 Get.find<GlobalController>().setCurrWidget(
-                  PricePage(jmCode, jmName),
+                    _globalController.pricePage!
                 );
                 Get.find<GlobalController>().setSelectecJm(
                   jmCode,
