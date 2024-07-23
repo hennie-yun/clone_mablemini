@@ -136,13 +136,19 @@ class MainPage extends StatelessWidget {
                 _globalCtrl.hogaPreData = HogaData();
               }
               var siseData = _controller.siseList[0];
-              _globalCtrl
-                  .setCurrWidget(PricePage("000660", "SK 하이닉스")); //페이지 이동
 
               // 앱바 변경
               Get.find<GlobalController>()
                   .setSelectecJm('000660', 'SK 하이닉스', siseData);
               Get.find<GlobalController>().selectedIndex.value = 1;
+
+              _globalCtrl.pricePage = PricePage(
+                  '000660',
+                  'SK 하이닉스');
+
+              Get.find<GlobalController>().setCurrWidget(
+                  _globalCtrl.pricePage!
+              );
 
               if (_globalCtrl.favWebSocketChannel.value != null) {
                 //-> 찜에서 호가로 이동할 경우 찜에서 필요한 채널 닫아주기
