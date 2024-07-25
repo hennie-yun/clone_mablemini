@@ -242,9 +242,6 @@ class FavPage extends StatelessWidget {
                 _globalController.pricePage = PricePage(
                     jmCode,
                     jmName);
-                // Get.find<GlobalController>().setCurrWidget(
-                //   PricePage(jmCode, jmName),
-                // );
                 Get.find<GlobalController>().setCurrWidget(
                     _globalController.pricePage!
                 );
@@ -308,84 +305,7 @@ class FavPage extends StatelessWidget {
   }
 
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: Obx(() {
-  //       return GridView.builder(
-  //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-  //           crossAxisCount: 1,
-  //           childAspectRatio: MediaQuery.of(context).size.width / 72,
-  //         ),
-  //         itemCount: _controller.siseList.length,
-  //         itemBuilder: (context, index) {
-  //           final siseData = _controller.siseList[index];
-  //           return InkWell(
-  //             onTap: () {
-  //               Get.find<GlobalController>().setCurrWidget(
-  //                 PricePage(
-  //                   _controller.jmCodes[index]['jmCode']!,
-  //                   _controller.jmCodes[index]['jmName']!,
-  //                 ),
-  //               );
-  //               Get.find<GlobalController>().setSelectecJm(
-  //                 _controller.jmCodes[index]['jmCode']!,
-  //                 _controller.jmCodes[index]['jmName']!,
-  //                 siseData,
-  //               );
-  //               Get.find<GlobalController>().selectedIndex.value = 1;
-  //             },
-  //             child: Container(
-  //               padding: const EdgeInsets.symmetric(horizontal: 24),
-  //               height: 72,
-  //               child: Row(
-  //                 children: [
-  //                   Container(
-  //                     width: 36,
-  //                     height: 36,
-  //                     margin: const EdgeInsets.only(right: 12),
-  //                     decoration: const BoxDecoration(shape: BoxShape.circle),
-  //                     child: ClipOval(
-  //                       child: Image.asset('assets/images/mmini.png'),
-  //                     ),
-  //                   ),
-  //                   Expanded(
-  //                     child: Text(
-  //                       _controller.jmCodes[index]["jmName"]!,
-  //                       overflow: TextOverflow.ellipsis,
-  //                       style: const TextStyle(
-  //                         fontWeight: FontWeight.w700,
-  //                         fontSize: 16,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Column(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     crossAxisAlignment: CrossAxisAlignment.end,
-  //                     children: [
-  //                       Text(
-  //                         '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
-  //                         style: const TextStyle(
-  //                           fontWeight: FontWeight.w700,
-  //                           fontSize: 16,
-  //                         ),
-  //                       ),
-  //                       makePrice(
-  //                         siseData.PRDY_VRSS,
-  //                         siseData.PRDY_CTRT,
-  //                         siseData.PRDY_VRSS_SIGN,
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     }),
-  //   );
-  // }
+
 }
 
 
@@ -425,3 +345,82 @@ Color updownColor(String updwn) {
     return const Color(0xFF4881FF);
   }
 }
+
+// @override
+// Widget build(BuildContext context) {
+//   return Scaffold(
+//     body: Obx(() {
+//       return GridView.builder(
+//         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//           crossAxisCount: 1,
+//           childAspectRatio: MediaQuery.of(context).size.width / 72,
+//         ),
+//         itemCount: _controller.siseList.length,
+//         itemBuilder: (context, index) {
+//           final siseData = _controller.siseList[index];
+//           return InkWell(
+//             onTap: () {
+//               Get.find<GlobalController>().setCurrWidget(
+//                 PricePage(
+//                   _controller.jmCodes[index]['jmCode']!,
+//                   _controller.jmCodes[index]['jmName']!,
+//                 ),
+//               );
+//               Get.find<GlobalController>().setSelectecJm(
+//                 _controller.jmCodes[index]['jmCode']!,
+//                 _controller.jmCodes[index]['jmName']!,
+//                 siseData,
+//               );
+//               Get.find<GlobalController>().selectedIndex.value = 1;
+//             },
+//             child: Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 24),
+//               height: 72,
+//               child: Row(
+//                 children: [
+//                   Container(
+//                     width: 36,
+//                     height: 36,
+//                     margin: const EdgeInsets.only(right: 12),
+//                     decoration: const BoxDecoration(shape: BoxShape.circle),
+//                     child: ClipOval(
+//                       child: Image.asset('assets/images/mmini.png'),
+//                     ),
+//                   ),
+//                   Expanded(
+//                     child: Text(
+//                       _controller.jmCodes[index]["jmName"]!,
+//                       overflow: TextOverflow.ellipsis,
+//                       style: const TextStyle(
+//                         fontWeight: FontWeight.w700,
+//                         fontSize: 16,
+//                       ),
+//                     ),
+//                   ),
+//                   Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     crossAxisAlignment: CrossAxisAlignment.end,
+//                     children: [
+//                       Text(
+//                         '${formatNumber(int.parse(siseData.STCK_PRPR))}원',
+//                         style: const TextStyle(
+//                           fontWeight: FontWeight.w700,
+//                           fontSize: 16,
+//                         ),
+//                       ),
+//                       makePrice(
+//                         siseData.PRDY_VRSS,
+//                         siseData.PRDY_CTRT,
+//                         siseData.PRDY_VRSS_SIGN,
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//     }),
+//   );
+// }

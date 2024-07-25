@@ -1,4 +1,5 @@
 import 'package:clone_mablemini/comm/SiseData.dart';
+import 'package:clone_mablemini/page/fav/FavPagePaint.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -13,7 +14,10 @@ class GlobalController extends GetxController {
   double pricePageHeight = 0;
 
   var selectedIndex = 0.obs;
-  var currentWidget = Rx<Widget>(FavPage()); // 초기화
+  var currentWidget = Rx<Widget>(FavPagePaint()); // 초기화
+
+  // var currentWidget = Rx<Widget>(FavPage()); // 초기화
+
 
   void setCurrWidget(Widget widget) {
     currentWidget.value = widget;

@@ -12,6 +12,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../comm/SiseData.dart';
 import '../../manager/GlobalController.dart';
 import '../fav/FavPage.dart';
+import '../fav/FavPagePaint.dart';
 import '../more/MorePage.dart';
 import '../price/PricePage.dart';
 
@@ -122,7 +123,7 @@ class MainPage extends StatelessWidget {
           _globalCtrl.selectedIndex.value = value;
           switch (value) {
             case 0:
-              _globalCtrl.setCurrWidget(FavPage()); // 찜하기 페이지
+              _globalCtrl.setCurrWidget(FavPagePaint()); // 찜하기 페이지
               if (_globalCtrl.hogaWebSocketChannel.value != null) {
                 //-> 현재가에서 찜 클릭할 경우 호가 채널 닫아주기
                 _globalCtrl.hogaWebSocketChannel.value?.sink.close();
@@ -193,7 +194,7 @@ class MainPage extends StatelessWidget {
                 }
 
                 _globalCtrl.isRushTest.value = !_globalCtrl.isRushTest.value;
-                FavPage();
+                FavPagePaint();
               },
               child: _globalCtrl.isRushTest.value == true
                   ? Text("러쉬테스트 ON ")
@@ -218,13 +219,9 @@ class MainPage extends StatelessWidget {
                 if (_globalCtrl.hogaWebSocketChannel.value != null) {
                   _globalCtrl.hogaWebSocketChannel.value?.sink.close();
                 }
-                // _globalCtrl.pricePage = PricePage(
-                //     _globalCtrl.selectedJmCode.value,
-                //     _globalCtrl.selectedJmName.value);
+
                 _globalCtrl.pricePage?.setupWebSocket();
-                // Get.find<GlobalController>().setCurrWidget(PricePage(
-                //     _globalCtrl.selectedJmCode.value,
-                //     _globalCtrl.selectedJmName.value));
+
 
               },
             ),
